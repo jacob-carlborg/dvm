@@ -122,7 +122,7 @@ private struct Path
 		if (result_.length > 0)
 			return result_;
 
-		return result_ = join(dvm, "result");
+		return result_ = join(tmp, "result");
 	}
 	
 	string scripts ()

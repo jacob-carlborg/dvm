@@ -6,7 +6,6 @@
  */
 module dvm.commands.Use;
 
-
 import dvm.util.Util;
 import tango.core.Exception;
 import tango.text.convert.Format : format = Format;
@@ -53,8 +52,12 @@ private:
 	void writeShellScript (ShellScript sh)
 	{
 		validatePath(envPath);
-		sh.path = join(options.path.result);
-		verbose(format(`installing "{}" as the current D compiler`, sh.path));
+		sh.path = options.path.result;
+		verbose(format(`installing "{}" as the current D compiler`, args.first));
+		
+		if (!exists(options.path.tmp))
+			createFolder(options.path.tmp);
+		
 		sh.write;
 	}
 	
@@ -63,7 +66,7 @@ private:
 		if (envPath_.length > 0)
 			return envPath_;
 		
-		return envPath_ = join(options.path.dvm, options.path.env, "dmd-" ~ args.first);
+		return envPath_ = join(options.path.env, "dmd-" ~ args.first);
 	}	
 }
 
