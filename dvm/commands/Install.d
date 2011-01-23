@@ -135,7 +135,7 @@ private:
 	
 	void installEnvironment (ShellScript sh)
 	{
-		sh.path = Path.join(options.path.dvm, options.path.env);				
+		sh.path = options.path.env;				
 		Path.createPath(sh.path);
 		sh.path = Path.join(sh.path, "dmd-" ~ args.first);
 		
