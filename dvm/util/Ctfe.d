@@ -6,8 +6,8 @@
  */
 module dvm.util.Ctfe;
 
-import mambo.string;
-import mambo.util.Traits;
+import dvm.core.string;
+import dvm.util.Traits;
 
 template format (ARGS...)
 {

@@ -12,7 +12,7 @@ version (Tango)
 	import tango.io.Stdout;
 	import tango.io.Console;
 	
-	import mambo.string;
+	import dvm.core.string;
 }
 
 else 
@@ -32,7 +32,7 @@ void print (A...)(A args)
 					        	  "{}{}{}{}{}{}{}{}"
 					        	  "{}{}{}{}{}{}{}{}";
 				
-		static assert (A.length <= fmt.length / 2, "mambo.io.print :: too many arguments");
+		static assert (A.length <= fmt.length / 2, "dvm.core.io.print :: too many arguments");
 		
 		Stdout.format(fmt[0 .. args.length * 2], args).flush;
 	}
@@ -56,7 +56,7 @@ void println (A...)(A args)
 					        	  "{}{}{}{}{}{}{}{}"
 					        	  "{}{}{}{}{}{}{}{}";
 
-		static assert (A.length <= fmt.length / 2, "mambo.io.println :: too many arguments");
+		static assert (A.length <= fmt.length / 2, "dvm.core.io.println :: too many arguments");
 		
 		Stdout.formatln(fmt[0 .. args.length * 2], args);
 	}
