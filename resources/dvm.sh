@@ -1,21 +1,8 @@
 #!/usr/bin/env bash
 
-# Set the default sandboxed value.
-if [[ -z "${dvm_selfcontained:-""}" ]] ; then
-	if [[ $(id | \sed -e 's/(.*//' | awk -F= '{print $2}') -eq 0 || \
-			-n "$dvm_prefix" && "$dvm_prefix" != "$HOME"/* ]] ; then
-
-		dvm_selfcontained=0
-	else
-		dvm_selfcontained=1
-	fi
-fi
-
 if [[ -z "$dvm_prefix" ]] ; then
 
-	if [[ "$dvm_selfcontained" = "0" ]] ; then
-		dvm_prefix="/usr/local/"
-	elif [[ -n "$HOME" ]] ; then
+	if [[ -n "$HOME" ]] ; then
 		dvm_prefix="$HOME/."
 	else
 		echo "No \$dvm_prefix was provided and "
@@ -59,3 +46,5 @@ dvm()
 		rm -r "$dvm_tmp_path"
 	fi
 }
+
+unset __dvm_setup_paths __dvm_setup_environment

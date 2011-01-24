@@ -23,6 +23,7 @@ class DvmInstall : Command
 	private
 	{
 		const postInstallInstrcutions = import("post_install_instructions.txt");
+		const failedInstallInstrcutions = import("failed_install_instructions.txt");
 
 		version (Posix)
 			const dvmScript = import("dvm.sh");
@@ -98,13 +99,13 @@ private:
 			shPath = bash_profile;
 		
 		else
-			throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:\n\n{}`,
-											bashrc, bash_profile, postInstallInstrcutions), __FILE__, __LINE__);
+			throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:{}{}`,
+											bashrc, bash_profile, "\n\n", failedInstallInstrcutions), __FILE__, __LINE__);
 		
 		verbose("installing dvm in the shell loading file: ", shPath);
 		File.append(shPath, sh.content);
 		
-		println('\n', postInstallInstrcutions);
+		println(postInstallInstrcutions);
 	}
 	
 	void createPath (string path)

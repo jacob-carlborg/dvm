@@ -1,8 +1,18 @@
-DVM has now been installed in your shell's loading file.
+You must now complete the installation by loading DVM in new shells.
 
-1) You must now ensure that there is no 'return' from inside
-the .bashrc or .bash_profile file, otherwise dvm may
-be prevented from working properly.
+1) Place the following line at the end of your shell's loading files
+(.bashrc or .bash_profile for bash and .zshrc for zsh),
+after all PATH/variable settings:
+
+# This loads DVM into a shell session.
+if [[ -s "$HOME/.dvm/scripts/dvm"]] ; then
+	source "$HOME/.dvm/scripts/dvm" ;
+fi
+
+You only need to add this line the first time you install dvm.
+
+2) Ensure that there is no 'return' from inside the ~/.bashrc file,
+otherwise dvm may be prevented from working properly.
 
 This means that if you see something like:
 
@@ -30,4 +40,4 @@ If you wish to DRY up your config you can 'source ~/.bashrc' at the bottom of yo
 Placing all non-interactive (non login) items in the .bashrc,
 including the 'source' line above and any environment settings.
 
-2) CLOSE THIS SHELL and open a new one in order to use dvm.
+3) CLOSE THIS SHELL and open a new one in order to use dvm.
