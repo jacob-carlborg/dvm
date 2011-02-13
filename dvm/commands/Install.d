@@ -9,10 +9,11 @@ module dvm.commands.Install;
 import tango.core.Exception;
 import tango.io.device.File;
 import tango.net.http.HttpGet;
-import tango.text.convert.Format : format = Format;
 import tango.sys.Common;
 import tango.sys.Process;
 import tango.sys.win32.Types;
+import tango.text.convert.Format : format = Format;
+import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
 import dvm.commands.Command;
@@ -79,6 +80,7 @@ private:
 		installWrapper;
 		setPermissions;
 		installEnvironment(createEnvironment);
+		patchDmdConf;
 	}
 	
 	void unpack ()
@@ -154,6 +156,18 @@ private:
 		sh.exportPath("PATH", envPath, binPath, Sh.variable("PATH", false));
 		
 		return sh;
+	}
+	
+	void patchDmdConf ()
+	{			
+		auto dmdConfPath = Path.join(installPath, options.path.conf);
+		
+		verbose("Patching: ", dmdConfPath);
+		
+		auto content = cast(string) File.get(dmdConfPath);
+		content = content.substitute("-I%@P%/../../src/phobos", "-I%@P%/../src/phobos");
+		
+		File.set(dmdConfPath, content);
 	}
 	
 	void move (string source, string destination)
