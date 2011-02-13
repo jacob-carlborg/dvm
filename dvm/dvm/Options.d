@@ -45,12 +45,14 @@ private struct Path
 		string scripts_;
 		string dvmScript_;
 		string dvmExecutable_;
+		string conf_;
 		
 		version (Posix)
 		{
 			const dvmDir = ".dvm";
 			const string scriptExtension = "";
 			const string executableExtension = "";
+			const string confExtension = ".conf";
 		}
 
 		else version (Windows)
@@ -58,6 +60,7 @@ private struct Path
 			const dvmDir = "dvm";
 			const scriptExtension = ".bat";
 			const executableExtension = ".exe";
+			const confExtension = ".ini";
 		}
 	}
 	
@@ -139,5 +142,13 @@ private struct Path
 			return tmp_;
 
 		return tmp_ = join(dvm, "tmp");
+	}
+	
+	string conf ()
+	{
+		if (conf_.length > 0)
+			return conf_;
+		
+		return conf_ = join(bin, "dmd" ~ confExtension);
 	}
 }
