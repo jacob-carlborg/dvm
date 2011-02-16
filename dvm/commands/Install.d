@@ -94,11 +94,12 @@ private:
 	
 	void moveFiles ()
 	{
-		auto root = Path.join(tmpCompilerPath, "dmd");
+		auto dmd = args.first.length > 0 && args.first[0] == '2' ? "dmd2" : "dmd";
+		auto root = Path.join(tmpCompilerPath, dmd);
 		auto platformRoot = Path.join(root, platform);
 		
 		if (!Path.exists(platformRoot))
-			throw new DvmException(format(`The platform "`, platform, `" is not compatible with the compiler dmd`, args.first), __FILE__, __LINE__);
+			throw new DvmException(format(`The platform "{}" is not compatible with the compiler dmd {}`, platform, args.first), __FILE__, __LINE__);
 		
 		auto binSource = Path.join(platformRoot, options.path.bin);
 		auto binDest = Path.join(installPath, options.path.bin);
@@ -186,7 +187,7 @@ private:
 	{
 		if (installPath_.length > 0)
 			return installPath_;
-		
+
 		return installPath_ = Path.join(options.path.compilers, "dmd-" ~ args.first);
 	}
 	
