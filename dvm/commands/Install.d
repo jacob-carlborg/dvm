@@ -97,9 +97,13 @@ private:
 		auto root = Path.join(tmpCompilerPath, "dmd");
 		auto platformRoot = Path.join(root, platform);
 		
-		if (!Path.exists(platformRoot))
-			throw new DvmException(format(`The platform "`, platform, `" is not compatible with the compiler dmd`, args.first), __FILE__, __LINE__);
-		
+		if (!Path.exists(platformRoot)) {
+			root = Path.join(tmpCompilerPath, "dmd2");
+			platformRoot = Path.join(root, platform);
+
+			if (!Path.exists(platformRoot))		
+				throw new DvmException(format(`The platform "`, platform, `" is not compatible with the compiler dmd`, args.first), __FILE__, __LINE__);
+		}
 		auto binSource = Path.join(platformRoot, options.path.bin);
 		auto binDest = Path.join(installPath, options.path.bin);
 		
@@ -166,6 +170,7 @@ private:
 		
 		auto content = cast(string) File.get(dmdConfPath);
 		content = content.substitute("-I%@P%/../../src/phobos", "-I%@P%/../src/phobos");
+		content = content.substitute("-I%@P%/../../src/druntime", "-I%@P%/../src/druntime");
 		
 		File.set(dmdConfPath, content);
 	}
