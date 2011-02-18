@@ -94,7 +94,7 @@ class Application
 		auto commands = CommandManager.instance.summary;
 		
 		opts.banner = "Usage: dvm [options] action [arg]";
-		opts.separator("Version 0.1.1");
+		opts.separator("Version 0.1.2");
 		opts.separator("");
 		opts.separator("Commands:");
 		opts.separator(commands);
