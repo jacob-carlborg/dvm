@@ -102,11 +102,11 @@ private:
 			throw new DvmException(format(`The platform "{}" is not compatible with the compiler dmd {}`, platform, args.first), __FILE__, __LINE__);
 		
 		auto binSource = Path.join(platformRoot, options.path.bin);
-		auto binDest = Path.join(installPath, options.path.bin);
-		
-		auto libSource = Path.join(platformRoot, options.path.lib);
+		auto binDest = Path.join(installPath, options.path.bin);		
+	 
+		auto libSource = getLibSource(platformRoot);
 		auto libDest = Path.join(installPath, options.path.lib);
-		
+
 		auto srcSource = Path.join(root, options.path.src);
 		auto srcDest = Path.join(installPath, options.path.src);
 
@@ -168,6 +168,7 @@ private:
 		auto content = cast(string) File.get(dmdConfPath);
 		content = content.substitute("-I%@P%/../../src/phobos", "-I%@P%/../src/phobos");
 		content = content.substitute("-I%@P%/../../src/druntime/import", "-I%@P%/../src/druntime/import");
+		content = content.substitute("-L-L%@P%/../lib32", "-L-L%@P%/../lib");
 		
 		File.set(dmdConfPath, content);
 	}
@@ -198,5 +199,26 @@ private:
 		verbose(options.indentation, "file: " ~ path, '\n');
 		
 		Path.permission(path, mode);
+	}
+	
+	string getLibSource (string platformRoot)
+	{
+		string libPath = Path.join(platformRoot, options.path.lib);
+		
+		if (Path.exists(libPath))
+			return libPath;
+		
+		// TODO 64bit is currently kind of experimental and only available on linux  
+		/*libPath = Path.join(platformRoot, options.path.lib64);
+		
+		if (Path.exists(libPath))
+			return libPath;*/
+		
+		libPath = Path.join(platformRoot, options.path.lib32);
+		
+		if (Path.exists(libPath))
+			return libPath;
+		
+		throw new DvmException("Could not find the library path: " ~ libPath, __FILE__, __LINE__);
 	}
 }
