@@ -167,6 +167,7 @@ private:
 		
 		auto content = cast(string) File.get(dmdConfPath);
 		content = content.substitute("-I%@P%/../../src/phobos", "-I%@P%/../src/phobos");
+		content = content.substitute("-I%@P%/../../src/druntime/import", "-I%@P%/../src/druntime/import");
 		
 		File.set(dmdConfPath, content);
 	}
