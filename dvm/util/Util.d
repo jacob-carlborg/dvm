@@ -31,7 +31,7 @@ void verbose (ARGS...) (ARGS args)
 		println(args);
 }
 
-void verbose_raw (ARGS...) (ARGS args)
+void verboseRaw (ARGS...) (ARGS args)
 {
 	if (Options.instance.verbose)
 		print(args);

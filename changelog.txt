@@ -1,0 +1,19 @@
+DVM Change Log
+
+Version 0.1.2
+	New/Changed Features
+	 * Added support for the new structure of the DMD zip, appeared in version 1.067 and 2.052.
+	 * Added a changelog.
+	
+	Bugs Fixed
+	 * Added dmd.conf patch for druntime as well.
+	 * Fixed: DMD2 was incorrectly handled.
+	 * Bump version number.
+
+Version 0.1.1
+	Bugs Fixed
+	 * Fix for: DMD couldn't find the source directory when installed. 
+
+Version 0.1
+	New/Changed Features
+	 * Initial releases.

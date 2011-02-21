@@ -29,6 +29,8 @@ private struct Path
 	const bin = "bin";
 	const src = "src";
 	const lib = "lib";
+	const lib32 = "lib32";
+	const lib64 = "lib64";
 	const import_ = "import";
 	const license = "license.txt";
 	const readme = "README.TXT";
