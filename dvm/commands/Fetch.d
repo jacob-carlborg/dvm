@@ -10,10 +10,12 @@ import tango.core.Exception;
 import tango.io.device.File;
 import Path = tango.io.Path;
 import tango.net.http.HttpGet;
+import tango.net.http.HttpConst;
 import tango.text.convert.Format : format = Format;
 
 import dvm.commands.Command;
 import dvm.core._;
+import dvm.util._;
 import dvm.dvm._;
 
 class Fetch : Command
@@ -49,11 +51,41 @@ protected:
 	void[] downloadFile (string url)
 	{
 		auto page = new HttpGet(url);
-		page.open;
+		auto buffer = page.open;
 		
 		checkPageStatus(page, url);
+
+		// load in chunks in order to display progress
+		int content_length = page.getResponseHeaders.getInt(HttpHeader.ContentLength);
+		const int width = 40;
+		int num = width;
+		string clear_line = "\x1B[1K"; // clear backwards
+		string save_cursor = "\x1B[s";
+		string unsave_cursor = "\x1B[u";
 		
-		return page.read;
+		verbose_raw(save_cursor);
+		try {
+			int bytes_left = content_length;
+			int chunk_size = bytes_left / num;
+			while ( bytes_left > 0 ) {
+				buffer.load (chunk_size > bytes_left ? bytes_left : chunk_size);
+				bytes_left -= chunk_size;
+				verbose_raw(clear_line ~ unsave_cursor ~ save_cursor);
+				int i = 0;
+				verbose_raw("[");
+				for ( ; i < (width - num); i++)
+					verbose_raw("#");
+				for ( ; i < width; i++) 
+					verbose_raw(" ");
+				verbose_raw("]");
+				verbose_raw(" ", (content_length - bytes_left) / 1024, "/", content_length / 1024, " KB");
+				num--;
+			}
+			
+		} finally {page.close;}
+		verbose(unsave_cursor);
+
+		return buffer.slice;
 	}
 	
 	void writeFile (void[] data, string filename)
