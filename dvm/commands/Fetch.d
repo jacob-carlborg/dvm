@@ -53,37 +53,47 @@ protected:
 		auto page = new HttpGet(url);
 		auto buffer = page.open;
 		
+		scope(exit)
+			page.close;
+		
 		checkPageStatus(page, url);
 
 		// load in chunks in order to display progress
-		int content_length = page.getResponseHeaders.getInt(HttpHeader.ContentLength);
+		int contentLength = page.getResponseHeaders.getInt(HttpHeader.ContentLength);
 		const int width = 40;
 		int num = width;
-		string clear_line = "\x1B[1K"; // clear backwards
-		string save_cursor = "\x1B[s";
-		string unsave_cursor = "\x1B[u";
 		
-		verbose_raw(save_cursor);
-		try {
-			int bytes_left = content_length;
-			int chunk_size = bytes_left / num;
-			while ( bytes_left > 0 ) {
-				buffer.load (chunk_size > bytes_left ? bytes_left : chunk_size);
-				bytes_left -= chunk_size;
-				verbose_raw(clear_line ~ unsave_cursor ~ save_cursor);
-				int i = 0;
-				verbose_raw("[");
-				for ( ; i < (width - num); i++)
-					verbose_raw("#");
-				for ( ; i < width; i++) 
-					verbose_raw(" ");
-				verbose_raw("]");
-				verbose_raw(" ", (content_length - bytes_left) / 1024, "/", content_length / 1024, " KB");
-				num--;
-			}
+		const clearLine = "\x1B[1K"; // clear backwards
+		const saveCursor = "\x1B[s";
+		const unsaveCursor = "\x1B[u";
+		
+		verboseRaw(saveCursor);		
+
+		int bytesLeft = contentLength;
+		int chunkSize = bytesLeft / num;
+		
+		while ( bytesLeft > 0 )
+		{
+			buffer.load (chunkSize > bytesLeft ? bytesLeft : chunkSize);
+			bytesLeft -= chunkSize;
+			int i = 0;
 			
-		} finally {page.close;}
-		verbose(unsave_cursor);
+			verboseRaw(clearLine ~ unsaveCursor ~ saveCursor);			
+			verboseRaw("[");
+			
+			for ( ; i < (width - num); i++)
+				verboseRaw("#");
+			
+			for ( ; i < width; i++) 
+				verboseRaw(" ");
+			
+			verboseRaw("]");
+			verboseRaw(" ", (contentLength - bytesLeft) / 1024, "/", contentLength / 1024, " KB");
+			
+			num--;
+		}
+			
+		verbose(unsaveCursor);
 
 		return buffer.slice;
 	}
