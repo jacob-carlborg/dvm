@@ -2,6 +2,7 @@ DVM Change Log
 
 Version 0.1.2
 	New/Changed Features
+	 * The fetch/install command now shows progress when downloading. Thanks to jdrewsen.
 	 * Added support for the new structure of the DMD zip, appeared in version 1.067 and 2.052.
 	 * Added a changelog.
 	

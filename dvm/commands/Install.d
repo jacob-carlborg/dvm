@@ -75,6 +75,7 @@ private:
 		archivePath = Path.join(options.path.archives, filename);
 		
 		fetch(url, archivePath);		
+		println("Installing: dmd-", args.first);
 		unpack;
 		moveFiles;
 		installWrapper;

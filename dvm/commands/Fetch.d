@@ -43,6 +43,16 @@ protected:
 	{
 		if (Path.exists(destination))
 			return;
+
+		if (options.verbose)
+		{
+			println("Fetching:");
+			println(options.indentation, "source: ", source);
+			println(options.indentation, "destination: ", destination, '\n');
+		}
+
+		else
+			println("Fetching: ", source);
 		
 		createPath(Path.parse(destination).folder);
 		writeFile(downloadFile(source), destination);
@@ -62,38 +72,41 @@ protected:
 		int contentLength = page.getResponseHeaders.getInt(HttpHeader.ContentLength);
 		const int width = 40;
 		int num = width;
+
+		const clearLine = "\033[1K"; // clear backwards
+		const saveCursor = "\0337";
+		const restoreCursor = "\0338";
 		
-		const clearLine = "\x1B[1K"; // clear backwards
-		const saveCursor = "\x1B[s";
-		const unsaveCursor = "\x1B[u";
-		
-		verboseRaw(saveCursor);		
+		print(saveCursor);
 
 		int bytesLeft = contentLength;
 		int chunkSize = bytesLeft / num;
 		
-		while ( bytesLeft > 0 )
+		while (bytesLeft > 0)
 		{
-			buffer.load (chunkSize > bytesLeft ? bytesLeft : chunkSize);
+			buffer.load(chunkSize > bytesLeft ? bytesLeft : chunkSize);
 			bytesLeft -= chunkSize;
 			int i = 0;
 			
-			verboseRaw(clearLine ~ unsaveCursor ~ saveCursor);			
-			verboseRaw("[");
+			print(clearLine ~ restoreCursor ~ saveCursor);
+			print("[");
 			
 			for ( ; i < (width - num); i++)
-				verboseRaw("#");
+				print("=");
+
+			print('>');
 			
 			for ( ; i < width; i++) 
-				verboseRaw(" ");
+				print(" ");
 			
-			verboseRaw("]");
-			verboseRaw(" ", (contentLength - bytesLeft) / 1024, "/", contentLength / 1024, " KB");
+			print("]");
+			print(" ", (contentLength - bytesLeft) / 1024, "/", contentLength / 1024, " KB");
 			
 			num--;
 		}
 			
-		verbose(unsaveCursor);
+		println(restoreCursor);
+		println();
 
 		return buffer.slice;
 	}
