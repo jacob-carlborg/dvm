@@ -1,7 +1,9 @@
 DVM Change Log
 
-Version 0.1.2
-	New/Changed Features
+Version 0.2.0
+	New/Change Features
+	 * Added support for installing Tango
+	 * Added support for installing 64bit compilers
 	 * The fetch/install command now shows progress when downloading. Thanks to jdrewsen.
 	 * Added support for the new structure of the DMD zip, appeared in version 1.067 and 2.052.
 	 * Added a changelog.
