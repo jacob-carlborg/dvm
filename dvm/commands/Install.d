@@ -301,17 +301,22 @@ private:
 		if (Path.exists(libPath))
 			return libPath;
 		
-		// TODO 64bit is currently kind of experimental and only available on linux  
-		/*libPath = Path.join(platformRoot, options.path.lib64);
-		
-		if (Path.exists(libPath))
-			return libPath;*/
-		
+		if (options.is64bit)
+		{
+			libPath = Path.join(platformRoot, options.path.lib);
+			
+			if (Path.exists(libPath))
+				return libPath;
+			
+			else
+				throw new DvmException("There is no 64bit compiler available on this platform", __FILE__, __LINE__);
+		}
+
 		libPath = Path.join(platformRoot, options.path.lib32);
-		
+
 		if (Path.exists(libPath))
 			return libPath;
-		
+
 		throw new DvmException("Could not find the library path: " ~ libPath, __FILE__, __LINE__);
 	}
 }

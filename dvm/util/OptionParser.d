@@ -134,10 +134,11 @@ class OptionParser
 				help ~= format("{}\n", option.helpText);
 			
 			else if (option.shortOption == char.init)
-				help ~= format("{}--{}{}{}\n",
-							indentation,
+				help ~= format("{}--{}{}{}{}\n",
+							indentation ~ indentation,
 							option.longOption,
 							" ".repeat(len - option.longOption.length),
+							indentation.repeat(numberOfIndentations),
 							option.helpText);
 			
 			else
@@ -146,7 +147,7 @@ class OptionParser
 							option.shortOption,
 							option.longOption,
 							" ".repeat(len - option.longOption.length),
-							indentation.repeat(numberOfIndentations + 2),
+							indentation.repeat(numberOfIndentations),
 							option.helpText);
 		}
 		
