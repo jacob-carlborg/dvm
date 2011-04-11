@@ -7,6 +7,7 @@
 module dvm.commands.Install;
 
 import tango.core.Exception;
+import tango.io.Stdout;
 import tango.io.device.File;
 import tango.net.http.HttpGet;
 import tango.sys.Common;
@@ -76,19 +77,23 @@ private:
 		
 		fetch(url, archivePath);		
 		println("Installing: dmd-", args.first);
+
 		unpack;
 		moveFiles;
 		installWrapper;
 		setPermissions;
 		installEnvironment(createEnvironment);
 		patchDmdConf;
+		
+		if (options.tango)
+			installTango;
 	}
 	
 	void unpack ()
 	{
 		tmpCompilerPath = Path.join(options.path.tmp, "dmd-" ~ args.first);
-		verbose("unpacking:");
-		verbose(options.indentation, "source :", archivePath);
+		verbose("Unpacking:");
+		verbose(options.indentation, "source: ", archivePath);
 		verbose(options.indentation, "destination: ", tmpCompilerPath, '\n');
 		extractArchive(archivePath, tmpCompilerPath);
 	}
@@ -111,11 +116,26 @@ private:
 		auto srcSource = Path.join(root, options.path.src);
 		auto srcDest = Path.join(installPath, options.path.src);
 
-		verbose("moving:");
+		verbose("Moving:");
 		
 		move(binSource, binDest);
 		move(libSource, libDest);
 		move(srcSource, srcDest);
+	}
+	
+	void installTango ()
+	{
+		verbose("Installing Tango");
+		Application.instance.handleCommand("dvm.commands.Use.Use", args.args);
+		
+		verbose("Removing temporary file: ", options.path.result, "\n");
+		Path.remove(options.path.result);
+		
+		fetchTango;
+		unpackTango;
+		buildTango;
+		moveTangoFiles;
+		patchDmdConfForTango;
 	}
 	
 	void installWrapper ()
@@ -123,13 +143,13 @@ private:
 		wrapper.target = Path.join(installPath, options.path.bin, "dmd");
 		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ args.first;
 		
-		verbose("installing wrapper: " ~ wrapper.path);
+		verbose("Installing wrapper: " ~ wrapper.path);
 		wrapper.write;
 	}
 	
 	void setPermissions ()
 	{
-		verbose("setting permissions:");
+		verbose("Setting permissions:");
 		
 		permission(Path.join(installPath, options.path.bin, "dmd"), "+x");
 		permission(Path.join(installPath, options.path.bin, "dumpobj"), "+x");
@@ -143,7 +163,7 @@ private:
 		Path.createPath(sh.path);
 		sh.path = Path.join(sh.path, "dmd-" ~ args.first);
 		
-		verbose("installing environment: ", sh.path);
+		verbose("Installing environment: ", sh.path);
 		sh.write;
 	}
 	
@@ -160,16 +180,83 @@ private:
 		return sh;
 	}
 	
-	void patchDmdConf ()
-	{			
+	void patchDmdConf (bool tango = false)
+	{
 		auto dmdConfPath = Path.join(installPath, options.path.conf);
 		
 		verbose("Patching: ", dmdConfPath);
 		
+		auto src = tango ? "-I%@P%/../import -defaultlib=tango -debuglib=tango -version=Tango" : "-I%@P%/../src/phobos";
 		auto content = cast(string) File.get(dmdConfPath);
-		content = content.substitute("-I%@P%/../../src/phobos", "-I%@P%/../src/phobos");
+		
+		content = content.substitute("-I%@P%/../../src/phobos", src);
 		content = content.substitute("-I%@P%/../../src/druntime/import", "-I%@P%/../src/druntime/import");
 		content = content.substitute("-L-L%@P%/../lib32", "-L-L%@P%/../lib");
+		
+		File.set(dmdConfPath, content);
+	}
+	
+	void fetchTango ()
+	{
+		const tangoUrl = "http://dsource.org/projects/tango/changeset/head/trunk?old_path=%2F&format=zip";
+		fetch(tangoUrl, options.path.tangoZip);
+	}
+	
+	void unpackTango ()
+	{
+		verbose("Unpacking:");
+		verbose(options.indentation, "source: ", options.path.tangoZip);
+		verbose(options.indentation, "destination: ", options.path.tangoTmp, '\n');
+		extractArchive(options.path.tangoZip, options.path.tangoUnarchived);
+	}
+	
+	void buildTango ()
+	{
+		verbose("Setting permission:");
+		permission(options.path.tangoBob, "+x");
+		
+		verbose("Building Tango...");
+		auto process = new Process(true, options.path.tangoBob, "-r=dmd", "-c=dmd", "-u", "-q", "-l=" ~ options.path.tangoLibName, options.path.tangoTmp);
+		process.workDir = options.path.tangoTmp;
+		process.execute;
+		
+		auto result = process.wait;
+		verbose("Process ", process.programName, '(', process.pid, ')', " exited with reason ", result.reason, ", status ", result.status, "\n");
+	}
+	
+	void moveTangoFiles ()
+	{
+		verbose("Moving:");
+		
+		auto importDest = Path.join(installPath, options.path.import_);
+		
+		auto tangoSource = options.path.tangoSrc;
+		auto tangoDest = Path.join(importDest, "tango");
+		
+		
+		auto objectSrc = options.path.tangoObject;
+		auto objectDest = Path.join(importDest, options.path.object_di);
+		
+		auto vendorSrc = options.path.tangoVendor;
+		auto vendorDest = Path.join(importDest, options.path.std);
+		
+		move(options.path.tangoLib, Path.join(installPath, options.path.lib, options.path.tangoLibName ~ options.path.libExtension));
+		move(vendorSrc, vendorDest);
+		move(tangoSource, tangoDest);
+		move(objectSrc, objectDest);
+	}
+	
+	void patchDmdConfForTango ()
+	{
+		auto dmdConfPath = Path.join(installPath, options.path.conf);
+		
+		verbose("Patching: ", dmdConfPath);
+		
+		auto src = "-I%@P%/../import -defaultlib=tango -debuglib=tango -version=Tango";
+		auto content = cast(string) File.get(dmdConfPath);
+		
+		content = content.substitute("-I%@P%/../src/phobos", src);
+		content = content.substitute("-I%@P%/../../src/druntime/import", "");
 		
 		File.set(dmdConfPath, content);
 	}
@@ -182,7 +269,12 @@ private:
 		if (Path.exists(destination))
 			Path.remove(destination, true);
 
-		Path.createPath(destination);	
+		if (Path.isFile(source))
+			Path.createPath(Path.parse(destination).path);
+		
+		else
+			Path.createPath(destination);
+
 		Path.rename(source, destination);
 	}
 	

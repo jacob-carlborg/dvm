@@ -8,7 +8,10 @@ module dvm.commands.Fetch;
 
 import tango.core.Exception;
 import tango.io.device.File;
+import tango.io.model.IConduit;
 import Path = tango.io.Path;
+import tango.net.InternetAddress;
+import tango.net.device.Socket;
 import tango.net.http.HttpGet;
 import tango.net.http.HttpConst;
 import tango.text.convert.Format : format = Format;
@@ -61,6 +64,7 @@ protected:
 	void[] downloadFile (string url)
 	{
 		auto page = new HttpGet(url);
+		page.setTimeout(30f);
 		auto buffer = page.open;
 		
 		scope(exit)
@@ -70,6 +74,7 @@ protected:
 
 		// load in chunks in order to display progress
 		int contentLength = page.getResponseHeaders.getInt(HttpHeader.ContentLength);
+
 		const int width = 40;
 		int num = width;
 

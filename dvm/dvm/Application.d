@@ -19,8 +19,6 @@ import dvm.util._;
 import dvm.commands._;
 import dvm.commands.Install;
 
-//import tango.core.tools.TraceExceptions;
-
 class Application
 {
 	private static Application instance_;
@@ -99,6 +97,10 @@ class Application
 		opts.separator("Commands:");
 		opts.separator(commands);
 		opts.separator("Options:");
+		
+		opts.on('t', "tango", "Installs Tango as the Standard library", {
+			options.tango = true;
+		});
 
 		opts.on('v', "verbose", "Show additional output.", {
 			options.verbose = true;

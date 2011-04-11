@@ -43,7 +43,7 @@ abstract class Command
 
 private struct Args
 {
-	private string[] args;
+	string[] args;
 	
 	string opIndex (size_t index)
 	{

@@ -44,7 +44,7 @@ private:
 		if (Path.exists(options.path.dvm))
 			throw new DvmException(format(`Cannot install dvm to "{}", path already exists.`, options.path.dvm), __FILE__, __LINE__);
 		
-		verbose("installing dvm to: ", options.path.dvm);
+		verbose("Installing dvm to: ", options.path.dvm);
 		createPaths;
 		copyExecutable;
 		writeScript;
@@ -54,7 +54,7 @@ private:
 	
 	void createPaths ()
 	{
-		verbose("creating paths:");
+		verbose("Creating paths:");
 
 		createPath(options.path.dvm);
 		createPath(options.path.archives);		
@@ -68,19 +68,19 @@ private:
 
 	void copyExecutable ()
 	{
-		verbose("copying executable:");
+		verbose("Copying executable:");
 		copy(getProcessPath, options.path.dvmExecutable);
 	}
 	
 	void writeScript ()
 	{
-		verbose("writing script to: ", options.path.dvmScript);
+		verbose("Writing script to: ", options.path.dvmScript);
 		File.set(options.path.dvmScript, dvmScript);
 	}
 
 	void setPermissions ()
 	{
-		verbose("setting permissions:");
+		verbose("Setting permissions:");
 		permission(options.path.dvmScript, "+x");
 		permission(options.path.dvmExecutable, "+x");
 	}
@@ -102,7 +102,7 @@ private:
 			throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:{}{}`,
 											bashrc, bash_profile, "\n\n", failedInstallInstrcutions), __FILE__, __LINE__);
 		
-		verbose("installing dvm in the shell loading file: ", shPath);
+		verbose("Installing dvm in the shell loading file: ", shPath);
 		File.append(shPath, sh.content);
 		
 		println(postInstallInstrcutions);
