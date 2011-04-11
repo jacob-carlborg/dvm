@@ -649,7 +649,7 @@ T[] repeat (T) (T[] arr, int number)
 {
 	T[] result;
 	
-	for (int i = 0; i <= number; i++)
+	for (int i = 0; i < number; i++)
 		result ~= arr;
 	
 	return result;

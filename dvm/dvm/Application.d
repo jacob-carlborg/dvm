@@ -90,13 +90,18 @@ class Application
 		auto helpMessage = "Use the `-h' flag for help.";
 		auto opts = new OptionParser;
 		auto commands = CommandManager.instance.summary;
+		auto help = false;
 		
-		opts.banner = "Usage: dvm [options] action [arg]";
-		opts.separator("Version 0.1.2");
+		opts.banner = "Usage: dvm [options] command [arg]";
+		opts.separator("Version 0.2.0");
 		opts.separator("");
 		opts.separator("Commands:");
 		opts.separator(commands);
 		opts.separator("Options:");
+		
+		opts.on("64bit", "Installs the 64bit version of the compiler", {
+			options.is64bit = true;
+		});
 		
 		opts.on('t', "tango", "Installs Tango as the Standard library", {
 			options.tango = true;
@@ -107,15 +112,23 @@ class Application
 		});
 		
 		opts.on('h', "help", "Show this message and exit.", {
-			println(opts);
-			println(helpMessage);
+			help = true;
 		});
 
-		opts.on((string[] args) {
-			handleArgs(args);
-		});
-		
-		opts.parse(args[1 .. $]);
+		if (args.length == 1 || help)
+		{
+			println(opts);
+			println(helpMessage);
+		}
+
+		else
+		{
+			opts.on((string[] args) {
+				handleArgs(args);
+			});
+			
+			opts.parse(args[1 .. $]);
+		}
 	}
 	
 	void printCommands ()

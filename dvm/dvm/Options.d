@@ -18,11 +18,12 @@ class Options
 	mixin Singleton;
 	
 	const string indentation = "    ";
-	const int numberOfIndentations = 2;
+	const int numberOfIndentations = 1;
 	const Path path = Path();
 	
 	bool verbose = false;
 	bool tango = false;
+	bool is64bit = false;
 }
 
 private struct Path
