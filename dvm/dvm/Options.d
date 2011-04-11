@@ -22,6 +22,7 @@ class Options
 	const Path path = Path();
 	
 	bool verbose = false;
+	bool tango = false;
 }
 
 private struct Path
@@ -34,6 +35,20 @@ private struct Path
 	const import_ = "import";
 	const license = "license.txt";
 	const readme = "README.TXT";
+	const std = "std";
+	const object_di = "object.di";
+	
+	version (Posix)
+	{
+		const libExtension = ".a";
+		const tangoLibName = "libtango";
+	}
+	
+	else
+	{
+		const libExtension = ".lib";
+		const tangoLibName = "tango";	
+	}
 	
 	private
 	{
@@ -48,6 +63,14 @@ private struct Path
 		string dvmScript_;
 		string dvmExecutable_;
 		string conf_;
+		string tangoZip_;
+		string tangoTmp_;
+		string tangoBob_;
+		string tangoLib_;
+		string tangoSrc_;
+		string tangoObject_;
+		string tangoVendor_;
+		string tangoUnarchived_;
 		
 		version (Posix)
 		{
@@ -55,6 +78,7 @@ private struct Path
 			const string scriptExtension = "";
 			const string executableExtension = "";
 			const string confExtension = ".conf";
+			
 		}
 
 		else version (Windows)
@@ -152,5 +176,93 @@ private struct Path
 			return conf_;
 		
 		return conf_ = join(bin, "dmd" ~ confExtension);
+	}
+	
+	string tangoZip ()
+	{
+		if (tangoZip_.length > 0)
+			return tangoZip_;
+		
+		return tangoZip_ = join(tmp, "tango.zip");
+	}
+	
+	string tangoTmp ()
+	{
+		if (tangoTmp_.length > 0)
+			return tangoTmp_;
+		
+		return tangoTmp_ = join(tangoUnarchived, "trunk");
+	}
+	
+	string tangoUnarchived ()
+	{
+		if (tangoUnarchived_.length > 0)
+			return tangoUnarchived_;
+		
+		return tangoUnarchived_ = join(tmp, "tango", "head");
+	}
+	
+	string tangoBob ()
+	{
+		if (tangoBob_.length > 0)
+			return tangoBob_;
+		
+		// TODO handle 64bit properly
+		version (D_LP64)
+			const postfix = "64";
+		
+		else
+			const postfix = "32";
+		
+		auto path = join(tangoTmp, "build", "bin");
+		
+		version (darwin)
+			path = join(path, "osx" ~ postfix);
+		
+		else version (freebsd)
+			path = join(path, "freebsd" ~ postfix);
+		
+		else version (linux)
+			path = join(path, "linux" ~ postfix);
+		
+		else version (Windows)
+			path = join(path, "win" ~ postfix);
+		
+		else
+			static assert(false, "Unhandled platform for installing Tango");
+		
+		return join(path, "bob" ~ executableExtension);
+	}
+	
+	string tangoLib ()
+	{
+		if (tangoLib_.length > 0)
+			return tangoLib_;
+		
+		return tangoLib_ = join(tangoTmp, tangoLibName ~ libExtension);
+	}
+	
+	string tangoSrc ()
+	{
+		if (tangoSrc_.length)
+			return tangoSrc_;
+		
+		return tangoSrc_ = join(tangoTmp, "tango");
+	}
+	
+	string tangoObject ()
+	{
+		if (tangoObject_.length > 0)
+			return tangoObject_;
+		
+		return tangoObject_ = join(tangoTmp, object_di);
+	}
+	
+	string tangoVendor ()
+	{
+		if (tangoVendor_.length > 0)
+			return tangoVendor_;
+		
+		return tangoVendor_ = join(tangoSrc, "core", "vendor", std);
 	}
 }

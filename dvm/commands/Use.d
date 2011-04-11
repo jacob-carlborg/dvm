@@ -42,7 +42,7 @@ private:
 	
 	ShellScript createShellScript ()
 	{
-		verbose("creating shell script");
+		verbose("Creating shell script");
 		auto sh = new ShellScript;
 		sh.source(envPath);
 		
@@ -53,7 +53,7 @@ private:
 	{
 		validatePath(envPath);
 		sh.path = options.path.result;
-		verbose(format(`installing "{}" as the current D compiler`, args.first));
+		verbose(format(`Installing "{}" as the current D compiler`, args.first));
 		
 		if (!exists(options.path.tmp))
 			createFolder(options.path.tmp);
