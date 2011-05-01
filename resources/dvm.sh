@@ -43,6 +43,9 @@ dvm()
 	
 	if [[ -s "$dvm_result_path" ]] ; then
 		source "$dvm_result_path"
+	fi
+
+	if [[ -s "$dvm_tmp_path" ]] ; then
 		rm -r "$dvm_tmp_path"
 	fi
 }
