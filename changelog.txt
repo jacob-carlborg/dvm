@@ -2,6 +2,8 @@ DVM Change Log
 
 Version 0.2.0
 	New/Change Features
+	 * Added an option for specifying a default compiler
+	 * Better compatible between different shells
 	 * Added support for installing Tango
 	 * Added support for installing 64bit compilers
 	 * The fetch/install command now shows progress when downloading. Thanks to jdrewsen.
@@ -9,6 +11,9 @@ Version 0.2.0
 	 * Added a changelog.
 	
 	Bugs Fixed
+	 * Exit if the DVM executable cannot be found
+	 * Always remove the temp path
+	 * Don't use "exit" in the DVM shell script
 	 * Added dmd.conf patch for druntime as well.
 	 * Fixed: DMD2 was incorrectly handled.
 	 * Bump version number.
