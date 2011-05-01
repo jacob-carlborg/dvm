@@ -13,6 +13,7 @@ import tango.text.convert.Format : format = Format;
 import dvm.core._;
 import dvm.dvm.Options;
 import dvm.dvm.ShellScript;
+import dvm.dvm.Wrapper;
 import dvm.commands.Command;
 import dvm.io.Path;
 
@@ -21,6 +22,7 @@ class Use : Command
 	private
 	{
 		string envPath_;
+		Wrapper wrapper;
 	}
 	
 	this ()
@@ -31,6 +33,8 @@ class Use : Command
 	void execute ()
 	{
 		loadEnvironment;
+		installWrapper;
+		setPermissions;
 	}
 	
 private:
@@ -46,6 +50,32 @@ private:
 
 		if (options.isDefault)
 			writeShellScript(shellScript, options.path.default_);
+		}
+
+	void installWrapper ()
+	{
+		wrapper.target = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin, "dmd");
+		wrapper.path = join(options.path.dvm, options.path.bin, "dmd-current");
+
+		verbose("Installing wrapper: " ~ wrapper.path);
+
+		if (exists(wrapper.path))
+			dvm.io.Path.remove(wrapper.path);
+
+		wrapper.write;
+	}
+
+	void setPermissions ()
+	{
+		verbose("Setting permissions:");
+
+		auto path = wrapper.path;
+		auto mode = "+x";
+
+		verbose(options.indentation, "mode: " ~ mode);
+		verbose(options.indentation, "file: " ~ path);
+
+		permission(path, mode);
 	}
 	
 	ShellScript createShellScript ()

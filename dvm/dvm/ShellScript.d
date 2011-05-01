@@ -179,7 +179,7 @@ struct Sh
 		
 	version (Posix)
 	{
-		const shebang = "#!/usr/bin/env bash";
+		const shebang = "#!/bin/sh";
 		const echoOff = "";
 		const separator = ":";
 		
