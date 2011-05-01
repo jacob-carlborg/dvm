@@ -8,7 +8,7 @@ if [[ -z "$dvm_prefix" ]] ; then
 		echo "No \$dvm_prefix was provided and "
 		echo "$(id | \sed -e's/^[^(]*(//' -e 's/).*//') has no \$HOME defined."
 		echo "Exiting..."
-		exit 1
+		return 1
 	fi
 fi
 
