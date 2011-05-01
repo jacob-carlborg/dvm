@@ -11,6 +11,7 @@ import tango.io.Stdout;
 import tango.io.device.File;
 import tango.net.http.HttpGet;
 import tango.sys.Common;
+import tango.sys.Environment;
 import tango.sys.Process;
 import tango.sys.win32.Types;
 import tango.text.convert.Format : format = Format;
@@ -126,13 +127,10 @@ private:
 	void installTango ()
 	{
 		verbose("Installing Tango");
-		Application.instance.handleCommand("dvm.commands.Use.Use", args.args);
-		
-		verbose("Removing temporary file: ", options.path.result, "\n");
-		Path.remove(options.path.result);
-		
+
 		fetchTango;
 		unpackTango;
+		setupTangoEnvironment;
 		buildTango;
 		moveTangoFiles;
 		patchDmdConfForTango;
@@ -210,18 +208,36 @@ private:
 		extractArchive(options.path.tangoZip, options.path.tangoUnarchived);
 	}
 	
+	void setupTangoEnvironment ()
+	{
+		verbose(format(`Installing "{}" as the temporary D compiler`, args.first));
+		auto path = Environment.get("PATH");
+		path = Path.join(installPath, options.path.bin) ~ options.path.pathSeparator ~ path;
+		Environment.set("PATH", path);
+	}
+
 	void buildTango ()
 	{
 		verbose("Setting permission:");
 		permission(options.path.tangoBob, "+x");
 		
 		verbose("Building Tango...");
-		auto process = new Process(true, options.path.tangoBob, "-r=dmd", "-c=dmd", "-u", "-q", "-l=" ~ options.path.tangoLibName, options.path.tangoTmp);
+		auto process = new Process(true, options.path.tangoBob, "-r=dmd", "-c=dmd", "-u", "-q", "-l=" ~ options.path.tangoLibName, ".");
+
 		process.workDir = options.path.tangoTmp;
 		process.execute;
 		
 		auto result = process.wait;
-		verbose("Process ", process.programName, '(', process.pid, ')', " exited with reason ", result.reason, ", status ", result.status, "\n");
+
+		if (options.verbose || result.reason != Process.Result.Exit)
+		{
+			println("Output of the Tango build:", "\n");
+			Stdout.copy(process.stdout).flush;
+			println();
+			println("Process ", process.programName, '(', process.pid, ')', " exited with:");
+			println(options.indentation, "reason: ", result);
+			println(options.indentation, "status: ", result.status, "\n");
+		}
 	}
 	
 	void moveTangoFiles ()
