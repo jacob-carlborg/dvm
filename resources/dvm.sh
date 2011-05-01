@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 if [[ -z "$dvm_prefix" ]] ; then
 
@@ -27,7 +27,7 @@ __dvm_setup_paths()
 __dvm_setup_environment()
 {
 	PATH="$dvm_bin_path:$PATH"
-	builtin hash -r
+	PATH=$PATH
 }
 
 __dvm_setup_paths
@@ -44,7 +44,7 @@ dvm()
 	fi
 	
 	if [[ -s "$dvm_result_path" ]] ; then
-		source "$dvm_result_path"
+		. "$dvm_result_path"
 	fi
 
 	if [[ -s "$dvm_tmp_path" ]] ; then
