@@ -43,12 +43,14 @@ private struct Path
 	{
 		const libExtension = ".a";
 		const tangoLibName = "libtango";
+		const pathSeparator = ":";
 	}
 	
 	else
 	{
 		const libExtension = ".lib";
-		const tangoLibName = "tango";	
+		const tangoLibName = "tango";
+		const pathSeparator = ";";
 	}
 	
 	private
