@@ -99,6 +99,10 @@ class Application
 		opts.separator(commands);
 		opts.separator("Options:");
 		
+		opts.on('d', "default", "Sets the default D compiler for new shells", {
+			options.isDefault = true;
+		});
+
 		opts.on("64bit", "Installs the 64bit version of the compiler", {
 			options.is64bit = true;
 		});
