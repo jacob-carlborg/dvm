@@ -24,6 +24,7 @@ class Options
 	bool verbose = false;
 	bool tango = false;
 	bool is64bit = false;
+	bool isDefault = false;
 }
 
 private struct Path
@@ -74,6 +75,7 @@ private struct Path
 		string tangoObject_;
 		string tangoVendor_;
 		string tangoUnarchived_;
+		string default__;
 		
 		version (Posix)
 		{
@@ -267,5 +269,13 @@ private struct Path
 			return tangoVendor_;
 		
 		return tangoVendor_ = join(tangoSrc, "core", "vendor", std);
+	}
+
+	string default_ ()
+	{
+		if (default__.length > 0)
+			return default__;
+
+		return default__ = join(env, "default");
 	}
 }

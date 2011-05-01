@@ -37,7 +37,15 @@ private:
 	
 	void loadEnvironment ()
 	{
-		writeShellScript(createShellScript);
+		auto shellScript = createShellScript;
+
+		auto current = options.isDefault ? "default" : "current";
+		verbose(format(`Installing "{}" as the {} D compiler`, args.first, current));
+
+		writeShellScript(shellScript, options.path.result);
+
+		if (options.isDefault)
+			writeShellScript(shellScript, options.path.default_);
 	}
 	
 	ShellScript createShellScript ()
@@ -49,11 +57,10 @@ private:
 		return sh;
 	}
 	
-	void writeShellScript (ShellScript sh)
+	void writeShellScript (ShellScript sh, string path)
 	{
 		validatePath(envPath);
-		sh.path = options.path.result;
-		verbose(format(`Installing "{}" as the current D compiler`, args.first));
+		sh.path = path;
 		
 		if (!exists(options.path.tmp))
 			createFolder(options.path.tmp);
