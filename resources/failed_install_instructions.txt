@@ -5,7 +5,7 @@ You must now complete the installation by loading DVM in new shells.
 after all PATH/variable settings:
 
 # This loads DVM into a shell session.
-if [[ -s "$HOME/.dvm/scripts/dvm"]] ; then
+if [[ -s "$HOME/.dvm/scripts/dvm" ]] ; then
 	source "$HOME/.dvm/scripts/dvm" ;
 fi
 
@@ -27,9 +27,9 @@ if [[ -n \"\$PS1\" ]] ; then
 fi # <= be sure to close the if at the end of the .bashrc.
 
 # This loads DVM into a shell session.
-if [[ -s "$HOME/.dvm/scripts/dvm"]] ; then 
+if [[ -s "$HOME/.dvm/scripts/dvm" ]] ; then
 	source "$HOME/.dvm/scripts/dvm" ;
-fi.
+fi
 
 EOF - This marks the end of the .bashrc file
 
