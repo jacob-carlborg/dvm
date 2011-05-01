@@ -39,6 +39,8 @@ dvm()
 		"$dvm_exe_path" "$@"
 	else
 		echo "Cannot found the dvm executable \"$dvm_exe_path\""
+		echo "Exiting..."
+		return 1
 	fi
 	
 	if [[ -s "$dvm_result_path" ]] ; then
