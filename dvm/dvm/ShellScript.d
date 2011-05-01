@@ -213,12 +213,12 @@ struct Sh
 		
 		string export_ (string name, string value, bool quote = true)
 		{
-			return quote ? format(`export {}="{}"`, name, value) : format(`export {}="{}"`, name, value);
+			return format("{}=\"{}\"\nexport {}", name, value, name);
 		}
 		
 		string source (string path, bool quote = true)
 		{			
-			return format("source {}", path);
+			return format(". {}", path);
 		}
 		
 		string exec (string command)

@@ -6,7 +6,7 @@ after all PATH/variable settings:
 
 # This loads DVM into a shell session.
 if [[ -s "$HOME/.dvm/scripts/dvm" ]] ; then
-	source "$HOME/.dvm/scripts/dvm" ;
+	. "$HOME/.dvm/scripts/dvm"
 fi
 
 You only need to add this line the first time you install dvm.
@@ -28,7 +28,7 @@ fi # <= be sure to close the if at the end of the .bashrc.
 
 # This loads DVM into a shell session.
 if [[ -s "$HOME/.dvm/scripts/dvm" ]] ; then
-	source "$HOME/.dvm/scripts/dvm" ;
+	. "$HOME/.dvm/scripts/dvm"
 fi
 
 EOF - This marks the end of the .bashrc file
