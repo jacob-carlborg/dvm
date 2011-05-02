@@ -2,6 +2,7 @@ DVM Change Log
 
 Version 0.2.0
 	New/Change Features
+	 * Added a "current" wrapper which points to the current compiler
 	 * Added an option for specifying a default compiler
 	 * Better compatible between different shells
 	 * Added support for installing Tango
