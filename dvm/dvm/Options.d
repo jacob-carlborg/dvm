@@ -75,7 +75,8 @@ private struct Path
 		string tangoObject_;
 		string tangoVendor_;
 		string tangoUnarchived_;
-		string default__;
+		string defaultEnv_;
+		string defaultBin_;
 		
 		version (Posix)
 		{
@@ -271,11 +272,19 @@ private struct Path
 		return tangoVendor_ = join(tangoSrc, "core", "vendor", std);
 	}
 
-	string default_ ()
+	string defaultEnv ()
 	{
-		if (default__.length > 0)
-			return default__;
+		if (defaultEnv_.length > 0)
+			return defaultEnv_;
 
-		return default__ = join(env, "default");
+		return defaultEnv_ = join(env, "default");
+	}
+
+	string defaultBin ()
+	{
+		if (defaultBin_.length > 0)
+			return defaultBin_;
+
+		return defaultBin_ = join(dvm, bin, "dvm-default-dc");
 	}
 }

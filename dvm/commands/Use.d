@@ -49,13 +49,16 @@ private:
 		writeShellScript(shellScript, options.path.result);
 
 		if (options.isDefault)
-			writeShellScript(shellScript, options.path.default_);
+		{
+			verbose("Installing environment: ", options.path.defaultEnv);
+			copy(options.path.result, options.path.defaultEnv);
 		}
+	}
 
 	void installWrapper ()
 	{
 		wrapper.target = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin, "dmd");
-		wrapper.path = join(options.path.dvm, options.path.bin, "dmd-current");
+		wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc");
 
 		verbose("Installing wrapper: " ~ wrapper.path);
 
@@ -63,17 +66,28 @@ private:
 			dvm.io.Path.remove(wrapper.path);
 
 		wrapper.write;
+
+		if (options.isDefault)
+		{
+			verbose("Installing wrapper: ", options.path.defaultBin);
+			copy(wrapper.path, options.path.defaultBin);
+		}
 	}
 
 	void setPermissions ()
 	{
 		verbose("Setting permissions:");
 
-		auto path = wrapper.path;
-		auto mode = "+x";
+		setPermission(wrapper.path, "+x");
 
-		verbose(options.indentation, "mode: " ~ mode);
-		verbose(options.indentation, "file: " ~ path);
+		if (options.isDefault)
+			setPermission(options.path.defaultBin, "+x");
+	}
+
+	void setPermission (string path, string mode)
+	{
+		verbose(options.indentation, "mode: ", mode);
+		verbose(options.indentation, "file: ", path);
 
 		permission(path, mode);
 	}
