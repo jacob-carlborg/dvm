@@ -22,7 +22,9 @@ __dvm_setup_paths()
 	dvm_result_path="$dvm_tmp_path/result"
 	dvm_bin_path="$dvm_path/bin"
 	dvm_exe_path="$dvm_bin_path/dvm"
-	dvm_default_path="$dvm_path/env/default"
+	dvm_default_env_path="$dvm_path/env/default"
+	dvm_default_bin_path="$dvm_bin_path/dvm-default-dc"
+	dvm_current_path="$dvm_bin_path/dvm-current-dc"
 }
 
 __dvm_setup_environment()
@@ -53,8 +55,12 @@ dvm()
 	fi
 }
 
-if [[ -s "$dvm_default_path" ]] ; then
-	. "$dvm_default_path"
+if [[ -s "$dvm_default_env_path" ]] ; then
+	. "$dvm_default_env_path"
+fi
+
+if [[ -s "$dvm_default_bin_path" ]] ; then
+	cp "$dvm_default_bin_path" "$dvm_current_path"
 fi
 
 unset __dvm_setup_paths __dvm_setup_environment
