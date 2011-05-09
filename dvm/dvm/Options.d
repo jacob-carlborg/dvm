@@ -30,6 +30,8 @@ class Options
 private struct Path
 {
 	const bin = "bin";
+    const bin32 = "bin32";
+    const bin64 = "bin64";
 	const src = "src";
 	const lib = "lib";
 	const lib32 = "lib32";

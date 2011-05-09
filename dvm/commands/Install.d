@@ -108,7 +108,7 @@ private:
 		if (!Path.exists(platformRoot))
 			throw new DvmException(format(`The platform "{}" is not compatible with the compiler dmd {}`, platform, args.first), __FILE__, __LINE__);
 		
-		auto binSource = Path.join(platformRoot, options.path.bin);
+		auto binSource = getBinSource(platformRoot);
 		auto binDest = Path.join(installPath, options.path.bin);		
 	 
 		auto libSource = getLibSource(platformRoot);
@@ -319,7 +319,7 @@ private:
 		
 		if (options.is64bit)
 		{
-			libPath = Path.join(platformRoot, options.path.lib);
+			libPath = Path.join(platformRoot, options.path.lib64);
 			
 			if (Path.exists(libPath))
 				return libPath;
@@ -335,4 +335,30 @@ private:
 
 		throw new DvmException("Could not find the library path: " ~ libPath, __FILE__, __LINE__);
 	}
+
+	string getBinSource (string platformRoot)
+    {
+    	string binPath = Path.join(platformRoot, options.path.bin);
+
+    	if (Path.exists(binPath))
+    		return binPath;
+
+    	if (options.is64bit)
+    	{
+    		binPath = Path.join(platformRoot, options.path.bin64);
+
+    		if (Path.exists(binPath))
+    			return binPath;
+
+    		else
+    			throw new DvmException("There is no 64bit compiler available on this platform", __FILE__, __LINE__);
+    	}
+
+    	binPath = Path.join(platformRoot, options.path.bin32);
+
+    	if (Path.exists(binPath))
+    		return binPath;
+
+    	throw new DvmException("Could not find the binrary path: " ~ binPath, __FILE__, __LINE__);
+    }
 }
