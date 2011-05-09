@@ -152,6 +152,12 @@ private:
 		permission(Path.join(installPath, options.path.bin, "dmd"), "+x");
 		permission(Path.join(installPath, options.path.bin, "dumpobj"), "+x");
 		permission(Path.join(installPath, options.path.bin, "obj2asm"), "+x");
+
+		auto rdmdPath = Path.join(installPath, options.path.bin, "rdmd");
+
+		if (Path.exists(rdmdPath))
+	        permission(rdmdPath, "+x");
+
 		permission(wrapper.path, "+x");
 	}
 	
