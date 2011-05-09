@@ -107,7 +107,11 @@ class Application
 			options.is64bit = true;
 		});
 		
-		opts.on('t', "tango", "Installs Tango as the Standard library", {
+		opts.on("32bit", "Installs the 32bit version of the compiler", {
+			options.is64bit = false;
+		});
+
+		opts.on('t', "tango", "Installs Tango as the standard library", {
 			options.tango = true;
 		});
 
