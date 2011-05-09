@@ -23,8 +23,13 @@ class Options
 	
 	bool verbose = false;
 	bool tango = false;
-	bool is64bit = false;
 	bool isDefault = false;
+
+	version (D_LP64)
+	    bool is64bit = true;
+
+	else
+	    bool is64bit = false;
 }
 
 private struct Path
