@@ -42,7 +42,7 @@ private:
 	void install ()
 	{
 		if (Path.exists(options.path.dvm))
-			throw new DvmException(format(`Cannot install dvm to "{}", path already exists.`, options.path.dvm), __FILE__, __LINE__);
+			return update;
 		
 		verbose("Installing dvm to: ", options.path.dvm);
 		createPaths;
@@ -50,6 +50,13 @@ private:
 		writeScript;
 		setPermissions;
 		installBashInclude(createBashInclude);
+	}
+
+	void update ()
+	{
+	    copyExecutable;
+	    writeScript;
+	    setPermissions;
 	}
 	
 	void createPaths ()
@@ -126,7 +133,7 @@ private:
 	{		
 		verbose(options.indentation, "source: ", source);
 		verbose(options.indentation, "destination: ", destination, '\n');
-		assert(Path.isFile(source));
+
 		Path.copy(source, destination);
 	}
 	
