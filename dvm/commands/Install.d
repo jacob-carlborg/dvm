@@ -228,12 +228,9 @@ private:
 		permission(options.path.tangoBob, "+x");
 		
 		verbose("Building Tango...");
-		string[] tangoBuildArgs = [options.path.tangoBob, "-r=dmd", "-c=dmd", "-u", "-q", "-l=" ~ options.path.tangoLibName, "."];
+		auto tangoBuildOptions = options.is64bit ? "-m=64" : "-m=32";
 
-		if (options.is64bit)
-		    tangoBuildArgs ~= "-m64";
-
-		auto process = new Process(true, tangoBuildArgs);
+		auto process = new Process(true, options.path.tangoBob, "-r=dmd", "-c=dmd", "-u", "-q", tangoBuildOptions, "-l=" ~ options.path.tangoLibName, ".");
 		process.workDir = options.path.tangoTmp;
 		process.execute;
 		
