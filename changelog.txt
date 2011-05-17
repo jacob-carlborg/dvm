@@ -2,16 +2,20 @@ DVM Change Log
 
 Version 0.2.0
 	New/Change Features
+	 * It's now possible to update an already existing DVM installation
+	 * Added an option for installing 32bit compilers, useful on 64bit platforms
+	 * Added support for the new structure of the DMD zip, appeared in version 1.068 and 2.053
 	 * Added a "current" wrapper which points to the current compiler
 	 * Added an option for specifying a default compiler
 	 * Better compatible between different shells
 	 * Added support for installing Tango
-	 * Added support for installing 64bit compilers
+	 * Added support for installing 64bit compilers (default on 64bit platforms)
 	 * The fetch/install command now shows progress when downloading. Thanks to jdrewsen.
 	 * Added support for the new structure of the DMD zip, appeared in version 1.067 and 2.052.
 	 * Added a changelog.
 	
 	Bugs Fixed
+	 * RDMD now has executable permission
 	 * Exit if the DVM executable cannot be found
 	 * Always remove the temp path
 	 * Don't use "exit" in the DVM shell script
