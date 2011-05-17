@@ -2,6 +2,7 @@ DVM Change Log
 
 Version 0.2.0
 	New/Change Features
+	 * 64bit version now available on Linux
 	 * It's now possible to update an already existing DVM installation
 	 * Added an option for installing 32bit compilers, useful on 64bit platforms
 	 * Added support for the new structure of the DMD zip, appeared in version 1.068 and 2.053
