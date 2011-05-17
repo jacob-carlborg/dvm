@@ -219,32 +219,26 @@ private struct Path
 	{
 		if (tangoBob_.length > 0)
 			return tangoBob_;
-		
-		// TODO handle 64bit properly
-		version (D_LP64)
-			const postfix = "64";
-		
-		else
-			const postfix = "32";
-		
+
+		auto suffix = Options.instance.is64bit ? "64" : "32";
 		auto path = join(tangoTmp, "build", "bin");
 		
 		version (darwin)
-			path = join(path, "osx" ~ postfix);
+			path = join(path, "osx" ~ suffix);
 		
 		else version (freebsd)
-			path = join(path, "freebsd" ~ postfix);
+			path = join(path, "freebsd" ~ suffix);
 		
 		else version (linux)
-			path = join(path, "linux" ~ postfix);
+			path = join(path, "linux" ~ suffix);
 		
 		else version (Windows)
-			path = join(path, "win" ~ postfix);
+			path = join(path, "win" ~ suffix);
 		
 		else
 			static assert(false, "Unhandled platform for installing Tango");
 		
-		return join(path, "bob" ~ executableExtension);
+		return tangoBob_ = join(path, "bob" ~ executableExtension);
 	}
 	
 	string tangoLib ()
