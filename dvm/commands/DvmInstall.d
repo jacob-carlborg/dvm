@@ -22,8 +22,8 @@ class DvmInstall : Command
 {	
 	private
 	{
-		const postInstallInstrcutions = import("post_install_instructions.txt");
-		const failedInstallInstrcutions = import("failed_install_instructions.txt");
+		const postInstallInstructions = import("post_install_instructions.txt");
+		const failedInstallInstructions = import("failed_install_instructions.txt");
 
 		version (Posix)
 			const dvmScript = import("dvm.sh");
@@ -49,7 +49,7 @@ private:
 		copyExecutable;
 		writeScript;
 		setPermissions;
-		installBashInclude(createBashInclude);
+		version (Posix) installBashInclude(createBashInclude);
 	}
 
 	void update ()
@@ -87,11 +87,15 @@ private:
 
 	void setPermissions ()
 	{
-		verbose("Setting permissions:");
-		permission(options.path.dvmScript, "+x");
-		permission(options.path.dvmExecutable, "+x");
+		version (Posix)
+		{
+			verbose("Setting permissions:");
+			permission(options.path.dvmScript, "+x");
+			permission(options.path.dvmExecutable, "+x");
+		}
 	}
 	
+	version (Posix)
 	void installBashInclude (ShellScript sh)
 	{
 		auto home = homeFolder;
@@ -107,12 +111,12 @@ private:
 		
 		else
 			throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:{}{}`,
-											bashrc, bash_profile, "\n\n", failedInstallInstrcutions), __FILE__, __LINE__);
+											bashrc, bash_profile, "\n\n", failedInstallInstructions), __FILE__, __LINE__);
 		
 		verbose("Installing dvm in the shell loading file: ", shPath);
 		File.append(shPath, sh.content);
 		
-		println(postInstallInstrcutions);
+		println(postInstallInstructions);
 	}
 	
 	void createPath (string path)
@@ -123,10 +127,13 @@ private:
 	
 	void permission (string path, string mode)
 	{
-		verbose(options.indentation, "mode: " ~ mode);
-		verbose(options.indentation, "file: " ~ path, '\n');
-		
-		Path.permission(path, mode);
+		version (Posix)
+		{
+			verbose(options.indentation, "mode: " ~ mode);
+			verbose(options.indentation, "file: " ~ path, '\n');
+			
+			Path.permission(path, mode);
+		}
 	}
 	
 	void copy (string source, string destination)

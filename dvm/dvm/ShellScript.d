@@ -57,9 +57,17 @@ class ShellScript
 		return this;
 	}
 	
+	version (Posix)
 	ShellScript exec (string name, string args = "", string a = "")
 	{
 		append(Sh.exec(name, args, a));
+		return this;
+	}
+	
+	version (Windows)
+	ShellScript exec (string name, string args = "")
+	{
+		append(Sh.exec(name, args));
 		return this;
 	}
 	
@@ -256,7 +264,7 @@ struct Sh
 			return "%*";
 		}
 		
-		string command (string c)
+		string comment (string c)
 		{
 			return "rem " ~ c;
 		}
@@ -266,7 +274,7 @@ struct Sh
 			return format("set {}={}", name, value); 
 		}
 		
-		void export_ (string name, string content, bool quote = true)
+		string export_ (string name, string content, bool quote = true)
 		{
 			return format("set {}={}", name, content);
 		}
@@ -276,14 +284,22 @@ struct Sh
 			return format("call {}", path);
 		}
 		
-		string exec (string command)
+		string exec (string name, string args = ""/+, string a = ""+/)
 		{
-			return source(command);
+			/+a = a == "" ? "" : format("-a {} ", a);
+			args = args == "" ? "" : ' ' ~ args;+/
+
+			return format("call {}{}", name, args);
 		}
 		
 		string ifFileIsNotEmpty (string path, string delegate () block)
 		{			
-			return format("if exist {} {}", path, block());
+			return format("if exist {} ( {} )", path, block());
+		}
+
+		string variable (string name, bool quote = true)
+		{
+			return quote ? format(`"%{}%"`, name) : '%' ~ name ~ '%';
 		}
 	}
 }	

@@ -7,6 +7,7 @@
 module dvm.dvm.Options;
 
 import tango.io.Path;
+import tango.sys.Environment;
 import tango.sys.HomeFolder;
 
 import dvm.core.string;
@@ -107,8 +108,12 @@ private struct Path
 	{
 		if (home_.length > 0)
 			return home_;
+		
+		version (Posix)
+			return home_ = homeFolder;
 
-		return home_ = homeFolder;
+		version (Windows)
+			return home_ = standard(Environment.get("APPDATA"));
 	}
 
 	string dvm ()

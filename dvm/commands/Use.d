@@ -86,10 +86,13 @@ private:
 
 	void setPermission (string path, string mode)
 	{
-		verbose(options.indentation, "mode: ", mode);
-		verbose(options.indentation, "file: ", path);
+		version (Posix)
+		{
+			verbose(options.indentation, "mode: ", mode);
+			verbose(options.indentation, "file: ", path);
 
-		permission(path, mode);
+			permission(path, mode);
+		}
 	}
 	
 	ShellScript createShellScript ()

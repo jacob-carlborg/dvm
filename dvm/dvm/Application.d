@@ -19,6 +19,8 @@ import dvm.util._;
 import dvm.commands._;
 import dvm.commands.Install;
 
+version (Windows) pragma(lib, "zlib.lib");
+
 class Application
 {
 	private static Application instance_;

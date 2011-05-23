@@ -311,10 +311,13 @@ private:
 	
 	void permission (string path, string mode)
 	{
-		verbose(options.indentation, "mode: " ~ mode);
-		verbose(options.indentation, "file: " ~ path, '\n');
-		
-		Path.permission(path, mode);
+		version (Posix)
+		{
+			verbose(options.indentation, "mode: " ~ mode);
+			verbose(options.indentation, "file: " ~ path, '\n');
+			
+			Path.permission(path, mode);
+		}
 	}
 	
 	string getLibSource (string platformRoot)
