@@ -78,9 +78,22 @@ protected:
 		const int width = 40;
 		int num = width;
 
-		const clearLine = "\033[1K"; // clear backwards
-		const saveCursor = "\0337";
-		const restoreCursor = "\0338";
+		version (Posix)
+		{
+			const clearLine = "\033[1K"; // clear backwards
+			const saveCursor = "\0337";
+			const restoreCursor = "\0338";
+		}
+		
+		else
+		{
+			const clearLine = "\r";
+			
+			// Leaving these empty string causes a linker error:
+			// http://d.puremagic.com/issues/show_bug.cgi?id=4324
+			const saveCursor = "\0";
+			const restoreCursor = "\0";
+		}
 		
 		print(saveCursor);
 
@@ -119,6 +132,7 @@ protected:
 	void writeFile (void[] data, string filename)
 	{
 		auto file = new File(filename, File.WriteCreate);
+		scope(exit) file.close();
 		file.write(data);
 	}
 	

@@ -8,7 +8,7 @@ module dvm.io.Path;
 
 import tango.core.Exception;
 public import tango.io.Path;
-import tango.stdc.posix.sys.stat;
+version (Posix) import tango.stdc.posix.sys.stat;
 import tango.sys.Common;
 
 import dvm.core._;
@@ -56,6 +56,7 @@ int remove (string path, bool recursive = false)
 	return removePath(path) ? result + 1 : result;
 }
 
+version (Posix)
 enum Owner
 {
 	Read = S_IRUSR,
@@ -64,6 +65,7 @@ enum Owner
 	All = S_IRWXU
 }
 
+version (Posix)
 enum Group
 {
 	Read = S_IRGRP,
@@ -72,6 +74,7 @@ enum Group
 	All = S_IRWXG
 }
 
+version (Posix)
 enum Others
 {
 	Read = S_IROTH,
@@ -80,12 +83,14 @@ enum Others
 	All = S_IRWXO
 }
 
+version (Posix)
 void permission (string path, ushort mode)
 {
 	if (chmod((path ~ '\0').ptr, mode) == -1)
 		throw new IOException(path ~ ": " ~ SysError.lastMsg);
 }
 
+version (Posix)
 private template permissions (alias reference)
 {
 	const permissions = "if (add)
@@ -118,6 +123,7 @@ void validatePath (string path)
 		throw new IOException("File not found \"" ~ path ~ "\"");
 }
 
+version (Posix)
 void permission (string path, string mode)
 {
 	ushort m = permission(path);
@@ -182,6 +188,7 @@ void permission (string path, string mode)
 	permission(path, m);
 }
 
+version (Posix)
 private ushort permission (string path)
 {
 	int status;

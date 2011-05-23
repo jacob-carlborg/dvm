@@ -44,7 +44,8 @@ struct Wrapper
 		sh.nl;
 		
 		sh.ifFileIsNotEmpty(dmdPath, {
-			sh.exec(dmdPath, Sh.allArgs, dmdPath);
+			version (Posix)   sh.exec(dmdPath, Sh.allArgs, dmdPath);
+			version (Windows) sh.exec(dmdPath, Sh.allArgs);
 		}, {
 			sh.printError(format(`Missing target: "{}"`, target), true);
 		});
