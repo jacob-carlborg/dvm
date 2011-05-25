@@ -82,7 +82,7 @@ private:
 		unpack;
 		moveFiles;
 		installWrapper;
-		setPermissions;
+		version (Posix) setPermissions;
 		installEnvironment(createEnvironment);
 		patchDmdConf;
 		
