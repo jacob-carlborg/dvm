@@ -48,8 +48,11 @@ private:
 		createPaths;
 		copyExecutable;
 		writeScript;
-		setPermissions;
-		version (Posix) installBashInclude(createBashInclude);
+		version (Posix)
+		{
+			setPermissions;
+			installBashInclude(createBashInclude);
+		}
 	}
 
 	void update ()
@@ -87,12 +90,9 @@ private:
 
 	void setPermissions ()
 	{
-		version (Posix)
-		{
-			verbose("Setting permissions:");
-			permission(options.path.dvmScript, "+x");
-			permission(options.path.dvmExecutable, "+x");
-		}
+		verbose("Setting permissions:");
+		permission(options.path.dvmScript, "+x");
+		permission(options.path.dvmExecutable, "+x");
 	}
 	
 	version (Posix)
