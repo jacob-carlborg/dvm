@@ -141,6 +141,9 @@ private:
 		wrapper.target = Path.join(installPath, options.path.bin, "dmd");
 		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ args.first;
 		
+		version (Windows)
+			wrapper.path ~= ".bat";
+			
 		verbose("Installing wrapper: " ~ wrapper.path);
 		wrapper.write;
 	}
@@ -193,9 +196,20 @@ private:
 		auto src = tango ? "-I%@P%/../import -defaultlib=tango -debuglib=tango -version=Tango" : "-I%@P%/../src/phobos";
 		auto content = cast(string) File.get(dmdConfPath);
 		
-		content = content.substitute("-I%@P%/../../src/phobos", src);
-		content = content.substitute("-I%@P%/../../src/druntime/import", "-I%@P%/../src/druntime/import");
-		content = content.substitute("-L-L%@P%/../lib32", "-L-L%@P%/../lib");
+		string slashSafeSubstitute(string haystack, string needle, string replacement)
+		{
+			version (Windows)
+			{
+				needle      = needle     .substitute("/", "\\");
+				replacement = replacement.substitute("/", "\\");
+			}
+				
+			return haystack.substitute(needle, replacement);
+		}
+		
+		content = content.slashSafeSubstitute("-I%@P%/../../src/phobos", src);
+		content = content.slashSafeSubstitute("-I%@P%/../../src/druntime/import", "-I%@P%/../src/druntime/import");
+		content = content.slashSafeSubstitute("-L-L%@P%/../lib32", "-L-L%@P%/../lib");
 		
 		File.set(dmdConfPath, content);
 	}
@@ -292,9 +306,15 @@ private:
 		if (Path.exists(destination))
 			Path.remove(destination, true);
 
+		bool createParentOnly = false;
 		if (Path.isFile(source))
-			Path.createPath(Path.parse(destination).path);
+			createParentOnly = true;
 		
+		version (Windows)
+			createParentOnly = true;
+		
+		if (createParentOnly)
+			Path.createPath(Path.parse(destination).path);
 		else
 			Path.createPath(destination);
 
