@@ -95,32 +95,63 @@ class ShellScript
 	
 	ShellScript ifFileIsNotEmpty (string path, void delegate () ifBlock, void delegate () elseBlock = null)
 	{
-		ifStatement("-s " ~ path, ifBlock, elseBlock);
+		version (Posix)
+			ifStatement("-s " ~ path, ifBlock, elseBlock);
+		
+		else
+			ifStatement("exist " ~ path, ifBlock, elseBlock);
+			
 		return this;
 	}
 	
 	ShellScript ifStatement (string condition, void delegate () ifBlock, void delegate () elseBlock = null)
 	{
-		append(format("if [[ {} ]] ; then", condition)).nl.indent;
-		ifBlock();
-		nl;
-		
-		if (elseBlock)
+		version (Posix)
 		{
-			append("else").nl.indent;
-			elseBlock();
+			append(format("if [[ {} ]] ; then", condition)).nl.indent;
+			ifBlock();
 			nl;
+			
+			if (elseBlock)
+			{
+				append("else").nl.indent;
+				elseBlock();
+				nl;
+			}
+			
+			append("fi");
 		}
-		
-		append("fi");
+
+		else
+		{
+			append(format("if {} (", condition)).nl.indent;
+			ifBlock();
+			nl;
+			append(")");
+			
+			if (elseBlock)
+			{
+				append(" else (").nl.indent;
+				elseBlock();
+				nl;
+				append(")");
+			}
+		}
 
 		return this;
 	}
 	
 	ShellScript printError (string message, bool singleQuote = false)
 	{
-		auto quote = singleQuote ? "'" : `"`;
-		append(format(`echo {}Error: {}{} >&2`, quote, message, quote));
+		version (Posix)
+		{
+			auto quote = singleQuote ? "'" : `"`;
+			append(format(`echo {}Error: {}{} >&2`, quote, message, quote));
+		}
+		
+		else
+			append(format(`echo Error: {} >&2`, message));
+
 		return this;
 	}
 	
@@ -165,7 +196,10 @@ class ShellScript
 	
 	ShellScript nl ()
 	{
-		append('\n');
+		version (Posix)
+			append('\n');
+		else
+			append("\r\n");
 		return this;
 	}
 	
@@ -234,6 +268,7 @@ struct Sh
 			return format("exec {}", command);
 		}
 		
+		/+
 		string ifStatement (string condition, string delegate () ifBlock, string delegate () elseBlock = null)
 		{
 			if (elseBlock is null)
@@ -246,6 +281,7 @@ struct Sh
 		{
 			return ifStatement("-s " ~ path, ifBlock, elseBlock);
 		}
+		+/
 		
 		string variable (string name, bool quote = true)
 		{
@@ -257,7 +293,7 @@ struct Sh
 	{
 		const shebang = "";
 		const echoOff = "@echo off";
-		const separator = ":";
+		const separator = ";";
 		
 		string allArgs (bool quote = true)
 		{
@@ -292,10 +328,12 @@ struct Sh
 			return format("call {}{}", name, args);
 		}
 		
+		/+
 		string ifFileIsNotEmpty (string path, string delegate () block)
 		{			
 			return format("if exist {} ( {} )", path, block());
 		}
+		+/
 
 		string variable (string name, bool quote = true)
 		{

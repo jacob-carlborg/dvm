@@ -91,7 +91,7 @@ private struct Path
 			const dvmDir = ".dvm";
 			const string scriptExtension = "";
 			const string executableExtension = "";
-			const string confExtension = ".conf";
+			const string confName = "dmd.conf";
 			
 		}
 
@@ -100,7 +100,7 @@ private struct Path
 			const dvmDir = "dvm";
 			const scriptExtension = ".bat";
 			const executableExtension = ".exe";
-			const confExtension = ".ini";
+			const confName = "sc.ini";
 		}
 	}
 	
@@ -193,7 +193,7 @@ private struct Path
 		if (conf_.length > 0)
 			return conf_;
 		
-		return conf_ = join(bin, "dmd" ~ confExtension);
+		return conf_ = join(bin, confName);
 	}
 	
 	string tangoZip ()
