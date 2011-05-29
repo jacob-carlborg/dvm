@@ -180,7 +180,7 @@ struct Sh
 	version (Posix)
 	{
 		const shebang = "#!/bin/sh";
-		const echoOff = "";
+		const echoOff = "\0";
 		const separator = ":";
 		
 		string allArgs (bool quote = true)
