@@ -9,4 +9,8 @@ module dvm.commands._;
 public:
 	
 import dvm.commands.Command;
+import dvm.commands.DvmInstall;
+import dvm.commands.Fetch;
 import dvm.commands.Install;
+import dvm.commands.List;
+import dvm.commands.Use;

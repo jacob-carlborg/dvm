@@ -59,6 +59,7 @@ class Application
 		commandManager.register("dvm.commands.Install.Install");
 		commandManager.register("dvm.commands.Fetch.Fetch");
 		commandManager.register("dvm.commands.Use.Use");
+		commandManager.register("dvm.commands.List.List");
 	}
 	
 	void handleCommand (string command, string[] args)
@@ -77,6 +78,7 @@ class Application
 				case "install":	command = "dvm.commands.Install.Install"; break;
 				case "fetch": command = "dvm.commands.Fetch.Fetch"; break;
 				case "use": command = "dvm.commands.Use.Use"; break;
+				case "list": command = "dvm.commands.List.List"; break;
 				default:
 					return;
 			}
