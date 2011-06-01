@@ -84,6 +84,8 @@ private struct Path
 		string tangoUnarchived_;
 		string defaultEnv_;
 		string defaultBin_;
+		string config_;
+		string installed_;
 		
 		version (Posix)
 		{
@@ -287,5 +289,21 @@ private struct Path
 			return defaultBin_;
 
 		return defaultBin_ = join(dvm, bin, "dvm-default-dc");
+	}
+	
+	string config ()
+	{
+		if (config_.length > 0)
+			return config_;
+
+		return config_ = join(dvm, "config");
+	}
+	
+	string installed ()
+	{
+		if (installed_.length > 0)
+			return installed_;
+
+		return installed_ = join(config, "installed");
 	}
 }
