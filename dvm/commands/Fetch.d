@@ -90,7 +90,7 @@ protected:
 			const clearLine = "\r";
 			
 			// Leaving these empty string causes a linker error:
-			// http://d.puremagic.com/issues/show_bug.cgi?id=4324
+			// http://d.puremagic.com/issues/show_bug.cgi?id=4315
 			const saveCursor = "\0";
 			const restoreCursor = "\0";
 		}
