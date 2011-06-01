@@ -19,7 +19,13 @@ import dvm.util._;
 import dvm.commands._;
 import dvm.commands.Install;
 
-version (Windows) pragma(lib, "zlib.lib");
+version (Windows)
+{
+	pragma(lib, "zlib.lib");
+	pragma(lib, "Advapi32.lib");
+}
+//version (Windows) import dvm.sys.Registry;
+//import tango.io.Stdout;
 
 class Application
 {
@@ -52,6 +58,19 @@ class Application
 	void run (string[] args)
 	{
 		this.args = args;
+		
+		/+bool wasCreated;
+		auto hKey =
+			RegCreateKey(
+				cast(HKEY)RegRoot.HKEY_CURRENT_USER,
+				`NickTest\Foo\Bar`,
+				0, KEY_READ | KEY_WRITE,
+				wasCreated
+			);
+		Stdout.formatln("wasCreated: {}", wasCreated);
+		RegSetValue(hKey, "SomeString", `C:\Hello World\readme.txt`);
+		
+		RegCloseKey(hKey);+/
 		
 		parseOptions();
 	}
