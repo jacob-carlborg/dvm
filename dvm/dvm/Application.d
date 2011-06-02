@@ -62,14 +62,25 @@ class Application
 		/+bool wasCreated;
 		auto hKey =
 			RegCreateKey(
-				cast(HKEY)RegRoot.HKEY_CURRENT_USER,
+				HKEY_CURRENT_USER,
 				`NickTest\Foo\Bar`,
-				0, KEY_READ | KEY_WRITE,
+				0, RegKeyAccess.All,
 				wasCreated
 			);
 		Stdout.formatln("wasCreated: {}", wasCreated);
-		RegSetValue(hKey, "SomeString", `C:\Hello World\readme.txt`);
+		RegSetValue(hKey, "SomeString", `C:\Hello World\read_me.txt`);
+		RegSetValue(hKey, "SomeInt", 0xDEADBEEF);
+		RegDeleteValue(hKey, "Blah");
+		RegCloseKey(hKey);
 		
+		hKey = RegOpenKey(HKEY_CURRENT_USER, `Environment`, RegKeyAccess.Read);
+		auto result = RegQueryValue(hKey, "PATH");
+		Stdout.formatln("result.type: {}", result.type);
+		Stdout.formatln("result.type == RegValueType.EXPAND_SZ: {}", result.type == RegValueType.EXPAND_SZ);
+		Stdout.formatln("result.asString: {}", result.asString);
+
+		Stdout.formatln("TEMP: {}", RegValueExists(hKey, "TEMP"));
+		Stdout.formatln("FOOBAR: {}", RegValueExists(hKey, "FOOBAR"));
 		RegCloseKey(hKey);+/
 		
 		parseOptions();
