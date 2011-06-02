@@ -16,6 +16,10 @@ import tango.sys.win32.UserGdi;
 import tango.text.Util;
 import tango.util.Convert;
 
+/// WARNING: REG_DWORD, REG_MULTI_SZ, REG_BINARY and REG_NONE are untested.
+
+/+ Types and Constants +++++++++++++++++++++++++/
+
 public import tango.sys.win32.Types :
 	HKEY,
 	KEY_ALL_ACCESS,
@@ -27,9 +31,17 @@ public import tango.sys.win32.Types :
 	KEY_QUERY_VALUE,
 	KEY_READ,
 	KEY_SET_VALUE,
-	KEY_WRITE;
+	KEY_WRITE,
+	REG_OPTION_NON_VOLATILE,
+	REG_OPTION_VOLATILE;
+	
+enum : DWORD
+{
+	REG_OPTION_CREATE_LINK    = 2,
+	REG_OPTION_BACKUP_RESTORE = 4,
+}
 
-enum RegRoot : DWORD
+enum RegRootEnum : DWORD
 {
 	HKEY_CLASSES_ROOT     = (0x80000000),
 	HKEY_CURRENT_USER     = (0x80000001),
@@ -38,6 +50,19 @@ enum RegRoot : DWORD
 	HKEY_PERFORMANCE_DATA = (0x80000004),
 	HKEY_CURRENT_CONFIG   = (0x80000005),
 	HKEY_DYN_DATA         = (0x80000006),
+}
+
+HKEY HKEY_CLASSES_ROOT()     { return cast(HKEY) RegRootEnum.HKEY_CLASSES_ROOT;     }
+HKEY HKEY_CURRENT_USER()     { return cast(HKEY) RegRootEnum.HKEY_CURRENT_USER;     }
+HKEY HKEY_LOCAL_MACHINE()    { return cast(HKEY) RegRootEnum.HKEY_LOCAL_MACHINE;    }
+HKEY HKEY_USERS()            { return cast(HKEY) RegRootEnum.HKEY_USERS;            }
+HKEY HKEY_PERFORMANCE_DATA() { return cast(HKEY) RegRootEnum.HKEY_PERFORMANCE_DATA; }
+HKEY HKEY_CURRENT_CONFIG()   { return cast(HKEY) RegRootEnum.HKEY_CURRENT_CONFIG;   }
+HKEY HKEY_DYN_DATA()         { return cast(HKEY) RegRootEnum.HKEY_DYN_DATA;         }
+
+enum RegKeyAccess
+{
+	Read, Write, All
 }
 
 enum RegValueType : DWORD
@@ -90,18 +115,91 @@ template DataTypeOf(RegValueType type)
 		alias ubyte[] DataTypeOf;
 }
 
+/+ Exception +++++++++++++++++++++++++/
+
+class RegistryException : WinAPIException
+{
+	string action;
+	
+	this(LONG code, string action="")
+	{
+		this.action = action;
+		super(code, action);
+	}
+}
+
+/+ Conversion Functions +++++++++++++++++++++++++/
+
 private alias dvm.core.string.toString16z toString16z;
 private wchar* toString16z(string str)
 {
 	return to!(wstring)(str).toString16z();
 }
 
-HKEY RegOpenKey(HKEY hKey, string subKey, REGSAM samDesired)
+ubyte[] toRegDWord(uint val)
+{
+	//return (cast(ubyte[4])val)[];
+	ubyte[] result;
+	result.length = 4;
+	result[0] = val & 0x0000_00FF;
+	result[1] = (val >>  8) & 0x0000_00FF;
+	result[2] = (val >> 16) & 0x0000_00FF;
+	result[3] = val >> 24;
+	return result;
+}
+
+ubyte[] toRegSZ(string str)
+{
+	auto wstr = to!(wstring)(str);
+	if(wstr.length == 0 || wstr[$-1] != '\0')
+		wstr ~= '\0';
+	return cast(ubyte[])wstr;
+}
+
+ubyte[] toRegMultiSZ(string[] arr)
+{
+	ushort[] result;
+	foreach(str; arr)
+	{
+		if(str.length == 0)
+			throw new Exception("Cannot store empty strings in a REG_MULTI_SZ");
+		
+		auto wstr = to!(wstring)(str);
+		result ~= cast(ushort[])wstr;
+		result ~= 0;
+	}
+	result ~= 0;
+	
+	return cast(ubyte[])result;
+}
+
+REGSAM toRegSam(RegKeyAccess access)
+{
+	switch(access)
+	{
+	case RegKeyAccess.Read:  return KEY_READ;
+	case RegKeyAccess.Write: return KEY_WRITE;
+	case RegKeyAccess.All:   return KEY_READ | KEY_WRITE;
+	default:
+		throw new Exception("Internal Error: Unhandled RegKeyAccess: '"~to!(string)(access)~"'");
+	}
+}
+
+/+ Registry Functions +++++++++++++++++++++++++/
+
+HKEY RegOpenKey(HKEY hKey, string subKey, RegKeyAccess access)
 {
 	HKEY outKey;
-	auto result = RegOpenKeyExW(hKey, to!(wstring)(subKey).toString16z(), 0, samDesired, &outKey);
+	
+	auto result =
+		RegOpenKeyExW(
+			hKey,
+			to!(wstring)(subKey).toString16z(),
+			0, toRegSam(access), &outKey
+		);
+
 	if(result != ERROR_SUCCESS)
-		throw new WinAPIException(result);
+		throw new RegistryException(result, "Open SubKey '"~subKey~"'");
 		
 	return outKey;
 }
@@ -110,7 +208,7 @@ HKEY RegCreateKey(
 	HKEY hKey,
 	string subKey,
 	DWORD dwOptions,
-	REGSAM samDesired,
+	RegKeyAccess access,
 	out bool neededToCreate
 )
 {
@@ -122,7 +220,7 @@ HKEY RegCreateKey(
 		0,
 		null,
 		dwOptions,
-		samDesired,
+		toRegSam(access),
 		null,
 		&outKey,
 		&disposition
@@ -131,7 +229,7 @@ HKEY RegCreateKey(
 	neededToCreate = (disposition == REG_CREATED_NEW_KEY);
 	
 	if(result != ERROR_SUCCESS)
-		throw new WinAPIException(result);
+		throw new RegistryException(result, "Create/Open SubKey '"~subKey~"'");
 		
 	return outKey;
 }
@@ -140,7 +238,7 @@ HKEY RegCreateKey(
 	HKEY hKey,
 	string subKey,
 	DWORD dwOptions,
-	REGSAM samDesired
+	RegKeyAccess access
 )
 {
 	bool neededToCreate;
@@ -149,7 +247,7 @@ HKEY RegCreateKey(
 			hKey,
 			subKey,
 			dwOptions,
-			samDesired,
+			access,
 			neededToCreate
 		);
 }
@@ -158,7 +256,7 @@ void RegCloseKey(HKEY hKey)
 {
 	auto result = tango.sys.win32.UserGdi.RegCloseKey(hKey);
 	if(result != ERROR_SUCCESS)
-		throw new WinAPIException(result);
+		throw new RegistryException(result, "Close Key");
 }
 
 bool RegValueExists(HKEY hKey, string valueName)
@@ -171,7 +269,21 @@ bool RegValueExists(HKEY hKey, string valueName)
 	if(result == ERROR_SUCCESS)
 		return true;
 
-	throw new WinAPIException(result);
+	throw new RegistryException(result, "Check if value '"~valueName~"' exists");
+}
+
+void RegDeleteKey(HKEY hKey, string subKey)
+{
+	auto result = RegDeleteKeyW(hKey, subKey.toString16z());
+	if(result != ERROR_SUCCESS)
+		throw new RegistryException(result, "Delete SubKey '"~subKey~"'");
+}
+
+void RegDeleteValue(HKEY hKey, string valueName)
+{
+	auto result = RegDeleteValueW(hKey, valueName.toString16z());
+	if(result != ERROR_SUCCESS)
+		throw new RegistryException(result, "Delete Value '"~valueName~"'");
 }
 
 /+ RegSetValue +++++++++++++++++++++++++/
@@ -180,14 +292,17 @@ bool RegValueExists(HKEY hKey, string valueName)
 /// Make sure to follow all the rules in MS's documentation.
 /// The other overloads of RegSetValue are recommended over
 /// this one, since they already handle all the proper rules.
-void RegSetValue(HKEY hKey, string valueName, RegValueType type, void* dataPtr, size_t dataLength)
+void RegSetValue(HKEY hKey, string valueName, RegValueType type, ubyte[] data)
 {
 	if(type == RegValueType.Unknown)
 		throw new Exception("Can't set a key value of type 'Unknown'");
-		
-	auto result = RegSetValueExW(hKey, valueName.toString16z(), 0, type, cast(ubyte*)dataPtr, dataLength);
+	
+	auto ptr = (data is null)? null : data.ptr;
+	auto len = (data is null)? 0    : data.length;
+	
+	auto result = RegSetValueExW(hKey, valueName.toString16z(), 0, type, ptr, len);
 	if(result != ERROR_SUCCESS)
-		throw new WinAPIException(result);
+		throw new RegistryException(result, "Set Value '"~valueName~"'");
 }
 
 void RegSetValue(HKEY hKey, string valueName, string data)
@@ -203,67 +318,50 @@ void RegSetValueExpand(HKEY hKey, string valueName, string data)
 void RegSetValue(HKEY hKey, string valueName, string data, bool expand)
 {
 	auto type = expand? RegValueType.EXPAND_SZ : RegValueType.SZ;
-
-	auto wstr = to!(wstring)(data);
-	if(wstr.length > 0 && wstr[$-1] != '\0')
-		wstr ~= '\0';
-	
-	RegSetValue(hKey, valueName, type, wstr.ptr, wstr.length * 2);
+	RegSetValue(hKey, valueName, type, data.toRegSZ());
 }
 
 void RegSetValue(HKEY hKey, string valueName, string[] data)
 {
-	ushort[] finalData;
-	foreach(str; data)
-	{
-		if(str.length == 0)
-			throw new Exception("Cannot store empty strings in a REG_MULTI_SZ");
-		
-		auto wstr = to!(wstring)( str );
-		finalData ~= cast(ushort[])wstr;
-		finalData ~= 0;
-	}
-	finalData ~= 0;
-	
-	RegSetValue(hKey, valueName, RegValueType.MULTI_SZ, finalData.ptr, finalData.length * 2);
+	RegSetValue(hKey, valueName, RegValueType.MULTI_SZ, data.toRegMultiSZ());
 }
 
 void RegSetValue(HKEY hKey, string valueName, ubyte[] data)
 {
-	RegSetValue(hKey, valueName, RegValueType.BINARY, data.ptr, data.length);
+	RegSetValue(hKey, valueName, RegValueType.BINARY, data);
 }
 
 void RegSetValue(HKEY hKey, string valueName, uint data)
 {
-	RegSetValue(hKey, valueName, RegValueType.DWORD, &data, data.sizeof);
+	RegSetValue(hKey, valueName, RegValueType.DWORD, toRegDWord(data));
 }
 
 void RegSetValue(HKEY hKey, string valueName)
 {
-	RegSetValue(hKey, valueName, RegValueType.NONE, null, 0);
+	RegSetValue(hKey, valueName, RegValueType.NONE, null);
 }
 
-/+void RegSetValue(HKEY hKey, string valueName, RegQueryResult data)
+void RegSetValue(HKEY hKey, string valueName, RegQueryResult data)
 {
 	switch(data.type)
 	{
 	case RegValueType.DWORD:
-		RegSetValue(hKey, valueName, data.type, data.asUInt);
+		RegSetValue(hKey, valueName, data.type, toRegDWord(data.asUInt));
 		break;
 		
 	case RegValueType.SZ, RegValueType.EXPAND_SZ:
-		RegSetValue(hKey, valueName, data.type, data.asString);
+		RegSetValue(hKey, valueName, data.type, data.asString.toRegSZ());
 		break;
 
 	case RegValueType.MULTI_SZ:
-		RegSetValue(hKey, valueName, data.type, data.asStringArray);
+		RegSetValue(hKey, valueName, data.type, data.asStringArray.toRegMultiSZ());
 		break;
 		
 	default:
 		RegSetValue(hKey, valueName, data.type, data.asBinary);
 		break;
 	}
-}+/
+}
 
 /+ RegQueryValue +++++++++++++++++++++++++/
 
@@ -275,18 +373,18 @@ RegQueryResult RegQueryValue()(HKEY hKey, string valueName)
 	
 	auto result = RegQueryValueExW(hKey, valueNameZ, null, null, null, &dataSize);
 	if(result != ERROR_SUCCESS)
-		throw new WinAPIException(result);
+		throw new RegistryException(result, "Check length of data for value '"~valueName~"'");
 
 	ubyte[] data;
 	data.length = dataSize;
 	
-	auto result = RegQueryValueExW(hKey, valueNameZ, null, &ret.type, data.ptr, data.length);
+	result = RegQueryValueExW(hKey, valueNameZ, null, &(cast(DWORD)(ret.type)), data.ptr, &dataSize);
 	if(result != ERROR_SUCCESS)
-		throw new WinAPIException(result);
+		throw new RegistryException(result, "Query Value '"~valueName~"'");
 
 	switch(ret.type)
 	{
-	case RegValueType.DWORD, RegValueType.DWORD_LITTLE_ENDIAN:
+	case RegValueType.DWORD:
 		ret.asUInt = (cast(uint[])data)[0];
 		break;
 		
@@ -295,8 +393,8 @@ RegQueryResult RegQueryValue()(HKEY hKey, string valueName)
 		break;
 
 	case RegValueType.MULTI_SZ:
-		ret.asStringArray = "";
-		auto wstrArr = data.split("\0"w)[0..$-1];
+		ret.asStringArray = null;
+		auto wstrArr = split(cast(wstring)data, "\0"w)[0..$-1];
 		foreach(wstr; wstrArr)
 			ret.asStringArray ~= to!(string)(wstr);
 		break;

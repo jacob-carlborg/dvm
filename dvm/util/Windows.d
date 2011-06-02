@@ -18,12 +18,20 @@ class WinAPIException : Exception
 {
 	LONG code;
 	
-	this(LONG code)
+	this(LONG code, string msg="")
 	{
 		this.code = code;
-		super(GetErrorMessage(code));
+		
+		if(msg != "")
+			msg ~= ": ";
+			
+		super(msg ~ GetErrorMessage(code));
 	}
 }
+
+// If FORMAT_MESSAGE_ALLOCATE_BUFFER is used, then this is the correct
+// signature. Otherwise, the signature in tango.sys.win32.UserGdi is corrent.
+extern(Windows) DWORD FormatMessageW(DWORD, LPCVOID, DWORD, DWORD, LPWSTR*, DWORD, VA_LIST*);
 
 string GetErrorMessage(DWORD errorCode)
 {
@@ -33,7 +41,7 @@ string GetErrorMessage(DWORD errorCode)
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
 		FORMAT_MESSAGE_FROM_SYSTEM     |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
-		null, errorCode, 0, pMsg, 0, null
+		null, errorCode, 0, &pMsg, 0, null
 	);
 	
 	if(result == 0)
@@ -42,8 +50,5 @@ string GetErrorMessage(DWORD errorCode)
 	scope(exit)	LocalFree(pMsg);
 		
 	auto msg = fromString16z(pMsg);
-	if(msg.ptr == pMsg)
-		msg = msg.dup;
-
 	return to!(string)(msg);
 }
