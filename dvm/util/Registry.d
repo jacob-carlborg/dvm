@@ -41,6 +41,7 @@ enum RegKeyOpenMode
 
 scope final class RegistryKey
 {
+	/// Properties ////////////////////////
 	private RegRoot _root;
 	private string _subKey;
 	private RegKeyAccess _access;
@@ -68,122 +69,195 @@ scope final class RegistryKey
 		return _wasCreated;
 	}
 	
+	/// toString ////////////////////////
 	string toString()
 	{
 		return dvm.sys.Registry.toString(_root) ~ `\` ~ _subKey;
 	}
 	
+	static string toString(RegRoot root, string subKey)
+	{
+		return dvm.sys.Registry.toString(root) ~ `\` ~ subKey;
+	}
+	
+	/// Private Error Handling Utilities ////////////////////////
+	private static string chooseErrorMsg(WinAPIException e, string msg)
+	{
+		if(msg == "")
+		{
+			auto re = cast(RegistryException)e;
+			if(re)
+				return re.registryMsg;
+		}
+		return msg;
+	}
+	
+	private static void staticErrorKey(WinAPIException e, RegRoot root, string subKey, string msg="")
+	{
+		msg = chooseErrorMsg(e, msg);
+		throw new RegistryException(e.code, toString(root, subKey), true, msg);
+	}
+	
+	private void errorKey(WinAPIException e, string msg="")
+	{
+		msg = chooseErrorMsg(e, msg);
+		throw new RegistryException(e.code, this.toString(), true, msg);
+	}
+	
+	private void errorValue(WinAPIException e, string valueName, string msg="")
+	{
+		msg = chooseErrorMsg(e, msg);
+		
+		if(valueName == "")
+			valueName = "(Default)";
+
+		throw new RegistryException(e.code, this.toString()~`\`~valueName, false, msg);
+	}
+	
+	/// Constructor/Destructor ////////////////////////
 	this(
 		RegRoot root, string subKey,
 		RegKeyOpenMode create = RegKeyOpenMode.Open,
 		RegKeyAccess access = RegKeyAccess.All
 	)
 	{
+		string nullStr = null;
+		assert("" == nullStr, `Failed: "" == nullStr`);
 		_root   = root;
 		_subKey = subKey;
 		_access = access;
 		
 		if(create == RegKeyOpenMode.Create)
-			_hKey = regCreateKey(cast(HKEY)root, subKey, 0, access, _wasCreated);
+		{
+			try _hKey = regCreateKey(cast(HKEY)root, subKey, 0, access, _wasCreated);
+			catch(WinAPIException e) errorKey(e);
+		}
 		else
-			_hKey = regOpenKey(cast(HKEY)root, subKey, access);
+		{
+			try _hKey = regOpenKey(cast(HKEY)root, subKey, access);
+			catch(WinAPIException e) errorKey(e);
+		}
 	}
 	
 	~this()
 	{
-		regCloseKey(_hKey);
+		try regCloseKey(_hKey);
+		catch(WinAPIException e) errorKey(e);
 	}
 	
+	/// Registry Functions ////////////////////////
 	static void deleteKey(RegRoot root, string subKey)
 	{
-		scope key = new RegistryKey(root, "", RegKeyOpenMode.Open, RegKeyAccess.Write);
-		regDeleteKey(key._hKey, subKey);
+		try
+		{
+			scope key = new RegistryKey(root, "", RegKeyOpenMode.Open, RegKeyAccess.Write);
+			regDeleteKey(key._hKey, subKey);
+		}
+		catch(WinAPIException e)
+			staticErrorKey(e, root, subKey);
 	}
 
 	void deleteValue(string valueName)
 	{
-		regDeleteValue(_hKey, valueName);
+		try regDeleteValue(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 	
 	bool valueExists(string valueName)
 	{
-		return regValueExists(_hKey, valueName);
+		try return regValueExists(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 	
-	/// setValue //////////////////////////////
+	/// Registry Functions: setValue //////////////////////////////
 	void setValue(string valueName, RegValueType type, ubyte[] data)
 	{
-		regSetValue(_hKey, valueName, type, data);
+		try regSetValue(_hKey, valueName, type, data);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	void setValue(string valueName, string data)
 	{
-		regSetValue(_hKey, valueName, data);
+		try regSetValue(_hKey, valueName, data);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	void setValueExpand(string valueName, string data)
 	{
-		regSetValueExpand(_hKey, valueName, data);
+		try regSetValueExpand(_hKey, valueName, data);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	void setValue(string valueName, string data, bool expand)
 	{
-		regSetValue(_hKey, valueName, data, expand);
+		try regSetValue(_hKey, valueName, data, expand);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	void setValue(string valueName, string[] data)
 	{
-		regSetValue(_hKey, valueName, data);
+		try regSetValue(_hKey, valueName, data);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	void setValue(string valueName, ubyte[] data)
 	{
-		regSetValue(_hKey, valueName, data);
+		try regSetValue(_hKey, valueName, data);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	void setValue(string valueName, uint data)
 	{
-		regSetValue(_hKey, valueName, data);
+		try regSetValue(_hKey, valueName, data);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	void setValue(string valueName)
 	{
-		regSetValue(_hKey, valueName);
+		try regSetValue(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	void setValue(string valueName, RegQueryResult data)
 	{
-		regSetValue(_hKey, valueName, data);
+		try regSetValue(_hKey, valueName, data);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
-	/// getValue //////////////////////////////
+	/// Registry Functions: getValue //////////////////////////////
 	RegQueryResult getValue(string valueName)
 	{
-		return regQueryValue(_hKey, valueName);
+		try return regQueryValue(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	string getValueString(string valueName)
 	{
-		return regQueryValue!(RegValueType.SZ)(_hKey, valueName);
+		try return regQueryValue!(RegValueType.SZ)(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	string getValueExpandString(string valueName)
 	{
-		return regQueryValue!(RegValueType.EXPAND_SZ)(_hKey, valueName);
+		try return regQueryValue!(RegValueType.EXPAND_SZ)(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	string[] getValueStringArray(string valueName)
 	{
-		return regQueryValue!(RegValueType.MULTI_SZ)(_hKey, valueName);
+		try return regQueryValue!(RegValueType.MULTI_SZ)(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	ubyte[] getValueBinary(string valueName)
 	{
-		return regQueryValue!(RegValueType.BINARY)(_hKey, valueName);
+		try return regQueryValue!(RegValueType.BINARY)(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 
 	uint getValueUInt(string valueName)
 	{
-		return regQueryValue!(RegValueType.DWORD)(_hKey, valueName);
+		try return regQueryValue!(RegValueType.DWORD)(_hKey, valueName);
+		catch(WinAPIException e) errorValue(e, valueName);
 	}
 }
