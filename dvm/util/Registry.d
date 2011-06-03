@@ -84,109 +84,106 @@ scope final class RegistryKey
 		_access = access;
 		
 		if(create == RegKeyOpenMode.Create)
-			_hKey = RegCreateKey(cast(HKEY)root, subKey, 0, access, _wasCreated);
+			_hKey = regCreateKey(cast(HKEY)root, subKey, 0, access, _wasCreated);
 		else
-			_hKey = RegOpenKey(cast(HKEY)root, subKey, access);
+			_hKey = regOpenKey(cast(HKEY)root, subKey, access);
 	}
 	
 	~this()
 	{
-		dvm.sys.Registry.RegCloseKey(_hKey);
+		regCloseKey(_hKey);
 	}
 	
 	static void deleteKey(RegRoot root, string subKey)
 	{
 		scope key = new RegistryKey(root, "", RegKeyOpenMode.Open, RegKeyAccess.Write);
-		RegDeleteKey(key._hKey, subKey);
+		regDeleteKey(key._hKey, subKey);
 	}
 
 	void deleteValue(string valueName)
 	{
-		RegDeleteValue(_hKey, valueName);
+		regDeleteValue(_hKey, valueName);
 	}
 	
 	bool valueExists(string valueName)
 	{
-		return RegValueExists(_hKey, valueName);
+		return regValueExists(_hKey, valueName);
 	}
 	
 	/// setValue //////////////////////////////
 	void setValue(string valueName, RegValueType type, ubyte[] data)
 	{
-		RegSetValue(_hKey, valueName, type, data);
+		regSetValue(_hKey, valueName, type, data);
 	}
 
 	void setValue(string valueName, string data)
 	{
-		RegSetValue(_hKey, valueName, data);
+		regSetValue(_hKey, valueName, data);
 	}
 
 	void setValueExpand(string valueName, string data)
 	{
-		RegSetValueExpand(_hKey, valueName, data);
+		regSetValueExpand(_hKey, valueName, data);
 	}
 
 	void setValue(string valueName, string data, bool expand)
 	{
-		RegSetValue(_hKey, valueName, data, expand);
+		regSetValue(_hKey, valueName, data, expand);
 	}
 
 	void setValue(string valueName, string[] data)
 	{
-		RegSetValue(_hKey, valueName, data);
+		regSetValue(_hKey, valueName, data);
 	}
 
 	void setValue(string valueName, ubyte[] data)
 	{
-		RegSetValue(_hKey, valueName, data);
+		regSetValue(_hKey, valueName, data);
 	}
 
 	void setValue(string valueName, uint data)
 	{
-		RegSetValue(_hKey, valueName, data);
+		regSetValue(_hKey, valueName, data);
 	}
 
 	void setValue(string valueName)
 	{
-		RegSetValue(_hKey, valueName);
+		regSetValue(_hKey, valueName);
 	}
 
 	void setValue(string valueName, RegQueryResult data)
 	{
-		RegSetValue(_hKey, valueName, data);
+		regSetValue(_hKey, valueName, data);
 	}
 
 	/// getValue //////////////////////////////
 	RegQueryResult getValue(string valueName)
 	{
-		return RegQueryValue(_hKey, valueName);
+		return regQueryValue(_hKey, valueName);
 	}
 
 	string getValueString(string valueName)
 	{
-		return RegQueryValue!(RegValueType.SZ)(_hKey, valueName);
+		return regQueryValue!(RegValueType.SZ)(_hKey, valueName);
 	}
 
 	string getValueExpandString(string valueName)
 	{
-		return RegQueryValue!(RegValueType.EXPAND_SZ)(_hKey, valueName);
+		return regQueryValue!(RegValueType.EXPAND_SZ)(_hKey, valueName);
 	}
 
 	string[] getValueStringArray(string valueName)
 	{
-		return RegQueryValue!(RegValueType.MULTI_SZ)(_hKey, valueName);
+		return regQueryValue!(RegValueType.MULTI_SZ)(_hKey, valueName);
 	}
 
 	ubyte[] getValueBinary(string valueName)
 	{
-		return RegQueryValue!(RegValueType.BINARY)(_hKey, valueName);
+		return regQueryValue!(RegValueType.BINARY)(_hKey, valueName);
 	}
 
 	uint getValueUInt(string valueName)
 	{
-		return RegQueryValue!(RegValueType.DWORD)(_hKey, valueName);
+		return regQueryValue!(RegValueType.DWORD)(_hKey, valueName);
 	}
 }
-
-/+ RegSetValue +++++++++++++++++++++++++/
-
