@@ -25,7 +25,6 @@ version (Windows)
 	pragma(lib, "Advapi32.lib");
 }
 //version (Windows) import dvm.sys.Registry;
-//version (Windows) import dvm.util.Registry;
 //import tango.io.Stdout;
 
 class Application
@@ -60,8 +59,7 @@ class Application
 	{
 		this.args = args;
 		
-		/+
-		bool wasCreated;
+		/+bool wasCreated;
 		auto hKey =
 			RegCreateKey(
 				HKEY_CURRENT_USER,
@@ -73,9 +71,6 @@ class Application
 		RegSetValue(hKey, "SomeString", `C:\Hello World\read_me.txt`);
 		RegSetValue(hKey, "SomeInt", 0xDEADBEEF);
 		RegDeleteValue(hKey, "Blah");
-		auto someInt = RegQueryValue(hKey, "SomeInt");
-		assert(someInt.type == RegValueType.DWORD);
-		assert(someInt.asUInt == 0xDEADBEEF);
 		RegCloseKey(hKey);
 		
 		hKey = RegOpenKey(HKEY_CURRENT_USER, `Environment`, RegKeyAccess.Read);
@@ -86,32 +81,7 @@ class Application
 
 		Stdout.formatln("TEMP: {}", RegValueExists(hKey, "TEMP"));
 		Stdout.formatln("FOOBAR: {}", RegValueExists(hKey, "FOOBAR"));
-		RegCloseKey(hKey);
-		+/
-		
-		/+
-		{
-			scope key = new RegistryKey(RegRoot.HKEY_CURRENT_USER, `NickTest\Foo\Bar`, RegKeyOpenMode.Create);
-			Stdout.formatln("wasCreated: {}", key.wasCreated);
-			key.setValue("SomeString", `C:\Hello World\read_me.txt`);
-			key.setValue("SomeInt", 0xDEADBEEF);
-			key.deleteValue("Blah");
-			auto someInt = key.getValue("SomeInt");
-			assert(someInt.type == RegValueType.DWORD);
-			assert(someInt.asUInt == 0xDEADBEEF);
-		}
-		
-		{
-			scope key = new RegistryKey(RegRoot.HKEY_CURRENT_USER, `Environment`);
-			auto result = key.getValue("PATH");
-			Stdout.formatln("result.type: {}", result.type);
-			Stdout.formatln("result.type == RegValueType.EXPAND_SZ: {}", result.type == RegValueType.EXPAND_SZ);
-			Stdout.formatln("result.asString: {}", result.asString);
-
-			Stdout.formatln("TEMP: {}", key.valueExists("TEMP"));
-			Stdout.formatln("FOOBAR: {}", key.valueExists("FOOBAR"));
-		}
-		+/
+		RegCloseKey(hKey);+/
 		
 		parseOptions();
 	}
