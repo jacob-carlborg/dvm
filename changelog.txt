@@ -3,6 +3,7 @@ DVM Change Log
 Version x.y.z
 	New/Change Features
 	 * Added a "list" command for listing installed compilers
+	 * Added a "uninstall" command for uninstalling compilers
 
 Version 0.2.0
 	New/Change Features
