@@ -136,16 +136,9 @@ private wchar* toString16z(string str)
 	return to!(wstring)(str).toString16z();
 }
 
-ubyte[] toRegDWord(uint val)
+ubyte[] toRegDWord(ref uint val)
 {
-	//return (cast(ubyte[4])val)[];
-	ubyte[] result;
-	result.length = 4;
-	result[0] = val & 0x0000_00FF;
-	result[1] = (val >>  8) & 0x0000_00FF;
-	result[2] = (val >> 16) & 0x0000_00FF;
-	result[3] = val >> 24;
-	return result;
+	return (cast(ubyte*)&val)[0..4];
 }
 
 ubyte[] toRegSZ(string str)
