@@ -20,7 +20,7 @@ import tango.util.Convert;
 ///
 /// WARNING: REG_MULTI_SZ, REG_BINARY and REG_NONE are untested.
 
-/+ Types and Constants +++++++++++++++++++++++++/
+/// Types and Constants ///////////////////////////
 
 public import tango.sys.win32.Types :
 	HKEY,
@@ -117,20 +117,39 @@ template DataTypeOf(RegValueType type)
 		alias ubyte[] DataTypeOf;
 }
 
-/+ Exception +++++++++++++++++++++++++/
+/// Exception ///////////////////////////
 
 class RegistryException : WinAPIException
 {
-	string action;
+	string registryMsg;
+	string path;
+	bool   isKey; // Is path a key or a value?
 	
-	this(LONG code, string action="")
+	this(LONG code, string path, bool isKey, string registryMsg="")
 	{
-		this.action = action;
-		super(code, action);
+		this.registryMsg = registryMsg;
+		this.path        = path;
+		this.isKey       = isKey;
+		
+		string keyInfo;
+		if(isKey)
+			keyInfo = "Registry Key '"~path~"': ";
+		else
+			keyInfo = "Registry Value '"~path~"': ";
+		
+		string regMsgInfo = registryMsg;
+		string windowsMsg = "";
+		if(code != ERROR_SUCCESS)
+			windowsMsg = WinAPIException.getMessage(code);
+
+		if(regMsgInfo != "" && windowsMsg != "")
+			regMsgInfo ~= ": ";
+		
+		super(code, keyInfo~regMsgInfo~windowsMsg);
 	}
 }
 
-/+ Conversion Functions +++++++++++++++++++++++++/
+/// Conversion Functions ///////////////////////////
 
 private alias dvm.core.string.toString16z toString16z;
 private wchar* toString16z(string str)
@@ -196,7 +215,58 @@ string toString(RegRoot root)
 	}
 }
 
-/+ Registry Functions +++++++++++++++++++++++++/
+string toString(RegValueType type)
+{
+	switch(type)
+	{
+	case RegValueType.BINARY:           return "REG_BINARY";
+	case RegValueType.DWORD:            return "REG_DWORD";
+	case RegValueType.EXPAND_SZ:        return "REG_EXPAND_SZ";
+	case RegValueType.LINK:             return "REG_LINK";
+	case RegValueType.MULTI_SZ:         return "REG_MULTI_SZ";
+	case RegValueType.NONE:             return "REG_NONE";
+	case RegValueType.SZ:               return "REG_SZ";
+	case RegValueType.DWORD_BIG_ENDIAN: return "REG_DWORD_BIG_ENDIAN";
+	case RegValueType.Unknown:          return "(Unknown KeyValueType)";
+	default:
+		return "(KeyValueType #"~to!(string)(cast(DWORD)type)~")";
+	}
+}
+
+/// Private Error Handling Utilities ///////////////////////////
+
+private void ensureSuccess(LONG code, string path, bool isKey, string registryMsg="")
+{
+	if(code != ERROR_SUCCESS)
+		error(code, path, isKey, registryMsg);
+}
+
+private void ensureSuccessKey(LONG code, string path, string registryMsg="")
+{
+	ensureSuccess(code, path, true, registryMsg);
+}
+
+private void ensureSuccessValue(LONG code, string path, string registryMsg="")
+{
+	ensureSuccess(code, path, false, registryMsg);
+}
+
+private void error(LONG code, string path, bool isKey, string registryMsg="")
+{
+	throw new RegistryException(code, `{Unknown Path}\`~path, isKey, registryMsg);
+}
+
+private void errorKey(LONG code, string path, string registryMsg="")
+{
+	error(code, path, true, registryMsg);
+}
+
+private void errorValue(LONG code, string path, string registryMsg="")
+{
+	error(code, path, false, registryMsg);
+}
+
+/// Registry Functions ///////////////////////////
 
 HKEY regOpenKey(HKEY hKey, string subKey, RegKeyAccess access)
 {
@@ -209,8 +279,7 @@ HKEY regOpenKey(HKEY hKey, string subKey, RegKeyAccess access)
 			0, toRegSam(access), &outKey
 		);
 
-	if(result != ERROR_SUCCESS)
-		throw new RegistryException(result, "Open SubKey '"~subKey~"'");
+	ensureSuccessKey(result, subKey, "Couldn't open key");
 		
 	return outKey;
 }
@@ -239,8 +308,7 @@ HKEY regCreateKey(
 	
 	wasCreated = (disposition == REG_CREATED_NEW_KEY);
 	
-	if(result != ERROR_SUCCESS)
-		throw new RegistryException(result, "Create/Open SubKey '"~subKey~"'");
+	ensureSuccessKey(result, subKey, "Couldn't open or create key");
 		
 	return outKey;
 }
@@ -266,8 +334,7 @@ HKEY regCreateKey(
 void regCloseKey(HKEY hKey)
 {
 	auto result = RegCloseKey(hKey);
-	if(result != ERROR_SUCCESS)
-		throw new RegistryException(result, "Close Key");
+	ensureSuccessKey(result, "{Unknown Key}", "Couldn't close key");
 }
 
 bool regValueExists(HKEY hKey, string valueName)
@@ -280,24 +347,22 @@ bool regValueExists(HKEY hKey, string valueName)
 	if(result == ERROR_SUCCESS)
 		return true;
 
-	throw new RegistryException(result, "Check if value '"~valueName~"' exists");
+	errorValue(result, valueName, "Couldn't check if value exists");
 }
 
 void regDeleteKey(HKEY hKey, string subKey)
 {
 	auto result = RegDeleteKeyW(hKey, subKey.toString16z());
-	if(result != ERROR_SUCCESS)
-		throw new RegistryException(result, "Delete SubKey '"~subKey~"'");
+	ensureSuccessKey(result, subKey, "Couldn't delete key");
 }
 
 void regDeleteValue(HKEY hKey, string valueName)
 {
 	auto result = RegDeleteValueW(hKey, valueName.toString16z());
-	if(result != ERROR_SUCCESS)
-		throw new RegistryException(result, "Delete Value '"~valueName~"'");
+	ensureSuccessValue(result, valueName, "Couldn't delete value");
 }
 
-/+ regSetValue +++++++++++++++++++++++++/
+/// Registry Functions: regSetValue ///////////////////////////
 
 /// Be very careful with this particuler version.
 /// Make sure to follow all the rules in MS's documentation.
@@ -306,14 +371,16 @@ void regDeleteValue(HKEY hKey, string valueName)
 void regSetValue(HKEY hKey, string valueName, RegValueType type, ubyte[] data)
 {
 	if(type == RegValueType.Unknown)
-		throw new Exception("Can't set a key value of type 'Unknown'");
+		errorValue(
+			ERROR_SUCCESS, valueName,
+			"Can't set a key value of type 'Unknown'"
+		);
 	
 	auto ptr = (data is null)? null : data.ptr;
 	auto len = (data is null)? 0    : data.length;
 	
 	auto result = RegSetValueExW(hKey, valueName.toString16z(), 0, type, ptr, len);
-	if(result != ERROR_SUCCESS)
-		throw new RegistryException(result, "Set Value '"~valueName~"'");
+	ensureSuccessValue(result, valueName, "Couldn't set "~toString(type)~" value");
 }
 
 void regSetValue(HKEY hKey, string valueName, string data)
@@ -374,7 +441,7 @@ void regSetValue(HKEY hKey, string valueName, RegQueryResult data)
 	}
 }
 
-/+ regQueryValue +++++++++++++++++++++++++/
+/// Registry Functions: regQueryValue ///////////////////////////
 
 RegQueryResult regQueryValue()(HKEY hKey, string valueName)
 {
@@ -383,15 +450,13 @@ RegQueryResult regQueryValue()(HKEY hKey, string valueName)
 	auto valueNameZ = valueName.toString16z();
 	
 	auto result = RegQueryValueExW(hKey, valueNameZ, null, null, null, &dataSize);
-	if(result != ERROR_SUCCESS)
-		throw new RegistryException(result, "Check length of data for value '"~valueName~"'");
+	ensureSuccessValue(result, valueName, "Couldn't check length of value's data");
 
 	ubyte[] data;
 	data.length = dataSize;
 	
 	result = RegQueryValueExW(hKey, valueNameZ, null, &(cast(DWORD)(ret.type)), data.ptr, &dataSize);
-	if(result != ERROR_SUCCESS)
-		throw new RegistryException(result, "Query Value '"~valueName~"'");
+	ensureSuccessValue(result, valueName, "Couldn't get value");
 
 	switch(ret.type)
 	{
@@ -423,9 +488,9 @@ DataTypeOf!(type) regQueryValue(RegValueType type)(HKEY hKey, string valueName)
 	auto result = regQueryValue(hKey, valueName);
 	
 	if(result.type != type)
-		throw new Exception(
-			"Expected key type '"~to!(string)(type)~"', "~
-			"not '"~to!(string)(result.type)~"' for key '"~valueName~"'"
+		errorValue(ERROR_SUCCESS, valueName,
+			"Expected key type '"~toString(type)~"', "~
+			"not '"~toString(result.type)~"'"
 		);
 	
 	alias DataTypeOf!(type) T;
@@ -438,4 +503,3 @@ DataTypeOf!(type) regQueryValue(RegValueType type)(HKEY hKey, string valueName)
 	else
 		return result.asBinary;
 }
-

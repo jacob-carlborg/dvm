@@ -26,7 +26,7 @@ version (Windows)
 }
 //version (Windows) import dvm.sys.Registry;
 //version (Windows) import dvm.util.Registry;
-//import tango.io.Stdout;
+import tango.io.Stdout;
 
 class Application
 {
@@ -63,30 +63,30 @@ class Application
 		/+
 		bool wasCreated;
 		auto hKey =
-			RegCreateKey(
+			regCreateKey(
 				HKEY_CURRENT_USER,
 				`NickTest\Foo\Bar`,
 				0, RegKeyAccess.All,
 				wasCreated
 			);
 		Stdout.formatln("wasCreated: {}", wasCreated);
-		RegSetValue(hKey, "SomeString", `C:\Hello World\read_me.txt`);
-		RegSetValue(hKey, "SomeInt", 0xDEADBEEF);
-		RegDeleteValue(hKey, "Blah");
-		auto someInt = RegQueryValue(hKey, "SomeInt");
+		regSetValue(hKey, "SomeString", `C:\Hello World\read_me.txt`);
+		regSetValue(hKey, "SomeInt", 0xDEADBEEF);
+		regDeleteValue(hKey, "Blah");
+		auto someInt = regQueryValue(hKey, "SomeInt");
 		assert(someInt.type == RegValueType.DWORD);
 		assert(someInt.asUInt == 0xDEADBEEF);
-		RegCloseKey(hKey);
+		regCloseKey(hKey);
 		
-		hKey = RegOpenKey(HKEY_CURRENT_USER, `Environment`, RegKeyAccess.Read);
-		auto result = RegQueryValue(hKey, "PATH");
+		hKey = regOpenKey(HKEY_CURRENT_USER, `Environment`, RegKeyAccess.Read);
+		auto result = regQueryValue(hKey, "PATH");
 		Stdout.formatln("result.type: {}", result.type);
 		Stdout.formatln("result.type == RegValueType.EXPAND_SZ: {}", result.type == RegValueType.EXPAND_SZ);
 		Stdout.formatln("result.asString: {}", result.asString);
 
-		Stdout.formatln("TEMP: {}", RegValueExists(hKey, "TEMP"));
-		Stdout.formatln("FOOBAR: {}", RegValueExists(hKey, "FOOBAR"));
-		RegCloseKey(hKey);
+		Stdout.formatln("TEMP: {}", regValueExists(hKey, "TEMP"));
+		Stdout.formatln("FOOBAR: {}", regValueExists(hKey, "FOOBAR"));
+		regCloseKey(hKey);
 		+/
 		
 		/+

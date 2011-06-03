@@ -14,41 +14,42 @@ import tango.sys.win32.Types;
 import tango.sys.win32.UserGdi;
 import tango.util.Convert;
 
-class WinAPIException : Exception
-{
-	LONG code;
-	
-	this(LONG code, string msg="")
-	{
-		this.code = code;
-		
-		if(msg != "")
-			msg ~= ": ";
-			
-		super(msg ~ GetErrorMessage(code));
-	}
-}
-
 // If FORMAT_MESSAGE_ALLOCATE_BUFFER is used, then this is the correct
 // signature. Otherwise, the signature in tango.sys.win32.UserGdi is corrent.
 extern(Windows) DWORD FormatMessageW(DWORD, LPCVOID, DWORD, DWORD, LPWSTR*, DWORD, VA_LIST*);
 
-string GetErrorMessage(DWORD errorCode)
+class WinAPIException : Exception
 {
-	wchar* pMsg;
+	LONG code;
+	string windowsMsg;
+	
+	this(LONG code, string msg="")
+	{
+		this.code = code;
 
-	auto result = FormatMessageW(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-		FORMAT_MESSAGE_FROM_SYSTEM     |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		null, errorCode, 0, &pMsg, 0, null
-	);
+		if(windowsMsg == "")
+			windowsMsg = getMessage(code);
+
+		super(msg==""? windowsMsg : msg);
+	}
 	
-	if(result == 0)
-		return "Unknown WinAPI Error";
-	
-	scope(exit)	LocalFree(pMsg);
+	static string getMessage(DWORD errorCode)
+	{
+		wchar* pMsg;
+
+		auto result = FormatMessageW(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+			FORMAT_MESSAGE_FROM_SYSTEM     |
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			null, errorCode, 0, &pMsg, 0, null
+		);
 		
-	auto msg = fromString16z(pMsg);
-	return to!(string)(msg);
+		if(result == 0)
+			return "Unknown WinAPI Error";
+		
+		scope(exit)	LocalFree(pMsg);
+			
+		auto msg = fromString16z(pMsg);
+		return to!(string)(msg);
+	}
 }
