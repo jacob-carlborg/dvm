@@ -1,5 +1,9 @@
 DVM Change Log
 
+Version x.y.z
+	New/Change Features
+	 * Added a "list" command for listing installed compilers
+
 Version 0.2.0
 	New/Change Features
 	 * 64bit version now available on Linux
