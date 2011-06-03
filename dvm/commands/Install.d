@@ -88,6 +88,8 @@ private:
 		
 		if (options.tango)
 			installTango;
+
+		registerCompiler;
 	}
 	
 	void unpack ()
@@ -123,19 +125,7 @@ private:
 		move(libSource, libDest);
 		move(srcSource, srcDest);
 	}
-	
-	void installTango ()
-	{
-		verbose("Installing Tango");
 
-		fetchTango;
-		unpackTango;
-		setupTangoEnvironment;
-		buildTango;
-		moveTangoFiles;
-		patchDmdConfForTango;
-	}
-	
 	void installWrapper ()
 	{
 		wrapper.target = Path.join(installPath, options.path.bin, "dmd");
@@ -198,6 +188,32 @@ private:
 		content = content.substitute("-L-L%@P%/../lib32", "-L-L%@P%/../lib");
 		
 		File.set(dmdConfPath, content);
+	}
+	
+	void installTango ()
+	{
+		verbose("Installing Tango");
+
+		fetchTango;
+		unpackTango;
+		setupTangoEnvironment;
+		buildTango;
+		moveTangoFiles;
+		patchDmdConfForTango;
+	}
+	
+	void registerCompiler ()
+	{
+		verbose("Registering compiler");
+		
+		auto installedCompilers = cast(string) File.get(options.path.installed);
+		auto dmd = "dmd-" ~ args.first;
+		
+		if (!installedCompilers.containsPattern(dmd))
+		{
+			installedCompilers ~= "\n" ~ dmd;
+			File.set(options.path.installed, installedCompilers);
+		}
 	}
 	
 	void fetchTango ()
