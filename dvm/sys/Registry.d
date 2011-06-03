@@ -198,7 +198,7 @@ string toString(RegRoot root)
 
 /+ Registry Functions +++++++++++++++++++++++++/
 
-HKEY RegOpenKey(HKEY hKey, string subKey, RegKeyAccess access)
+HKEY regOpenKey(HKEY hKey, string subKey, RegKeyAccess access)
 {
 	HKEY outKey;
 	
@@ -215,7 +215,7 @@ HKEY RegOpenKey(HKEY hKey, string subKey, RegKeyAccess access)
 	return outKey;
 }
 
-HKEY RegCreateKey(
+HKEY regCreateKey(
 	HKEY hKey,
 	string subKey,
 	DWORD dwOptions,
@@ -245,7 +245,7 @@ HKEY RegCreateKey(
 	return outKey;
 }
 
-HKEY RegCreateKey(
+HKEY regCreateKey(
 	HKEY hKey,
 	string subKey,
 	DWORD dwOptions,
@@ -254,7 +254,7 @@ HKEY RegCreateKey(
 {
 	bool wasCreated;
 	return
-		RegCreateKey(
+		regCreateKey(
 			hKey,
 			subKey,
 			dwOptions,
@@ -263,14 +263,14 @@ HKEY RegCreateKey(
 		);
 }
 
-void RegCloseKey(HKEY hKey)
+void regCloseKey(HKEY hKey)
 {
-	auto result = tango.sys.win32.UserGdi.RegCloseKey(hKey);
+	auto result = RegCloseKey(hKey);
 	if(result != ERROR_SUCCESS)
 		throw new RegistryException(result, "Close Key");
 }
 
-bool RegValueExists(HKEY hKey, string valueName)
+bool regValueExists(HKEY hKey, string valueName)
 {
 	auto result = RegQueryValueExW(hKey, valueName.toString16z(), null, null, null, null);
 
@@ -283,27 +283,27 @@ bool RegValueExists(HKEY hKey, string valueName)
 	throw new RegistryException(result, "Check if value '"~valueName~"' exists");
 }
 
-void RegDeleteKey(HKEY hKey, string subKey)
+void regDeleteKey(HKEY hKey, string subKey)
 {
 	auto result = RegDeleteKeyW(hKey, subKey.toString16z());
 	if(result != ERROR_SUCCESS)
 		throw new RegistryException(result, "Delete SubKey '"~subKey~"'");
 }
 
-void RegDeleteValue(HKEY hKey, string valueName)
+void regDeleteValue(HKEY hKey, string valueName)
 {
 	auto result = RegDeleteValueW(hKey, valueName.toString16z());
 	if(result != ERROR_SUCCESS)
 		throw new RegistryException(result, "Delete Value '"~valueName~"'");
 }
 
-/+ RegSetValue +++++++++++++++++++++++++/
+/+ regSetValue +++++++++++++++++++++++++/
 
 /// Be very careful with this particuler version.
 /// Make sure to follow all the rules in MS's documentation.
-/// The other overloads of RegSetValue are recommended over
+/// The other overloads of regSetValue are recommended over
 /// this one, since they already handle all the proper rules.
-void RegSetValue(HKEY hKey, string valueName, RegValueType type, ubyte[] data)
+void regSetValue(HKEY hKey, string valueName, RegValueType type, ubyte[] data)
 {
 	if(type == RegValueType.Unknown)
 		throw new Exception("Can't set a key value of type 'Unknown'");
@@ -316,67 +316,67 @@ void RegSetValue(HKEY hKey, string valueName, RegValueType type, ubyte[] data)
 		throw new RegistryException(result, "Set Value '"~valueName~"'");
 }
 
-void RegSetValue(HKEY hKey, string valueName, string data)
+void regSetValue(HKEY hKey, string valueName, string data)
 {
-	RegSetValue(hKey, valueName, data, false);
+	regSetValue(hKey, valueName, data, false);
 }
 
-void RegSetValueExpand(HKEY hKey, string valueName, string data)
+void regSetValueExpand(HKEY hKey, string valueName, string data)
 {
-	RegSetValue(hKey, valueName, data, true);
+	regSetValue(hKey, valueName, data, true);
 }
 
-void RegSetValue(HKEY hKey, string valueName, string data, bool expand)
+void regSetValue(HKEY hKey, string valueName, string data, bool expand)
 {
 	auto type = expand? RegValueType.EXPAND_SZ : RegValueType.SZ;
-	RegSetValue(hKey, valueName, type, data.toRegSZ());
+	regSetValue(hKey, valueName, type, data.toRegSZ());
 }
 
-void RegSetValue(HKEY hKey, string valueName, string[] data)
+void regSetValue(HKEY hKey, string valueName, string[] data)
 {
-	RegSetValue(hKey, valueName, RegValueType.MULTI_SZ, data.toRegMultiSZ());
+	regSetValue(hKey, valueName, RegValueType.MULTI_SZ, data.toRegMultiSZ());
 }
 
-void RegSetValue(HKEY hKey, string valueName, ubyte[] data)
+void regSetValue(HKEY hKey, string valueName, ubyte[] data)
 {
-	RegSetValue(hKey, valueName, RegValueType.BINARY, data);
+	regSetValue(hKey, valueName, RegValueType.BINARY, data);
 }
 
-void RegSetValue(HKEY hKey, string valueName, uint data)
+void regSetValue(HKEY hKey, string valueName, uint data)
 {
-	RegSetValue(hKey, valueName, RegValueType.DWORD, toRegDWord(data));
+	regSetValue(hKey, valueName, RegValueType.DWORD, toRegDWord(data));
 }
 
-void RegSetValue(HKEY hKey, string valueName)
+void regSetValue(HKEY hKey, string valueName)
 {
-	RegSetValue(hKey, valueName, RegValueType.NONE, null);
+	regSetValue(hKey, valueName, RegValueType.NONE, null);
 }
 
-void RegSetValue(HKEY hKey, string valueName, RegQueryResult data)
+void regSetValue(HKEY hKey, string valueName, RegQueryResult data)
 {
 	switch(data.type)
 	{
 	case RegValueType.DWORD:
-		RegSetValue(hKey, valueName, data.type, toRegDWord(data.asUInt));
+		regSetValue(hKey, valueName, data.type, toRegDWord(data.asUInt));
 		break;
 		
 	case RegValueType.SZ, RegValueType.EXPAND_SZ:
-		RegSetValue(hKey, valueName, data.type, data.asString.toRegSZ());
+		regSetValue(hKey, valueName, data.type, data.asString.toRegSZ());
 		break;
 
 	case RegValueType.MULTI_SZ:
-		RegSetValue(hKey, valueName, data.type, data.asStringArray.toRegMultiSZ());
+		regSetValue(hKey, valueName, data.type, data.asStringArray.toRegMultiSZ());
 		break;
 		
 	default:
-		RegSetValue(hKey, valueName, data.type, data.asBinary);
+		regSetValue(hKey, valueName, data.type, data.asBinary);
 		break;
 	}
 }
 
-/+ RegQueryValue +++++++++++++++++++++++++/
+/+ regQueryValue +++++++++++++++++++++++++/
 
-RegQueryResult RegQueryValue()(HKEY hKey, string valueName)
+RegQueryResult regQueryValue()(HKEY hKey, string valueName)
 {
 	RegQueryResult ret;
 	DWORD dataSize;
@@ -418,9 +418,9 @@ RegQueryResult RegQueryValue()(HKEY hKey, string valueName)
 	return ret;
 }
 
-DataTypeOf!(type) RegQueryValue(RegValueType type)(HKEY hKey, string valueName)
+DataTypeOf!(type) regQueryValue(RegValueType type)(HKEY hKey, string valueName)
 {
-	auto result = RegQueryValue(hKey, valueName);
+	auto result = regQueryValue(hKey, valueName);
 	
 	if(result.type != type)
 		throw new Exception(
