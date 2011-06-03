@@ -16,9 +16,7 @@ import tango.sys.win32.UserGdi;
 import tango.text.Util;
 import tango.util.Convert;
 
-/// Low-Level Registry Wrappers
-///
-/// WARNING: REG_MULTI_SZ, REG_BINARY and REG_NONE are untested.
+/// WARNING: REG_DWORD, REG_MULTI_SZ, REG_BINARY and REG_NONE are untested.
 
 /+ Types and Constants +++++++++++++++++++++++++/
 
@@ -43,7 +41,7 @@ enum : DWORD
 	REG_OPTION_BACKUP_RESTORE = 4,
 }
 
-enum RegRoot : DWORD
+enum RegRootEnum : DWORD
 {
 	HKEY_CLASSES_ROOT     = (0x80000000),
 	HKEY_CURRENT_USER     = (0x80000001),
@@ -54,13 +52,13 @@ enum RegRoot : DWORD
 	HKEY_DYN_DATA         = (0x80000006),
 }
 
-HKEY HKEY_CLASSES_ROOT()     { return cast(HKEY) RegRoot.HKEY_CLASSES_ROOT;     }
-HKEY HKEY_CURRENT_USER()     { return cast(HKEY) RegRoot.HKEY_CURRENT_USER;     }
-HKEY HKEY_LOCAL_MACHINE()    { return cast(HKEY) RegRoot.HKEY_LOCAL_MACHINE;    }
-HKEY HKEY_USERS()            { return cast(HKEY) RegRoot.HKEY_USERS;            }
-HKEY HKEY_PERFORMANCE_DATA() { return cast(HKEY) RegRoot.HKEY_PERFORMANCE_DATA; }
-HKEY HKEY_CURRENT_CONFIG()   { return cast(HKEY) RegRoot.HKEY_CURRENT_CONFIG;   }
-HKEY HKEY_DYN_DATA()         { return cast(HKEY) RegRoot.HKEY_DYN_DATA;         }
+HKEY HKEY_CLASSES_ROOT()     { return cast(HKEY) RegRootEnum.HKEY_CLASSES_ROOT;     }
+HKEY HKEY_CURRENT_USER()     { return cast(HKEY) RegRootEnum.HKEY_CURRENT_USER;     }
+HKEY HKEY_LOCAL_MACHINE()    { return cast(HKEY) RegRootEnum.HKEY_LOCAL_MACHINE;    }
+HKEY HKEY_USERS()            { return cast(HKEY) RegRootEnum.HKEY_USERS;            }
+HKEY HKEY_PERFORMANCE_DATA() { return cast(HKEY) RegRootEnum.HKEY_PERFORMANCE_DATA; }
+HKEY HKEY_CURRENT_CONFIG()   { return cast(HKEY) RegRootEnum.HKEY_CURRENT_CONFIG;   }
+HKEY HKEY_DYN_DATA()         { return cast(HKEY) RegRootEnum.HKEY_DYN_DATA;         }
 
 enum RegKeyAccess
 {
@@ -180,22 +178,6 @@ REGSAM toRegSam(RegKeyAccess access)
 	}
 }
 
-string toString(RegRoot root)
-{
-	switch(root)
-	{
-	case RegRoot.HKEY_CLASSES_ROOT:     return "HKEY_CLASSES_ROOT";
-	case RegRoot.HKEY_CURRENT_USER:     return "HKEY_CURRENT_USER";
-	case RegRoot.HKEY_LOCAL_MACHINE:    return "HKEY_LOCAL_MACHINE";
-	case RegRoot.HKEY_USERS:            return "HKEY_USERS";
-	case RegRoot.HKEY_PERFORMANCE_DATA: return "HKEY_PERFORMANCE_DATA";
-	case RegRoot.HKEY_CURRENT_CONFIG:   return "HKEY_CURRENT_CONFIG";
-	case RegRoot.HKEY_DYN_DATA:         return "HKEY_DYN_DATA";
-	default:
-		throw new Exception("Internal Error: Unhandled RegRoot '"~to!(string)(root)~"'");
-	}
-}
-
 /+ Registry Functions +++++++++++++++++++++++++/
 
 HKEY RegOpenKey(HKEY hKey, string subKey, RegKeyAccess access)
@@ -220,7 +202,7 @@ HKEY RegCreateKey(
 	string subKey,
 	DWORD dwOptions,
 	RegKeyAccess access,
-	out bool wasCreated
+	out bool neededToCreate
 )
 {
 	HKEY outKey;
@@ -237,7 +219,7 @@ HKEY RegCreateKey(
 		&disposition
 	);
 	
-	wasCreated = (disposition == REG_CREATED_NEW_KEY);
+	neededToCreate = (disposition == REG_CREATED_NEW_KEY);
 	
 	if(result != ERROR_SUCCESS)
 		throw new RegistryException(result, "Create/Open SubKey '"~subKey~"'");
@@ -252,14 +234,14 @@ HKEY RegCreateKey(
 	RegKeyAccess access
 )
 {
-	bool wasCreated;
+	bool neededToCreate;
 	return
 		RegCreateKey(
 			hKey,
 			subKey,
 			dwOptions,
 			access,
-			wasCreated
+			neededToCreate
 		);
 }
 
