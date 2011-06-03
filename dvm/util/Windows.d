@@ -53,3 +53,28 @@ class WinAPIException : Exception
 		return to!(string)(msg);
 	}
 }
+
+private alias dvm.core.string.toString16z toString16z;
+wchar* toString16z(string str)
+{
+	return to!(wstring)(str).toString16z();
+}
+
+import tango.io.Stdout;
+/// For more info, see: http://msdn.microsoft.com/en-us/library/ms725497(VS.85).aspx
+void broadcastSettingChange(string settingName, uint timeout=1)
+{
+	auto result = SendMessageTimeoutW(
+		HWND_BROADCAST, WM_SETTINGCHANGE,
+		0, cast(LPARAM)(settingName.toString16z()),
+		SMTO_ABORTIFHUNG, timeout, null
+	);
+	
+	if(result == 0)
+	{
+		auto errCode = GetLastError();
+		Stdout.formatln("ERROR_SUCCESS==0: {}", ERROR_SUCCESS==0);
+		if(errCode != ERROR_SUCCESS)
+			throw new WinAPIException(errCode, "Problem broadcasting WM_SETTINGCHANGE of '"~settingName~"'");
+	}
+}

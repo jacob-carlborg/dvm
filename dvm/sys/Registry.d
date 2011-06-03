@@ -147,15 +147,17 @@ class RegistryException : WinAPIException
 		
 		super(code, keyInfo~regMsgInfo~windowsMsg);
 	}
+
+	this(string path, bool isKey, string registryMsg="")
+	{
+		this(ERROR_SUCCESS, path, isKey, registryMsg);
+	}
 }
 
 /// Conversion Functions ///////////////////////////
 
+private alias dvm.util.Windows.toString16z toString16z;
 private alias dvm.core.string.toString16z toString16z;
-private wchar* toString16z(string str)
-{
-	return to!(wstring)(str).toString16z();
-}
 
 ubyte[] toRegDWord(ref uint val)
 {

@@ -72,6 +72,7 @@ private struct Path
 		string result_;
 		string tmp_;
 		string scripts_;
+		string binDir_;
 		string dvmScript_;
 		string dvmExecutable_;
 		string conf_;
@@ -129,7 +130,7 @@ private struct Path
 		if (dvmExecutable_.length > 0)
 			return dvmExecutable_;
 		
-		return dvmExecutable_ = join(dvm, bin, "dvm" ~ executableExtension);
+		return dvmExecutable_ = join(binDir, "dvm" ~ executableExtension);
 	}
 	
 	string dvmScript ()
@@ -178,6 +179,14 @@ private struct Path
 			return scripts_;
 		
 		return scripts_ = join(dvm, "scripts");
+	}
+
+	string binDir ()
+	{
+		if (binDir_.length > 0)
+			return binDir_;
+		
+		return binDir_ = join(dvm, "bin");
 	}
 
 	string tmp ()
@@ -291,6 +300,6 @@ private struct Path
 		if (defaultBin_.length > 0)
 			return defaultBin_;
 
-		return defaultBin_ = join(dvm, bin, "dvm-default-dc");
+		return defaultBin_ = join(binDir, "dvm-default-dc");
 	}
 }

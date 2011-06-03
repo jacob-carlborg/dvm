@@ -26,7 +26,7 @@ version (Windows)
 }
 //version (Windows) import dvm.sys.Registry;
 //version (Windows) import dvm.util.Registry;
-import tango.io.Stdout;
+//import tango.io.Stdout;
 
 class Application
 {

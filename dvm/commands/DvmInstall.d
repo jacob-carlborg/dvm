@@ -9,6 +9,7 @@ module dvm.commands.DvmInstall;
 import tango.io.device.File;
 import tango.sys.HomeFolder;
 import tango.text.convert.Format : format = Format;
+import tango.text.Util;
 
 import dvm.core._;
 import Path = dvm.io.Path;
@@ -17,6 +18,8 @@ import dvm.dvm.Exceptions;
 import dvm.dvm.ShellScript;
 import dvm.sys.Process;
 import dvm.util.Util;
+version (Windows) import dvm.util.Registry;
+version (Windows) import dvm.util.Windows;
 
 class DvmInstall : Command
 {	
@@ -53,6 +56,9 @@ private:
 			setPermissions;
 			installBashInclude(createBashInclude);
 		}
+		
+		version (Windows)
+			setupRegistry;
 	}
 
 	void update ()
@@ -60,6 +66,8 @@ private:
 	    copyExecutable;
 	    writeScript;
 	    setPermissions;
+		version (Windows)
+			setupRegistry;
 	}
 	
 	void createPaths ()
@@ -67,7 +75,7 @@ private:
 		verbose("Creating paths:");
 
 		createPath(options.path.dvm);
-		createPath(options.path.archives);		
+		createPath(options.path.archives);
 		createPath(Path.join(options.path.dvm, options.path.bin));
 		createPath(options.path.compilers);
 		createPath(options.path.env);
@@ -155,5 +163,42 @@ private:
 		});
 		
 		return sh;
+	}
+	
+	version (Windows)
+	void setupRegistry ()
+	{
+		string dvmEnvVar = "DVM";
+		string dvmEnvVarExpand = "%"~dvmEnvVar~"%";
+		auto binDir = tango.text.Util.replace(options.path.binDir, '/', '\\');
+
+		scope envKey = new RegistryKey(RegRoot.HKEY_CURRENT_USER, "Environment");
+		
+		envKey.setValue(dvmEnvVar, binDir);
+		
+		if(envKey.valueExists("PATH"))
+		{
+			auto path = envKey.getValue("PATH");
+			if(path.type != RegValueType.SZ && path.type != RegValueType.EXPAND_SZ)
+			{
+				throw new RegistryException(
+					envKey.toString~`\PATH`, false,
+					"Expected type REG_SZ or REG_EXPAND_SZ, not "~
+					dvm.util.Registry.toString(path.type)
+				);
+			}
+			
+			if(path.asString.find(dvmEnvVarExpand) == size_t.max)
+				envKey.setValueExpand("PATH", dvmEnvVarExpand~";"~path.asString);
+		}
+		else
+		{
+			envKey.setValueExpand("PATH", dvmEnvVarExpand);
+		}
+		
+		broadcastSettingChange("Environment");
+		
+		println("DVM has now been installed.");
+		println("To use dvm, you may need to open a new command prompt.");
 	}
 }
