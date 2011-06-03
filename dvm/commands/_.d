@@ -13,4 +13,5 @@ import dvm.commands.DvmInstall;
 import dvm.commands.Fetch;
 import dvm.commands.Install;
 import dvm.commands.List;
+import dvm.commands.Uninstall;
 import dvm.commands.Use;

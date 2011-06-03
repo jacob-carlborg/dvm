@@ -22,7 +22,7 @@ class List : Command
 
 	this ()
 	{
-		super("list", "Show currently installed D compilers");
+		super("list", "Show currently installed D compilers.");
 	}
 
 	void execute ()
