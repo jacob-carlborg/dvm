@@ -121,8 +121,6 @@ scope final class RegistryKey
 		RegKeyAccess access = RegKeyAccess.All
 	)
 	{
-		string nullStr = null;
-		assert("" == nullStr, `Failed: "" == nullStr`);
 		_root   = root;
 		_subKey = subKey;
 		_access = access;
