@@ -142,7 +142,12 @@ private:
 		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ args.first;
 		
 		version (Windows)
+		{
 			wrapper.path ~= ".bat";
+			
+			Path.native(wrapper.target);
+			Path.native(wrapper.path);
+		}
 			
 		verbose("Installing wrapper: " ~ wrapper.path);
 		wrapper.write;
