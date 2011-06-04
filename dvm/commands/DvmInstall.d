@@ -170,7 +170,7 @@ private:
 	{
 		string dvmEnvVar = "DVM";
 		string dvmEnvVarExpand = "%"~dvmEnvVar~"%";
-		auto binDir = tango.text.Util.replace(options.path.binDir, '/', '\\');
+		auto binDir = Path.native(options.path.binDir.dup);
 
 		scope envKey = new RegistryKey(RegRoot.HKEY_CURRENT_USER, "Environment");
 		

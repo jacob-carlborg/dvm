@@ -34,7 +34,8 @@ class Use : Command
 	{
 		loadEnvironment;
 		installWrapper;
-		setPermissions;
+		version (Posix)
+			setPermissions;
 	}
 	
 private:
@@ -74,6 +75,7 @@ private:
 		}
 	}
 
+	version (Posix)
 	void setPermissions ()
 	{
 		verbose("Setting permissions:");
@@ -84,15 +86,13 @@ private:
 			setPermission(options.path.defaultBin, "+x");
 	}
 
+	version (Posix)
 	void setPermission (string path, string mode)
 	{
-		version (Posix)
-		{
-			verbose(options.indentation, "mode: ", mode);
-			verbose(options.indentation, "file: ", path);
+		verbose(options.indentation, "mode: ", mode);
+		verbose(options.indentation, "file: ", path);
 
-			permission(path, mode);
-		}
+		permission(path, mode);
 	}
 	
 	ShellScript createShellScript ()
