@@ -33,9 +33,11 @@ class Use : Command
 	void execute ()
 	{
 		loadEnvironment;
-		installWrapper;
 		version (Posix)
+		{
+			installWrapper;
 			setPermissions;
+		}
 	}
 	
 private:
@@ -60,6 +62,8 @@ private:
 	{
 		wrapper.target = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin, "dmd");
 		wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc");
+		version (Windows)
+			wrapper.path ~= ".bat";
 
 		verbose("Installing wrapper: " ~ wrapper.path);
 
@@ -99,7 +103,8 @@ private:
 	{
 		verbose("Creating shell script");
 		auto sh = new ShellScript;
-		sh.source(envPath);
+		sh.echoOff;
+		sh.source(Sh.quote(envPath));
 		
 		return sh;
 	}
@@ -120,7 +125,7 @@ private:
 		if (envPath_.length > 0)
 			return envPath_;
 		
-		return envPath_ = join(options.path.env, "dmd-" ~ args.first);
+		return envPath_ = native(join(options.path.env, "dmd-" ~ args.first ~ options.path.scriptExtension));
 	}	
 }
 

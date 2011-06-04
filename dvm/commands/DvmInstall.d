@@ -87,6 +87,7 @@ private:
 	void copyExecutable ()
 	{
 		verbose("Copying executable:");
+		verbose("getProcessPath: ", getProcessPath);
 		copy(getProcessPath, options.path.dvmExecutable);
 	}
 	

@@ -11,13 +11,9 @@ set dvm_default_env_path=%dvm_path%\env\default
 set dvm_default_bin_path=%dvm_bin_path%\dvm-default-dc
 set dvm_current_path=%dvm_bin_path%\dvm-current-dc
 
-REM if exist "%dvm_exe_path%" (
-REM 	call "%dvm_default_env_path%"
-REM )
-
-REM if exist "%dvm_default_bin_path%" (
-REM 	copy /Y "%dvm_default_bin_path%" "%dvm_current_path%" > NUL
-REM )
+if exist "%dvm_result_path%" (
+	del /Q /F "%dvm_result_path%"
+)
 
 if exist "%dvm_exe_path%" (
 	"%dvm_exe_path%" %*
@@ -28,4 +24,3 @@ if exist "%dvm_result_path%" (
 )
 
 rmdir /Q /S "%dvm_tmp_path%"
-mkdir "%dvm_tmp_path%"
