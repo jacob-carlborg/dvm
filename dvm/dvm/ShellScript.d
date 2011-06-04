@@ -320,21 +320,11 @@ struct Sh
 			return format("call {}", path);
 		}
 		
-		string exec (string name, string args = ""/+, string a = ""+/)
+		string exec (string name, string args = "")
 		{
-			/+a = a == "" ? "" : format("-a {} ", a);
-			args = args == "" ? "" : ' ' ~ args;+/
-
-			return format("call {}{}", name, args);
+			return format("{} {}", name, args);
 		}
 		
-		/+
-		string ifFileIsNotEmpty (string path, string delegate () block)
-		{			
-			return format("if exist {} ( {} )", path, block());
-		}
-		+/
-
 		string variable (string name, bool quote = true)
 		{
 			return quote ? format(`"%{}%"`, name) : '%' ~ name ~ '%';

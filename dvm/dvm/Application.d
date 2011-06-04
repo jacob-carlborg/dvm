@@ -24,9 +24,6 @@ version (Windows)
 	pragma(lib, "zlib.lib");
 	pragma(lib, "Advapi32.lib");
 }
-//version (Windows) import dvm.sys.Registry;
-//version (Windows) import dvm.util.Registry;
-//import tango.io.Stdout;
 
 class Application
 {
@@ -59,59 +56,6 @@ class Application
 	void run (string[] args)
 	{
 		this.args = args;
-		
-		/+
-		bool wasCreated;
-		auto hKey =
-			regCreateKey(
-				HKEY_CURRENT_USER,
-				`NickTest\Foo\Bar`,
-				0, RegKeyAccess.All,
-				wasCreated
-			);
-		Stdout.formatln("wasCreated: {}", wasCreated);
-		regSetValue(hKey, "SomeString", `C:\Hello World\read_me.txt`);
-		regSetValue(hKey, "SomeInt", 0xDEADBEEF);
-		regDeleteValue(hKey, "Blah");
-		auto someInt = regQueryValue(hKey, "SomeInt");
-		assert(someInt.type == RegValueType.DWORD);
-		assert(someInt.asUInt == 0xDEADBEEF);
-		regCloseKey(hKey);
-		
-		hKey = regOpenKey(HKEY_CURRENT_USER, `Environment`, RegKeyAccess.Read);
-		auto result = regQueryValue(hKey, "PATH");
-		Stdout.formatln("result.type: {}", result.type);
-		Stdout.formatln("result.type == RegValueType.EXPAND_SZ: {}", result.type == RegValueType.EXPAND_SZ);
-		Stdout.formatln("result.asString: {}", result.asString);
-
-		Stdout.formatln("TEMP: {}", regValueExists(hKey, "TEMP"));
-		Stdout.formatln("FOOBAR: {}", regValueExists(hKey, "FOOBAR"));
-		regCloseKey(hKey);
-		+/
-		
-		/+
-		{
-			scope key = new RegistryKey(RegRoot.HKEY_CURRENT_USER, `NickTest\Foo\Bar`, RegKeyOpenMode.Create);
-			Stdout.formatln("wasCreated: {}", key.wasCreated);
-			key.setValue("SomeString", `C:\Hello World\read_me.txt`);
-			key.setValue("SomeInt", 0xDEADBEEF);
-			key.deleteValue("Blah");
-			auto someInt = key.getValue("SomeInt");
-			assert(someInt.type == RegValueType.DWORD);
-			assert(someInt.asUInt == 0xDEADBEEF);
-		}
-		
-		{
-			scope key = new RegistryKey(RegRoot.HKEY_CURRENT_USER, `Environment`);
-			auto result = key.getValue("PATH");
-			Stdout.formatln("result.type: {}", result.type);
-			Stdout.formatln("result.type == RegValueType.EXPAND_SZ: {}", result.type == RegValueType.EXPAND_SZ);
-			Stdout.formatln("result.asString: {}", result.asString);
-
-			Stdout.formatln("TEMP: {}", key.valueExists("TEMP"));
-			Stdout.formatln("FOOBAR: {}", key.valueExists("FOOBAR"));
-		}
-		+/
 		
 		parseOptions();
 	}

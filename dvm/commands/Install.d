@@ -138,7 +138,7 @@ private:
 	
 	void installWrapper ()
 	{
-		wrapper.target = Path.join(installPath, options.path.bin, "dmd");
+		wrapper.target = Path.join(installPath, options.path.bin, "dmd"~options.path.executableExtension);
 		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ args.first;
 		
 		version (Windows)
@@ -166,9 +166,9 @@ private:
 	
 	void installEnvironment (ShellScript sh)
 	{
-		sh.path = options.path.env;				
+		sh.path = options.path.env;
 		Path.createPath(sh.path);
-		sh.path = Path.join(sh.path, "dmd-" ~ args.first);
+		sh.path = Path.join(sh.path, "dmd-" ~ args.first ~ options.path.scriptExtension);
 		
 		verbose("Installing environment: ", sh.path);
 		sh.write;
@@ -182,7 +182,10 @@ private:
 		auto envPath = Path.join(installPath, options.path.bin);
 		auto binPath = Path.join(options.path.dvm, options.path.bin);
 		
-		sh.exportPath("PATH", envPath, binPath, Sh.variable("PATH", false));
+		version (Posix)
+			sh.exportPath("PATH", envPath, binPath, Sh.variable("PATH", false));
+		else
+			sh.exportPath("DVM", Path.native(envPath), Path.native(binPath));
 		
 		return sh;
 	}
