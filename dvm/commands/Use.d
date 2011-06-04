@@ -16,6 +16,7 @@ import dvm.dvm.ShellScript;
 import dvm.dvm.Wrapper;
 import dvm.commands.Command;
 import dvm.io.Path;
+version (Windows) import DvmRegistry = dvm.util.DvmRegistry;
 
 class Use : Command
 {
@@ -38,6 +39,8 @@ class Use : Command
 			installWrapper;
 			setPermissions;
 		}
+		version (Windows)
+			updateRegistry;
 	}
 	
 private:
@@ -51,6 +54,7 @@ private:
 
 		writeShellScript(shellScript, options.path.result);
 
+		version (Posix)
 		if (options.isDefault)
 		{
 			verbose("Installing environment: ", options.path.defaultEnv);
@@ -77,6 +81,13 @@ private:
 			verbose("Installing wrapper: ", options.path.defaultBin);
 			copy(wrapper.path, options.path.defaultBin);
 		}
+	}
+
+	version (Windows)
+	void updateRegistry ()
+	{
+		auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
+		DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
 	}
 
 	version (Posix)
@@ -126,7 +137,7 @@ private:
 			return envPath_;
 		
 		return envPath_ = native(join(options.path.env, "dmd-" ~ args.first ~ options.path.scriptExtension));
-	}	
+	}
 }
 
 template UseImpl ()
