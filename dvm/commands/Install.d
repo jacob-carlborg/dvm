@@ -140,14 +140,8 @@ private:
 	{
 		wrapper.target = Path.join(installPath, options.path.bin, "dmd"~options.path.executableExtension);
 		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ args.first;
-		
 		version (Windows)
-		{
 			wrapper.path ~= ".bat";
-			
-			Path.native(wrapper.target);
-			Path.native(wrapper.path);
-		}
 			
 		verbose("Installing wrapper: " ~ wrapper.path);
 		wrapper.write;
@@ -189,8 +183,14 @@ private:
 		
 		version (Posix)
 			sh.exportPath("PATH", envPath, binPath, Sh.variable("PATH", false));
-		else
-			sh.exportPath("DVM", Path.native(envPath), Path.native(binPath));
+		
+		version (Windows)
+		{
+			Path.native(envPath);
+			Path.native(binPath);
+			sh.exportPath("DVM",  envPath, binPath).nl;
+			sh.exportPath("PATH", envPath, Sh.variable("PATH", false));
+		}
 		
 		return sh;
 	}

@@ -177,7 +177,7 @@ private struct Path
 		if (result_.length > 0)
 			return result_;
 
-		return result_ = join(tmp, "result");
+		return result_ = join(tmp, "result" ~ scriptExtension);
 	}
 	
 	string scripts ()

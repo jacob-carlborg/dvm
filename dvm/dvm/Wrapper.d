@@ -8,6 +8,7 @@ module dvm.dvm.Wrapper;
 
 import dvm.core._;
 import dvm.dvm.ShellScript;
+import dvm.io.Path;
 
 struct Wrapper
 {
@@ -35,6 +36,9 @@ struct Wrapper
 	
 	private void createContent ()
 	{
+		native(path);
+		native(target);
+		
 		sh = new ShellScript(path);
 		auto dmd = "dmd";
 		auto dmdPath = Sh.quote(target);
