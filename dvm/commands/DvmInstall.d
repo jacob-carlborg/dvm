@@ -18,8 +18,7 @@ import dvm.dvm.Exceptions;
 import dvm.dvm.ShellScript;
 import dvm.sys.Process;
 import dvm.util.Util;
-version (Windows) import dvm.util.Registry;
-version (Windows) import dvm.util.Windows;
+version (Windows) import DvmRegistry = dvm.util.DvmRegistry;
 
 class DvmInstall : Command
 {	
@@ -169,36 +168,7 @@ private:
 	version (Windows)
 	void setupRegistry ()
 	{
-		string dvmEnvVar = "DVM";
-		string dvmEnvVarExpand = "%"~dvmEnvVar~"%";
-		auto binDir = Path.native(options.path.binDir.dup);
-
-		scope envKey = new RegistryKey(RegRoot.HKEY_CURRENT_USER, "Environment");
-		
-		envKey.setValue(dvmEnvVar, binDir);
-		
-		if(envKey.valueExists("PATH"))
-		{
-			auto path = envKey.getValue("PATH");
-			if(path.type != RegValueType.SZ && path.type != RegValueType.EXPAND_SZ)
-			{
-				throw new RegistryException(
-					envKey.toString~`\PATH`, false,
-					"Expected type REG_SZ or REG_EXPAND_SZ, not "~
-					dvm.util.Registry.toString(path.type)
-				);
-			}
-			
-			if(path.asString.find(dvmEnvVarExpand) == size_t.max)
-				envKey.setValueExpand("PATH", dvmEnvVarExpand~";"~path.asString);
-		}
-		else
-		{
-			envKey.setValueExpand("PATH", dvmEnvVarExpand);
-		}
-		
-		broadcastSettingChange("Environment");
-		
+		DvmRegistry.updateEnvironment(options.path.binDir);
 		println("DVM has now been installed.");
 		println("To use dvm, you may need to open a new command prompt.");
 	}

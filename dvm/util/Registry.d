@@ -17,8 +17,6 @@ import dvm.util.Windows;
 import tango.sys.win32.Types;
 import tango.sys.win32.UserGdi;
 
-import tango.io.Stdout;
-
 public import dvm.sys.Registry :
 	RegRoot,
 	HKEY_CLASSES_ROOT,
