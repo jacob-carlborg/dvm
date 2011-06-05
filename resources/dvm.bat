@@ -23,4 +23,4 @@ if exist "%dvm_result_path%" (
 	call "%dvm_result_path%"
 )
 
-rmdir /Q /S "%dvm_tmp_path%"
+rmdir /Q /S "%dvm_tmp_path%" 2> NUL
