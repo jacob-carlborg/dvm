@@ -34,11 +34,11 @@ class Use : Command
 	void execute ()
 	{
 		loadEnvironment;
+		installWrapper;
+
 		version (Posix)
-		{
-			installWrapper;
 			setPermissions;
-		}
+
 		version (Windows)
 			updateRegistry;
 	}
@@ -64,10 +64,8 @@ private:
 
 	void installWrapper ()
 	{
-		wrapper.target = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin, "dmd");
-		wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc");
-		version (Windows)
-			wrapper.path ~= ".bat";
+		wrapper.target = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin, "dmd" ~ options.path.executableExtension);
+		wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc" ~ options.path.scriptExtension);
 
 		verbose("Installing wrapper: " ~ wrapper.path);
 
