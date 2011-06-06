@@ -126,24 +126,17 @@ class Application
 			help = true;
 		});
 
+		opts.on((string[] args) {
+			if (!help)
+				handleArgs(args);
+		});
+	
+		opts.parse(args[1 .. $]);
+		
 		if (args.length == 1 || help)
 		{
 			println(opts);
 			println(helpMessage);
 		}
-
-		else
-		{
-			opts.on((string[] args) {
-				handleArgs(args);
-			});
-			
-			opts.parse(args[1 .. $]);
-		}
-	}
-	
-	void printCommands ()
-	{
-		
 	}
 }
