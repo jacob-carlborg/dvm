@@ -307,6 +307,6 @@ private struct Path
 		if (defaultBin_.length > 0)
 			return defaultBin_;
 
-		return defaultBin_ = join(binDir, "dvm-default-dc");
+		return defaultBin_ = join(binDir, "dvm-default-dc" ~ scriptExtension);
 	}
 }
