@@ -68,7 +68,7 @@ class Install : Fetch
 	}
 	
 private:
-		
+	
 	void install ()
 	{
 		auto filename = buildFilename;
@@ -204,17 +204,6 @@ private:
 		auto src = tango ? "-I%@P%/../import -defaultlib=tango -debuglib=tango -version=Tango" : "-I%@P%/../src/phobos";
 		auto content = cast(string) File.get(dmdConfPath);
 		
-		string slashSafeSubstitute(string haystack, string needle, string replacement)
-		{
-			version (Windows)
-			{
-				needle      = needle     .substitute("/", "\\");
-				replacement = replacement.substitute("/", "\\");
-			}
-				
-			return haystack.substitute(needle, replacement);
-		}
-		
 		content = content.slashSafeSubstitute("-I%@P%/../../src/phobos", src);
 		content = content.slashSafeSubstitute("-I%@P%/../../src/druntime/import", "-I%@P%/../src/druntime/import");
 		content = content.slashSafeSubstitute("-L-L%@P%/../lib32", "-L-L%@P%/../lib");
@@ -246,13 +235,21 @@ private:
 
 	void buildTango ()
 	{
-		verbose("Setting permission:");
-		permission(options.path.tangoBob, "+x");
+		version (Posix)
+		{
+			verbose("Setting permission:");
+			permission(options.path.tangoBob, "+x");
+		}
 		
 		verbose("Building Tango...");
-		auto tangoBuildOptions = options.is64bit ? "-m=64" : "-m=32";
 
-		auto process = new Process(true, options.path.tangoBob, "-r=dmd", "-c=dmd", "-u", "-q", tangoBuildOptions, "-l=" ~ options.path.tangoLibName, ".");
+		auto tangoBuildOptions = [
+			"-r=dmd"[], "-c=dmd", "-u", "-q", "-l=" ~ options.path.tangoLibName
+		];
+		version (Posix)
+			auto tangoBuildOptions = options.is64bit ? "-m=64" : "-m=32";
+
+		auto process = new Process(true, options.path.tangoBob ~ tangoBuildOptions ~ "."[]);
 		process.workDir = options.path.tangoTmp;
 		process.execute;
 		
@@ -297,11 +294,23 @@ private:
 		
 		verbose("Patching: ", dmdConfPath);
 		
-		auto src = "-I%@P%/../import -defaultlib=tango -debuglib=tango -version=Tango";
-		auto content = cast(string) File.get(dmdConfPath);
+		string newInclude = "-I%@P%/../import";
+		string newArgs = " -defaultlib=tango -debuglib=tango -version=Tango";
+		string content = cast(string) File.get(dmdConfPath);
 		
-		content = content.substitute("-I%@P%/../src/phobos", src);
-		content = content.substitute("-I%@P%/../../src/druntime/import", "");
+		string oldInclude1 = "-I%@P%/../src/phobos";
+		string oldInclude2 = "-I%@P%/../../src/druntime/import";
+		version (Windows)
+		{
+			oldInclude1 = '"' ~ oldInclude1 ~ '"';
+			oldInclude2 = '"' ~ oldInclude2 ~ '"';
+			newInclude  = '"' ~ newInclude  ~ '"';
+		}
+
+		auto src = newInclude ~ newArgs;
+		
+		content = content.slashSafeSubstitute(oldInclude1, src);
+		content = content.slashSafeSubstitute(oldInclude2, "");
 		
 		File.set(dmdConfPath, content);
 	}
@@ -399,4 +408,15 @@ private:
 
     	throw new DvmException("Could not find the binrary path: " ~ binPath, __FILE__, __LINE__);
     }
+
+	string slashSafeSubstitute(string haystack, string needle, string replacement)
+	{
+		version (Windows)
+		{
+			needle      = needle     .substitute("/", "\\");
+			replacement = replacement.substitute("/", "\\");
+		}
+			
+		return haystack.substitute(needle, replacement);
+	}
 }
