@@ -262,11 +262,11 @@ private:
 		
 		verbose("Building Tango...");
 
-		auto tangoBuildOptions = [
+		string[] tangoBuildOptions = [
 			"-r=dmd"[], "-c=dmd", "-u", "-q", "-l=" ~ options.path.tangoLibName
 		];
 		version (Posix)
-			auto tangoBuildOptions = options.is64bit ? "-m=64" : "-m=32";
+			tangoBuildOptions ~= options.is64bit ? "-m=64" : "-m=32";
 
 		auto process = new Process(true, options.path.tangoBob ~ tangoBuildOptions ~ "."[]);
 		process.workDir = options.path.tangoTmp;
