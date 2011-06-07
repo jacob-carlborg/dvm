@@ -1,5 +1,5 @@
 /**
- * Copyright: Copyright (c) 2010 Jacob Carlborg. All rights reserved.
+ * Copyright: Copyright (c) 2010-2011 Jacob Carlborg. All rights reserved.
  * Authors: Jacob Carlborg
  * Version: Initial created: Aug 15, 2010
  * License: $(LINK2 http://www.boost.org/LICENSE_1_0.txt, Boost Software License 1.0)
@@ -36,8 +36,8 @@ class Options
 private struct Path
 {
 	const bin = "bin";
-    const bin32 = "bin32";
-    const bin64 = "bin64";
+	const bin32 = "bin32";
+	const bin64 = "bin64";
 	const src = "src";
 	const lib = "lib";
 	const lib32 = "lib32";
@@ -86,6 +86,8 @@ private struct Path
 		string tangoUnarchived_;
 		string defaultEnv_;
 		string defaultBin_;
+		string config_;
+		string installed_;
 		
 		version (Posix)
 		{
@@ -308,5 +310,21 @@ private struct Path
 			return defaultBin_;
 
 		return defaultBin_ = join(binDir, "dvm-default-dc" ~ scriptExtension);
+	}
+	
+	string config ()
+	{
+		if (config_.length > 0)
+			return config_;
+
+		return config_ = join(dvm, "config");
+	}
+	
+	string installed ()
+	{
+		if (installed_.length > 0)
+			return installed_;
+
+		return installed_ = join(config, "installed");
 	}
 }

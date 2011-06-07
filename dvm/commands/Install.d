@@ -1,5 +1,5 @@
 /**
- * Copyright: Copyright (c) 2010 Jacob Carlborg. All rights reserved.
+ * Copyright: Copyright (c) 2010-2011 Jacob Carlborg. All rights reserved.
  * Authors: Jacob Carlborg
  * Version: Initial created: Nov 8, 2010
  * License: $(LINK2 http://www.boost.org/LICENSE_1_0.txt, Boost Software License 1.0)
@@ -88,6 +88,8 @@ private:
 		
 		if (options.tango)
 			installTango;
+
+		registerCompiler;
 	}
 	
 	void unpack ()
@@ -123,26 +125,14 @@ private:
 		move(libSource, libDest);
 		move(srcSource, srcDest);
 	}
-	
-	void installTango ()
-	{
-		verbose("Installing Tango");
 
-		fetchTango;
-		unpackTango;
-		setupTangoEnvironment;
-		buildTango;
-		moveTangoFiles;
-		patchDmdConfForTango;
-	}
-	
 	void installWrapper ()
 	{
 		wrapper.target = Path.join(installPath, options.path.bin, "dmd"~options.path.executableExtension);
 		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ args.first;
 		version (Windows)
 			wrapper.path ~= ".bat";
-			
+		
 		verbose("Installing wrapper: " ~ wrapper.path);
 		wrapper.write;
 	}
@@ -209,6 +199,32 @@ private:
 		content = content.slashSafeSubstitute("-L-L%@P%/../lib32", "-L-L%@P%/../lib");
 		
 		File.set(dmdConfPath, content);
+	}
+	
+	void installTango ()
+	{
+		verbose("Installing Tango");
+
+		fetchTango;
+		unpackTango;
+		setupTangoEnvironment;
+		buildTango;
+		moveTangoFiles;
+		patchDmdConfForTango;
+	}
+	
+	void registerCompiler ()
+	{
+		verbose("Registering compiler");
+		
+		auto installedCompilers = cast(string) File.get(options.path.installed);
+		auto dmd = "dmd-" ~ args.first;
+		
+		if (!installedCompilers.containsPattern(dmd))
+		{
+			installedCompilers ~= "\n" ~ dmd;
+			File.set(options.path.installed, installedCompilers);
+		}
 	}
 	
 	void fetchTango ()
