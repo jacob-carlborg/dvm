@@ -217,12 +217,17 @@ private:
 	{
 		verbose("Registering compiler");
 		
-		auto installedCompilers = cast(string) File.get(options.path.installed);
+		string installedCompilers;
+		if(Path.exists(options.path.installed))
+			installedCompilers = cast(string) File.get(options.path.installed);
+
 		auto dmd = "dmd-" ~ args.first;
 		
 		if (!installedCompilers.containsPattern(dmd))
 		{
-			installedCompilers ~= "\n" ~ dmd;
+			if(installedCompilers != "")
+				installedCompilers ~= "\n";
+			installedCompilers ~= dmd;
 			File.set(options.path.installed, installedCompilers);
 		}
 	}
