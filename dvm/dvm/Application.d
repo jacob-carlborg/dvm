@@ -1,5 +1,5 @@
 /**
- * Copyright: Copyright (c) 2010 Jacob Carlborg. All rights reserved.
+ * Copyright: Copyright (c) 2010-2011 Jacob Carlborg. All rights reserved.
  * Authors: Jacob Carlborg
  * Version: Initial created: Aug 15, 2010
  * License: $(LINK2 http://www.boost.org/LICENSE_1_0.txt, Boost Software License 1.0)
@@ -17,7 +17,6 @@ import dvm.core._;
 import dvm.util._;
 
 import dvm.commands._;
-import dvm.commands.Install;
 
 version (Windows)
 {
@@ -65,6 +64,8 @@ class Application
 		commandManager.register("dvm.commands.Install.Install");
 		commandManager.register("dvm.commands.Fetch.Fetch");
 		commandManager.register("dvm.commands.Use.Use");
+		commandManager.register("dvm.commands.List.List");
+		commandManager.register("dvm.commands.Uninstall.Uninstall");
 	}
 	
 	void handleCommand (string command, string[] args)
@@ -83,6 +84,8 @@ class Application
 				case "install":	command = "dvm.commands.Install.Install"; break;
 				case "fetch": command = "dvm.commands.Fetch.Fetch"; break;
 				case "use": command = "dvm.commands.Use.Use"; break;
+				case "list": command = "dvm.commands.List.List"; break;
+				case "uninstall": command = "dvm.commands.Uninstall.Uninstall"; break;
 				default:
 					return;
 			}
@@ -132,24 +135,17 @@ class Application
 			help = true;
 		});
 
+		opts.on((string[] args) {
+			if (!help)
+				handleArgs(args);
+		});
+	
+		opts.parse(args[1 .. $]);
+		
 		if (args.length == 1 || help)
 		{
 			println(opts);
 			println(helpMessage);
 		}
-
-		else
-		{
-			opts.on((string[] args) {
-				handleArgs(args);
-			});
-			
-			opts.parse(args[1 .. $]);
-		}
-	}
-	
-	void printCommands ()
-	{
-		
 	}
 }
