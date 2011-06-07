@@ -62,6 +62,7 @@ private:
 
 	void update ()
 	{
+		createPaths;
 	    copyExecutable;
 	    writeScript;
 	    setPermissions;
@@ -79,6 +80,7 @@ private:
 		createPath(options.path.compilers);
 		createPath(options.path.env);
 		createPath(options.path.scripts);
+		createPath(options.path.config);
 		
 		verbose();
 	}
@@ -130,7 +132,8 @@ private:
 	void createPath (string path)
 	{
 		verbose(options.indentation, path);
-		Path.createFolder(path);
+		if(!Path.exists(path))
+			Path.createFolder(path);
 	}
 	
 	void permission (string path, string mode)
