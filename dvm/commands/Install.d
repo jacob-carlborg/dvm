@@ -225,9 +225,7 @@ private:
 		
 		if (!installedCompilers.containsPattern(dmd))
 		{
-			if(installedCompilers != "")
-				installedCompilers ~= "\n";
-			installedCompilers ~= dmd;
+			installedCompilers ~= dmd ~ "\n";
 			File.set(options.path.installed, installedCompilers);
 		}
 	}
