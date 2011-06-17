@@ -82,7 +82,10 @@ private:
 		unpack;
 		moveFiles;
 		installWrapper;
-		version (Posix) setPermissions;
+
+		version (Posix)
+			setPermissions;
+
 		installEnvironment(createEnvironment);
 		patchDmdConf;
 		
@@ -128,8 +131,9 @@ private:
 
 	void installWrapper ()
 	{
-		wrapper.target = Path.join(installPath, options.path.bin, "dmd"~options.path.executableExtension);
+		wrapper.target = Path.join(installPath, options.path.bin, "dmd" ~ options.path.executableExtension);
 		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ args.first;
+
 		version (Windows)
 			wrapper.path ~= ".bat";
 		
@@ -262,9 +266,8 @@ private:
 		
 		verbose("Building Tango...");
 
-		string[] tangoBuildOptions = [
-			"-r=dmd"[], "-c=dmd", "-u", "-q", "-l=" ~ options.path.tangoLibName
-		];
+		string[] tangoBuildOptions = ["-r=dmd"[], "-c=dmd", "-u", "-q", "-l=" ~ options.path.tangoLibName];
+
 		version (Posix)
 			tangoBuildOptions ~= options.is64bit ? "-m=64" : "-m=32";
 
@@ -343,6 +346,7 @@ private:
 			Path.remove(destination, true);
 
 		bool createParentOnly = false;
+
 		if (Path.isFile(source))
 			createParentOnly = true;
 		
@@ -351,6 +355,7 @@ private:
 		
 		if (createParentOnly)
 			Path.createPath(Path.parse(destination).path);
+
 		else
 			Path.createPath(destination);
 
@@ -428,11 +433,11 @@ private:
     	throw new DvmException("Could not find the binrary path: " ~ binPath, __FILE__, __LINE__);
     }
 
-	string slashSafeSubstitute(string haystack, string needle, string replacement)
+	string slashSafeSubstitute (string haystack, string needle, string replacement)
 	{
 		version (Windows)
 		{
-			needle      = needle     .substitute("/", "\\");
+			needle = needle.substitute("/", "\\");
 			replacement = replacement.substitute("/", "\\");
 		}
 			

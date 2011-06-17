@@ -57,17 +57,9 @@ class ShellScript
 		return this;
 	}
 	
-	version (Posix)
 	ShellScript exec (string name, string args = "", string a = "")
 	{
 		append(Sh.exec(name, args, a));
-		return this;
-	}
-	
-	version (Windows)
-	ShellScript exec (string name, string args = "")
-	{
-		append(Sh.exec(name, args));
 		return this;
 	}
 	
@@ -198,8 +190,10 @@ class ShellScript
 	{
 		version (Posix)
 			append('\n');
+
 		else
 			append("\r\n");
+
 		return this;
 	}
 	
@@ -320,7 +314,7 @@ struct Sh
 			return format("call {}", path);
 		}
 		
-		string exec (string name, string args = "")
+		string exec (string name, string args = "", string a = "")
 		{
 			return format("{} {}", name, args);
 		}

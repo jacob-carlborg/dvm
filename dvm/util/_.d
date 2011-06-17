@@ -16,4 +16,6 @@ import dvm.util.Traits;
 import dvm.util.Use;
 import dvm.util.Util;
 import dvm.util.Version;
-version (Windows) import dvm.util.Windows;
+
+version (Windows)
+	import dvm.util.Windows;
