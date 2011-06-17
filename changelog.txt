@@ -2,9 +2,12 @@ DVM Change Log
 
 Version x.y.z
 	New/Change Features
+	 * Added Windows support
 	 * Added a "list" command for listing installed compilers
 	 * Added a "uninstall" command for uninstalling compilers
-	 * Added Windows support
+
+	Bugs Fixed
+	 * The -h/--help flag doesn't show anything
 
 Version 0.2.0
 	New/Change Features
