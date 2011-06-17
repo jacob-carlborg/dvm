@@ -50,6 +50,7 @@ private:
 		createPaths;
 		copyExecutable;
 		writeScript;
+
 		version (Posix)
 		{
 			setPermissions;
@@ -66,6 +67,7 @@ private:
 	    copyExecutable;
 	    writeScript;
 	    setPermissions;
+
 		version (Windows)
 			setupRegistry;
 	}
@@ -106,29 +108,29 @@ private:
 	}
 	
 	version (Posix)
-	void installBashInclude (ShellScript sh)
-	{
-		auto home = homeFolder;
-		auto bashrc = Path.join(home, ".bashrc");
-		auto bash_profile = Path.join(home, ".bash_profile");
-		string shPath;
-		
-		if (Path.exists(bashrc))
-			shPath = bashrc;
-		
-		else if (Path.exists(bash_profile))
-			shPath = bash_profile;
-		
-		else
-			throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:{}{}`,
-											bashrc, bash_profile, "\n\n", failedInstallInstructions), __FILE__, __LINE__);
-		
-		verbose("Installing dvm in the shell loading file: ", shPath);
-		File.append(shPath, sh.content);
-		
-		println(postInstallInstructions);
-	}
-	
+		void installBashInclude (ShellScript sh)
+		{
+			auto home = homeFolder;
+			auto bashrc = Path.join(home, ".bashrc");
+			auto bash_profile = Path.join(home, ".bash_profile");
+			string shPath;
+
+			if (Path.exists(bashrc))
+				shPath = bashrc;
+
+			else if (Path.exists(bash_profile))
+				shPath = bash_profile;
+
+			else
+				throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:{}{}`,
+												bashrc, bash_profile, "\n\n", failedInstallInstructions), __FILE__, __LINE__);
+
+			verbose("Installing dvm in the shell loading file: ", shPath);
+			File.append(shPath, sh.content);
+
+			println(postInstallInstructions);
+		}
+
 	void createPath (string path)
 	{
 		verbose(options.indentation, path);
@@ -169,10 +171,10 @@ private:
 	}
 	
 	version (Windows)
-	void setupRegistry ()
-	{
-		DvmRegistry.updateEnvironment(options.path.binDir);
-		println("DVM has now been installed.");
-		println("To use dvm, you may need to open a new command prompt.");
-	}
+		void setupRegistry ()
+		{
+			DvmRegistry.updateEnvironment(options.path.binDir);
+			println("DVM has now been installed.");
+			println("To use dvm, you may need to open a new command prompt.");
+		}
 }

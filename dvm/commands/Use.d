@@ -55,11 +55,11 @@ private:
 		writeShellScript(shellScript, options.path.result);
 
 		version (Posix)
-		if (options.isDefault)
-		{
-			verbose("Installing environment: ", options.path.defaultEnv);
-			copy(options.path.result, options.path.defaultEnv);
-		}
+			if (options.isDefault)
+			{
+				verbose("Installing environment: ", options.path.defaultEnv);
+				copy(options.path.result, options.path.defaultEnv);
+			}
 	}
 
 	void installWrapper ()
@@ -82,31 +82,31 @@ private:
 	}
 
 	version (Windows)
-	void updateRegistry ()
-	{
-		auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
-		DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
-	}
+		void updateRegistry ()
+		{
+			auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
+			DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
+		}
 
 	version (Posix)
-	void setPermissions ()
-	{
-		verbose("Setting permissions:");
+		void setPermissions ()
+		{
+			verbose("Setting permissions:");
 
-		setPermission(wrapper.path, "+x");
+			setPermission(wrapper.path, "+x");
 
-		if (options.isDefault)
-			setPermission(options.path.defaultBin, "+x");
-	}
+			if (options.isDefault)
+				setPermission(options.path.defaultBin, "+x");
+		}
 
 	version (Posix)
-	void setPermission (string path, string mode)
-	{
-		verbose(options.indentation, "mode: ", mode);
-		verbose(options.indentation, "file: ", path);
+		void setPermission (string path, string mode)
+		{
+			verbose(options.indentation, "mode: ", mode);
+			verbose(options.indentation, "file: ", path);
 
-		permission(path, mode);
-	}
+			permission(path, mode);
+		}
 	
 	ShellScript createShellScript ()
 	{
