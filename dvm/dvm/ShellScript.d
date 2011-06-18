@@ -216,7 +216,7 @@ struct Sh
 	version (Posix)
 	{
 		const shebang = "#!/bin/sh";
-		const echoOff = "\0";
+		const echoOff = "";
 		const separator = ":";
 		
 		string allArgs (bool quote = true)
