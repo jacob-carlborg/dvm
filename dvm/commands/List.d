@@ -6,8 +6,7 @@
  */
 module dvm.commands.List;
 
-import tango.io.Console;
-import tango.io.device.File;
+import tango.io.vfs.FileFolder;
 
 import dvm.core._;
 import dvm.commands.Command;
@@ -27,15 +26,22 @@ class List : Command
 
 	void execute ()
 	{
-		if (!exists(options.path.installed))
+		scope folder = new FileFolder(options.path.compilers);
+
+		if (folder.self.folders == 0)
 		{
 			println("No installed D compilers");
 			return;
 		}
-
+		
 		println("Installed D compilers:\n");
-		auto file = new File(options.path.installed);
-		Cout.stream.copy(file);
-		println();
+		
+		foreach (file ; folder)
+			println(stripPath(file.toString));
+	}
+	
+	private string stripPath (string name)
+	{
+		return parse(name).file;
 	}
 }
