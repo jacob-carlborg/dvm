@@ -82,7 +82,6 @@ private:
 		createPath(options.path.compilers);
 		createPath(options.path.env);
 		createPath(options.path.scripts);
-		createPath(options.path.config);
 		
 		verbose();
 	}

@@ -91,8 +91,6 @@ private:
 		
 		if (options.tango)
 			installTango;
-
-		registerCompiler;
 	}
 	
 	void unpack ()
@@ -215,23 +213,6 @@ private:
 		buildTango;
 		moveTangoFiles;
 		patchDmdConfForTango;
-	}
-	
-	void registerCompiler ()
-	{
-		verbose("Registering compiler");
-		
-		string installedCompilers;
-		if(Path.exists(options.path.installed))
-			installedCompilers = cast(string) File.get(options.path.installed);
-
-		auto dmd = "dmd-" ~ args.first;
-		
-		if (!installedCompilers.containsPattern(dmd))
-		{
-			installedCompilers ~= dmd ~ "\n";
-			File.set(options.path.installed, installedCompilers);
-		}
 	}
 	
 	void fetchTango ()
