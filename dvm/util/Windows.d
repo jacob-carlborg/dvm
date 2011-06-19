@@ -16,7 +16,7 @@ import tango.util.Convert;
 
 // If FORMAT_MESSAGE_ALLOCATE_BUFFER is used, then this is the correct
 // signature. Otherwise, the signature in tango.sys.win32.UserGdi is corrent.
-DWORD FormatMessageW (DWORD, LPCVOID, DWORD, DWORD, LPWSTR*, DWORD, VA_LIST*);
+extern (Windows) DWORD FormatMessageW (DWORD, LPCVOID, DWORD, DWORD, LPWSTR*, DWORD, VA_LIST*);
 
 class WinAPIException : DvmException
 {
