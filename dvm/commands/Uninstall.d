@@ -32,7 +32,6 @@ class Uninstall : Command
 	{
 		println("Uninstalling dmd-", args.first);
 		removeFiles;
-		unregisterCompiler;
 	}
 	
 private:
@@ -46,21 +45,6 @@ private:
 		removeFile(Path.join(options.path.compilers, dmd));
 		removeFile(Path.join(options.path.env, dmd));
 		removeFile(Path.join(options.path.dvm, options.path.bin, dmd));
-	}
-	
-	void unregisterCompiler ()
-	{
-		if (!Path.exists(options.path.installed))
-			return;
-		
-		verbose("\nUnregistering compiler");
-		
-		scope file = new File(options.path.installed, File.ReadWriteExisting);
-		auto content = cast(string) file.load;
-		content = content.substitute("dmd-" ~ args.first ~ "\n", "");
-		file.truncate(0);
-		file.seek(0);
-		file.write(content);
 	}
 	
 	void removeFile (string path)
