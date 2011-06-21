@@ -8,6 +8,7 @@ module dvm.commands.Command;
 
 import dvm.dvm._;
 import dvm.core.string;
+import Path = dvm.io.Path;
 
 abstract class Command
 {
@@ -31,13 +32,25 @@ abstract class Command
 	void invoke (string[] args ...)
 	{
 		this.args.args = args;
-		execute;
+		execute_;
 	}
 	
 	void invoke (Args args)
 	{
 		this.args = args;
+		execute_;
+	}
+	
+	private void execute_ ()
+	{
+		deleteTmpDirectory;
 		execute;
+	}
+	
+	private void deleteTmpDirectory ()
+	{
+		if (Path.exists(options.path.tmp))
+			Path.remove(options.path.tmp, true);
 	}
 }
 
