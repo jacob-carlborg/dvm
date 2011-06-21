@@ -23,14 +23,14 @@ class WinAPIException : DvmException
 	LONG code;
 	string windowsMsg;
 	
-	this (LONG code, string msg="")
+	this (LONG code, string msg = "", string file = "", long line = 0)
 	{
 		this.code = code;
 
 		if(windowsMsg == "")
 			windowsMsg = getMessage(code);
 
-		super(msg==""? windowsMsg : msg);
+		super(msg == "" ? windowsMsg : msg, file, line);
 	}
 	
 	static string getMessage (DWORD errorCode)
@@ -78,6 +78,6 @@ void broadcastSettingChange (string settingName, uint timeout=1)
 		Stdout.formatln("ERROR_SUCCESS==0: {}", ERROR_SUCCESS == 0);
 
 		if (errCode != ERROR_SUCCESS)
-			throw new WinAPIException(errCode, "Problem broadcasting WM_SETTINGCHANGE of '"~settingName~"'");
+			throw new WinAPIException(errCode, "Problem broadcasting WM_SETTINGCHANGE of '" ~ settingName ~ "'", __FILE__, __LINE__);
 	}
 }

@@ -4,3 +4,5 @@ dsss.last
 dakefile
 dvm/dvm/dvm
 .DS_Store
+.map
+.eprj
