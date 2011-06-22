@@ -57,9 +57,9 @@ class ShellScript
 		return this;
 	}
 	
-	ShellScript exec (string name, string args = "", string a = "")
+	ShellScript exec (string name, string args = "")
 	{
-		append(Sh.exec(name, args, a));
+		append(Sh.exec(name, args));
 		return this;
 	}
 	
@@ -100,7 +100,7 @@ class ShellScript
 	{
 		version (Posix)
 		{
-			append(format("if [[ {} ]] ; then", condition)).nl.indent;
+			append(format("if [ {} ] ; then", condition)).nl.indent;
 			ifBlock();
 			nl;
 			
@@ -239,12 +239,11 @@ struct Sh
 			return format("{}{}={}", loc, name, value); 
 		}
 		
-		string exec (string name, string args = "", string a = "")
+		string exec (string name, string args = "")
 		{
-			a = a == "" ? "" : format("-a {} ", a);
 			args = args == "" ? "" : ' ' ~ args;
 
-			return format("exec {}{}{}", a, name, args);
+			return format("exec {}{}", name, args);
 		}
 		
 		string export_ (string name, string value, bool quote = true)
@@ -261,21 +260,6 @@ struct Sh
 		{
 			return format("exec {}", command);
 		}
-		
-		/+
-		string ifStatement (string condition, string delegate () ifBlock, string delegate () elseBlock = null)
-		{
-			if (elseBlock is null)
-				return format("if [[ {} ]] ; then\n\t{}\nfi", condition, ifBlock());
-			
-			return format("if [[ {} ]] ; then\n\t{}\nelse\n\t{}\nfi", condition, ifBlock(), elseBlock());
-		}
-		
-		string ifFileIsNotEmpty (string path, string delegate () ifBlock, string delegate () elseBlock = null)
-		{
-			return ifStatement("-s " ~ path, ifBlock, elseBlock);
-		}
-		+/
 		
 		string variable (string name, bool quote = true)
 		{
@@ -314,7 +298,7 @@ struct Sh
 			return format("call {}", path);
 		}
 		
-		string exec (string name, string args = "", string a = "")
+		string exec (string name, string args = "")
 		{
 			return format("{} {}", name, args);
 		}
@@ -324,17 +308,4 @@ struct Sh
 			return quote ? format(`"%{}%"`, name) : '%' ~ name ~ '%';
 		}
 	}
-}	
-
-private:
-
-/*string format (Args ...) (Args args)
-{
-	static const string fmt = "{}{}{}{}{}{}{}{}"
-		  					  "{}{}{}{}{}{}{}{}"
-			  				  "{}{}{}{}{}{}{}{}";
-
-	static assert (Args.length <= fmt.length / 2, "dvm.dvm.ShellScript :: too many arguments");
-
-	return format(fmt[0 .. args.length * 2], args);
-}*/
+}
