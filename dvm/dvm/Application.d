@@ -68,11 +68,6 @@ class Application
 		commandManager.register("dvm.commands.Uninstall.Uninstall");
 	}
 	
-	void handleCommand (string command, string[] args)
-	{
-		commandManager[command].invoke(args);
-	}
-	
 	void handleArgs (string[] args)
 	{
 		if (args.length > 0)
@@ -87,11 +82,21 @@ class Application
 				case "list": command = "dvm.commands.List.List"; break;
 				case "uninstall": command = "dvm.commands.Uninstall.Uninstall"; break;
 				default:
-					return;
+					return unhandledCommand(args[0]);
 			}
 		
 			handleCommand(command, args[1 .. $]);			
 		}			
+	}
+	
+	void handleCommand (string command, string[] args)
+	{
+		commandManager[command].invoke(args);
+	}
+	
+	void unhandledCommand (string command)
+	{
+		println(`Unrecognized command: "`, command, `"`);
 	}
 	
 	void parseOptions ()
