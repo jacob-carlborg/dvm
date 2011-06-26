@@ -2,12 +2,16 @@ DVM Change Log
 
 Version x.y.z
 	New/Change Features
+	 * Better compatibility between different shell implementations
 	 * Added Windows support. Thanks to Nick Sabalausky.
 	 * Added a "list" command for listing installed compilers
 	 * Added a "uninstall" command for uninstalling compilers
 
 	Bugs Fixed
-	 * The -h/--help flag doesn't show anything
+ 	 * Issue 7: No error on invalid command
+	 * Issue 13: Tmp dir should be deleted before running DVM binary (not just after)
+	 * Issue 5: Invalid character in .dvm/env files
+	 * Issue 12: "dvm -h" and "dvm --help" print nothing
 
 Version 0.2.0
 	New/Change Features
