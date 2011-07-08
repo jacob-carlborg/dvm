@@ -126,7 +126,7 @@ void checkSystemPath()
 				catch(Exception e)
 				{
 					println("DVM was unable to edit your system PATH.");
-					println("(Maybe you don't have sufficient priveleges?)");
+					println("(Maybe you don't have sufficient privileges?)");
 					println("");
 					println("You'll have to remove the DMD from your system PATH manually,");
 					println("or contact your system administrator.");
