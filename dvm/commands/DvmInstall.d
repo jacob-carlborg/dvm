@@ -19,6 +19,7 @@ import dvm.dvm.ShellScript;
 import dvm.sys.Process;
 import dvm.util.Util;
 version (Windows) import DvmRegistry = dvm.util.DvmRegistry;
+version (Windows) import dvm.util.Windows;
 
 class DvmInstall : Command
 {	
@@ -173,6 +174,8 @@ private:
 		void setupRegistry ()
 		{
 			DvmRegistry.updateEnvironment(options.path.binDir);
+			DvmRegistry.checkSystemPath();
+			broadcastSettingChange("Environment");
 			println("DVM has now been installed.");
 			println("To use dvm, you may need to open a new command prompt.");
 		}
