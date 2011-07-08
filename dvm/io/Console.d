@@ -12,6 +12,7 @@ import tango.text.Util;
 import tango.text.Unicode;
 
 import dvm.core._;
+import dvm.dvm.Options;
 import dvm.util.Util;
 
 /++
@@ -57,6 +58,7 @@ string prompt(string promptMsg, bool delegate(string) accept=null, string reject
 }
 
 /// Returns 'true' for "Yes"
+/// Obeys --force and --decline
 bool promptYesNo()
 {
 	bool matches(char ch, string str)
@@ -70,6 +72,20 @@ bool promptYesNo()
 		return matches('y', str) || matches('n', str);
 	}
 
+	auto options = Options.instance;
+	
+	if (options.decline)
+	{
+		println("[Declining, 'no']");
+		return false;
+	}
+
+	if (options.force)
+	{
+		println("[Forcing, 'yes']");
+		return true;
+	}
+	
 	auto response = prompt("Yes/No?>", &accept);
 	return matches('y', response);
 }

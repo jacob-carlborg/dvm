@@ -26,6 +26,9 @@ class Options
 	bool tango = false;
 	bool isDefault = false;
 
+	bool force = false;
+	bool decline = false;
+
 	version (D_LP64)
 	    bool is64bit = true;
 
