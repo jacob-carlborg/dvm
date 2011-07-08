@@ -113,22 +113,22 @@ class Application
 		opts.separator(commands);
 		opts.separator("Options:");
 		
-		opts.on('d', "default", "Sets the default D compiler for new shells", {
+		opts.on('d', "default", "Sets the default D compiler for new shells.", {
 			options.isDefault = true;
 		});
 		
 		version (Posix)
 		{
-			opts.on("64bit", "Installs the 64bit version of the compiler", {
+			opts.on("64bit", "Installs the 64bit version of the compiler.", {
 				options.is64bit = true;
 			});
 			
-			opts.on("32bit", "Installs the 32bit version of the compiler", {
+			opts.on("32bit", "Installs the 32bit version of the compiler.", {
 				options.is64bit = false;
 			});
 		}
 		
-		opts.on('t', "tango", "Installs Tango as the standard library", {
+		opts.on('t', "tango", "Installs Tango as the standard library.", {
 			options.tango = true;
 		});
 
