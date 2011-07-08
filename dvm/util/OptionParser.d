@@ -9,6 +9,7 @@ module dvm.util.OptionParser;
 import dvm.dvm.Options;
 import tango.text.Arguments;
 import tango.text.convert.Format;
+import tango.io.Stdout;
 
 import dvm.core.string;
 import dvm.util.Traits;
@@ -82,7 +83,9 @@ class OptionParser
 	
 	OptionParser parse (string input, bool sloppy = false)
 	{
-		arguments.parse(input, sloppy);	
+		if (!arguments.parse(input, sloppy))
+			throw new Exception(arguments.errors(&stderr.layout.sprint), __FILE__, __LINE__);
+
 		handleArgs(arguments(null).assigned);
 		
 		return this;
@@ -90,7 +93,9 @@ class OptionParser
 	
 	OptionParser parse (string[] input, bool sloppy = false)
 	{
-		arguments.parse(input, sloppy);
+		if (!arguments.parse(input, sloppy))
+			throw new Exception(arguments.errors(&stderr.layout.sprint), __FILE__, __LINE__);
+
 		handleArgs(arguments(null).assigned);
 
 		return this;
