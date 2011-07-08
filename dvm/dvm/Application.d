@@ -86,7 +86,7 @@ class Application
 			}
 		
 			handleCommand(command, args[1 .. $]);			
-		}			
+		}
 	}
 	
 	void handleCommand (string command, string[] args)
@@ -136,12 +136,23 @@ class Application
 			options.verbose = true;
 		});
 		
+		opts.on("force", "Answer 'yes' to all prompts.", {
+			options.force = true;
+		});
+		
+		opts.on("decline", "Answer 'no' to all prompts.", {
+			options.decline = true;
+		});
+		
 		opts.on('h', "help", "Show this message and exit.", {
 			help = true;
 		});
 
 		opts.on((string[] args) {
-			if (!help)
+			if (options.force && options.decline)
+				println("Cannot use both --force and --decline");
+			
+			else if (!help)
 				handleArgs(args);
 		});
 	
