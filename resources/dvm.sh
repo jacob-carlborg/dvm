@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [[ -z "$dvm_prefix" ]] ; then
+if [ -z "$dvm_prefix" ] ; then
 
-	if [[ -n "$HOME" ]] ; then
+	if [ -n "$HOME" ] ; then
 		dvm_prefix="$HOME/."
 	else
 		echo "No \$dvm_prefix was provided and "
@@ -12,7 +12,7 @@ if [[ -z "$dvm_prefix" ]] ; then
 	fi
 fi
 
-if [[ -z "$dvm_path" ]] ; then
+if [ -z "$dvm_path" ] ; then
 	dvm_path="${dvm_prefix}dvm"
 fi
 
@@ -38,7 +38,7 @@ __dvm_setup_environment
 
 dvm()
 {	
-	if [[ -e "$dvm_exe_path" ]] ; then
+	if [ -e "$dvm_exe_path" ] ; then
 		"$dvm_exe_path" "$@"
 	else
 		echo "Cannot found the dvm executable \"$dvm_exe_path\""
@@ -46,20 +46,20 @@ dvm()
 		return 1
 	fi
 	
-	if [[ -s "$dvm_result_path" ]] ; then
+	if [ -s "$dvm_result_path" ] ; then
 		. "$dvm_result_path"
 	fi
 
-	if [[ -s "$dvm_tmp_path" ]] ; then
+	if [ -s "$dvm_tmp_path" ] ; then
 		rm -r "$dvm_tmp_path"
 	fi
 }
 
-if [[ -s "$dvm_default_env_path" ]] ; then
+if [ -s "$dvm_default_env_path" ] ; then
 	. "$dvm_default_env_path"
 fi
 
-if [[ -s "$dvm_default_bin_path" ]] ; then
+if [ -s "$dvm_default_bin_path" ] ; then
 	cp "$dvm_default_bin_path" "$dvm_current_path"
 fi
 
