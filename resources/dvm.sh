@@ -40,6 +40,7 @@ dvm()
 {	
 	if [ -e "$dvm_exe_path" ] ; then
 		"$dvm_exe_path" "$@"
+		exit_code=$?
 	else
 		echo "Cannot found the dvm executable \"$dvm_exe_path\""
 		echo "Exiting..."
@@ -53,6 +54,8 @@ dvm()
 	if [ -s "$dvm_tmp_path" ] ; then
 		rm -r "$dvm_tmp_path"
 	fi
+	
+	return $exit_code
 }
 
 if [ -s "$dvm_default_env_path" ] ; then
