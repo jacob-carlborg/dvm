@@ -86,7 +86,7 @@ class Application
 			}
 		
 			handleCommand(command, args[1 .. $]);			
-		}			
+		}
 	}
 	
 	void handleCommand (string command, string[] args)
@@ -113,22 +113,22 @@ class Application
 		opts.separator(commands);
 		opts.separator("Options:");
 		
-		opts.on('d', "default", "Sets the default D compiler for new shells", {
+		opts.on('d', "default", "Sets the default D compiler for new shells.", {
 			options.isDefault = true;
 		});
 		
 		version (Posix)
 		{
-			opts.on("64bit", "Installs the 64bit version of the compiler", {
+			opts.on("64bit", "Installs the 64bit version of the compiler.", {
 				options.is64bit = true;
 			});
 			
-			opts.on("32bit", "Installs the 32bit version of the compiler", {
+			opts.on("32bit", "Installs the 32bit version of the compiler.", {
 				options.is64bit = false;
 			});
 		}
 		
-		opts.on('t', "tango", "Installs Tango as the standard library", {
+		opts.on('t', "tango", "Installs Tango as the standard library.", {
 			options.tango = true;
 		});
 
@@ -136,12 +136,23 @@ class Application
 			options.verbose = true;
 		});
 		
+		opts.on("force", "Answer 'yes' to all prompts.", {
+			options.force = true;
+		});
+		
+		opts.on("decline", "Answer 'no' to all prompts.", {
+			options.decline = true;
+		});
+		
 		opts.on('h', "help", "Show this message and exit.", {
 			help = true;
 		});
 
 		opts.on((string[] args) {
-			if (!help)
+			if (options.force && options.decline)
+				println("Cannot use both --force and --decline");
+			
+			else if (!help)
 				handleArgs(args);
 		});
 	

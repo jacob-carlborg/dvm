@@ -62,7 +62,6 @@ wchar* toString16z (string str)
 	return to!(wstring)(str).toString16z();
 }
 
-import tango.io.Stdout;
 /// For more info, see: http://msdn.microsoft.com/en-us/library/ms725497(VS.85).aspx
 void broadcastSettingChange (string settingName, uint timeout=1)
 {
@@ -75,9 +74,28 @@ void broadcastSettingChange (string settingName, uint timeout=1)
 	if(result == 0)
 	{
 		auto errCode = GetLastError();
-		Stdout.formatln("ERROR_SUCCESS==0: {}", ERROR_SUCCESS == 0);
 
 		if (errCode != ERROR_SUCCESS)
 			throw new WinAPIException(errCode, "Problem broadcasting WM_SETTINGCHANGE of '" ~ settingName ~ "'", __FILE__, __LINE__);
 	}
+}
+
+string expandEnvironmentStrings(string str)
+{
+	auto wstr = toString16z(str);
+	
+	wstring result;
+	result.length = 32_000 / wchar.sizeof;
+	
+	auto resultLength = ExpandEnvironmentStringsW(wstr, result.ptr, result.length);
+
+	if(resultLength == 0)
+	{
+		auto errCode = GetLastError();
+
+		if (errCode != ERROR_SUCCESS)
+			throw new WinAPIException(errCode, "Problem expanding environment variables", __FILE__, __LINE__);
+	}
+	
+	return to!(string)(result[0..resultLength-1]);
 }

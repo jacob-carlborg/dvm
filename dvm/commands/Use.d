@@ -17,6 +17,7 @@ import dvm.dvm.Wrapper;
 import dvm.commands.Command;
 import dvm.io.Path;
 version (Windows) import DvmRegistry = dvm.util.DvmRegistry;
+version (Windows) import dvm.util.Windows;
 
 class Use : Command
 {
@@ -86,6 +87,11 @@ private:
 		{
 			auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
 			DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
+			
+			if (options.isDefault)
+				DvmRegistry.checkSystemPath();
+			
+			broadcastSettingChange("Environment");
 		}
 
 	version (Posix)
