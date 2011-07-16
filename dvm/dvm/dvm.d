@@ -9,7 +9,7 @@ module dvm.dvm.dvm;
 import dvm.dvm.Application;
 import dvm.core.string;
 
-void main (string[] args)
+int main (string[] args)
 {
-	Application.instance.run(args);
+	return Application.instance.run(args);
 }

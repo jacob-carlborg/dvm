@@ -8,7 +8,9 @@ module dvm.dvm.Application;
 
 import tango.core.Exception;
 import tango.io.device.File;
+import tango.io.Stdout;
 import tango.net.http.HttpGet;
+import tango.stdc.stdlib : EXIT_SUCCESS, EXIT_FAILURE;
 import tango.text.Arguments;
 import tango.text.convert.Format : Format;
 
@@ -16,7 +18,7 @@ import dvm.dvm._;
 import dvm.core._;
 import dvm.util._;
 
-import dvm.commands._;
+static import dvm.commands._;
 
 version (Windows)
 {
@@ -52,11 +54,49 @@ class Application
 		registerCommands;
 	}
 	
-	void run (string[] args)
+	int run (string[] args)
 	{
 		this.args = args;
 		
-		parseOptions();
+		return handleExceptions in {
+			parseOptions();
+			return EXIT_SUCCESS;
+		};
+	}
+	
+	Use!(int delegate ()) handleExceptions ()
+	{
+		Use!(int delegate ()) use;
+		
+		use.args[0] = (int delegate () dg) {
+			try
+				return dg();
+				
+			catch (DvmException e)
+			{
+				stderr.format("An error occurred: {}", e).flush;
+				return EXIT_FAILURE;
+			}
+			
+			catch (Exception e)
+			{
+				stderr.format("An unknown error occurred:").newline;
+				throw e;
+			}
+		};
+		
+		return use;
+	}
+	
+	Use!(int delegate ()) debugHandleExceptions ()
+	{
+		Use!(int delegate ()) use;
+	
+		use.args[0] = (int delegate () dg) {
+			return dg();
+		};
+		
+		return use;
 	}
 	
 	private void registerCommands ()
@@ -96,7 +136,7 @@ class Application
 	
 	void unhandledCommand (string command)
 	{
-		println(`Unrecognized command: "`, command, `"`);
+		throw new DvmException("unrecognized command " ~ `"` ~ command ~ `"` ~ "\n", __FILE__, __LINE__);
 	}
 	
 	void parseOptions ()
@@ -150,7 +190,7 @@ class Application
 
 		opts.on((string[] args) {
 			if (options.force && options.decline)
-				println("Cannot use both --force and --decline");
+				throw new InvalidOptionException("Cannot use both --force and --decline", __FILE__, __LINE__);
 			
 			else if (!help)
 				handleArgs(args);
