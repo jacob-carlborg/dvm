@@ -10,16 +10,23 @@ import dvm.core.string;
 
 class DvmException : Exception
 {
-	this (string message, string file, long line)
+	template Constructor ()
 	{
-		super(message, file, line);
+		this (string message, string file, long line)
+		{
+			super(message, file, line);
+		}
 	}
+
+	mixin Constructor;
 }
 
 class MissingArgumentException : DvmException
 {
-	this (string msg, string file, long line)
-	{
-		super(msg, file, line);
-	}
+	mixin Constructor;
+}
+
+class InvalidOptionException : DvmException
+{
+	mixin Constructor;
 }
