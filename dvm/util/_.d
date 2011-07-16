@@ -9,6 +9,8 @@ module dvm.util._;
 public:
 	
 import dvm.util.Closure;
+import dvm.util.Ctfe;
+
 import dvm.util.OptionParser;
 import dvm.util.Range;
 import dvm.util.Singleton;
@@ -17,5 +19,6 @@ import dvm.util.Use;
 import dvm.util.Util;
 import dvm.util.Version;
 
-version (Windows)
+version (Windows):
+	import dvm.util.DvmRegistry;
 	import dvm.util.Windows;
