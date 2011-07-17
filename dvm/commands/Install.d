@@ -58,7 +58,7 @@ class Install : Fetch
 	
 	void execute ()
 	{
-		if (args.first == "dvm") // special case for the installation of dvm itself
+		if (args.any() && args.first == "dvm") // special case for the installation of dvm itself
 		{
 			(new DvmInstall).invoke(args);
 			return;

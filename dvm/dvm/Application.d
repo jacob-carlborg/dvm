@@ -157,6 +157,10 @@ class Application
 			options.isDefault = true;
 		});
 		
+		opts.on('l', "latest", "Gets the latest D compiler.", {
+			options.latest = true;
+		});
+		
 		version (Posix)
 		{
 			opts.on("64bit", "Installs the 64bit version of the compiler.", {
