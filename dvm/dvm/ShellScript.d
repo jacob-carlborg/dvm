@@ -51,7 +51,7 @@ class ShellScript
 	
 	ShellScript echoOff ()
 	{
-		if (Sh.echoOff != "")
+		version (Windows)
 			append(Sh.echoOff).nl;
 
 		return this;
@@ -216,7 +216,6 @@ struct Sh
 	version (Posix)
 	{
 		const shebang = "#!/bin/sh";
-		const echoOff = "";
 		const separator = ":";
 		
 		string allArgs (bool quote = true)
