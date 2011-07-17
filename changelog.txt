@@ -1,14 +1,15 @@
 DVM Change Log
 
-Version x.y.z
+Version 0.3.0
 	New/Change Features
-	 * Added an option for installing the latest compile
+	 * Added an option for installing the latest compiler
 	 * Better compatibility between different shell implementations
 	 * Added Windows support. Thanks to Nick Sabalausky
 	 * Added a "list" command for listing installed compilers
 	 * Added a "uninstall" command for uninstalling compilers
 
 	Bugs Fixed
+	 * Can't link using DMD 1.068.
 	 * Issue 2: The '.dvm/bin/dmd-{ver}' scripts don't work on Ubuntu 10.04 
  	 * Issue 7: No error on invalid command
 	 * Issue 13: Tmp dir should be deleted before running DVM binary (not just after)
