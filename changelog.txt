@@ -2,7 +2,7 @@ DVM Change Log
 
 Version x.y.z
 	New/Change Features
-	 * Added an option for getting the latest compile
+	 * Added an option for installing the latest compile
 	 * Better compatibility between different shell implementations
 	 * Added Windows support. Thanks to Nick Sabalausky
 	 * Added a "list" command for listing installed compilers
