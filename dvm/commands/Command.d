@@ -60,7 +60,7 @@ private struct Args
 	
 	string opIndex (size_t index)
 	{
-		if (index > args.length - 1)
+		if (index > args.length - 1 && empty)
 			throw new MissingArgumentException("Missing argument(s)", __FILE__, __LINE__);
 		
 		return args[index];
