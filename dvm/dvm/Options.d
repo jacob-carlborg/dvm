@@ -28,6 +28,7 @@ class Options
 
 	bool force = false;
 	bool decline = false;
+	bool latest = false;
 
 	version (D_LP64)
 	    bool is64bit = true;

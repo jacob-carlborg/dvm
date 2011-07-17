@@ -15,6 +15,7 @@ import tango.net.device.Socket;
 import tango.net.http.HttpGet;
 import tango.net.http.HttpConst;
 import tango.text.convert.Format : format = Format;
+import Regex = tango.text.Regex;
 
 import dvm.commands.Command;
 import dvm.core._;
@@ -138,7 +139,7 @@ protected:
 	
 	string buildFilename ()
 	{
-		return "dmd." ~ args.first ~ ".zip";
+		return "dmd." ~ getDMDVersion ~ ".zip";
 	}
 	
 	string buildUrl (string filename)
@@ -159,6 +160,41 @@ protected:
 		
 		else if (!page.isResponseOK)
 			throw new IOException(format(`An unexpected error occurred. The resource "{}" responded with the message "{}" and the status code {}.`, url, page.getResponse.getReason, page.getResponse.getStatus));
+	}
+	
+	string getDMDVersion ()
+	{
+		if (options.latest)
+		{
+			auto vers = getDVersion;
+			return args.first = vers ~ "." ~ getLatestDMDVersion(vers);
+		}
+
+		return args.first;
+	}
+	
+	string getLatestDMDVersion (string dVersion)
+	{
+		auto page = new HttpGet("http://www.digitalmars.com/d/download.html");
+		auto content = cast(string) page.read;
+
+		auto pattern = new Regex.Regex(`http:\/\/ftp\.digitalmars\.com\/(dmd.` ~ dVersion ~ `.(\d+).zip)`);
+		string vers = null;
+
+		foreach (line ; content.split('\n'))
+			if (pattern.test(line))
+				if (pattern[2] > vers)
+					vers = pattern[2];
+
+		if (vers is null)
+			throw new DvmException("Failed to get the latest DMD version.", __FILE__, __LINE__);
+
+		return vers;
+	}
+
+	string getDVersion ()
+	{
+		return args.empty() ? "2" : args.first;
 	}
 }
 

@@ -71,8 +71,29 @@ private struct Args
 		return opIndex(0);
 	}
 	
+	string first (string arg)
+	{
+		if (empty)
+			args ~= arg;
+			
+		else
+			args[0] = arg;
+		
+		return arg;
+	}
+	
 	string last ()
 	{
 		return opIndex(args.length - 1);
+	}
+	
+	bool empty ()
+	{
+		return args.length == 0;
+	}
+	
+	bool any ()
+	{
+		return !empty;
 	}
 }
