@@ -71,13 +71,14 @@ bool isDMDDir(string path)
 
 void checkSystemPath()
 {
-	scope envKey = new RegistryKey(RegRoot.HKEY_LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`);
-	if (envKey.valueExists("PATH"))
+	auto envKeyPath = `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`;
+	scope envKeyRead = new RegistryKey(RegRoot.HKEY_LOCAL_MACHINE, envKeyPath, RegKeyOpenMode.Open, RegKeyAccess.Read);
+	if (envKeyRead.valueExists("PATH"))
 	{
-		auto pathValue = envKey.getValue("PATH");
+		auto pathValue = envKeyRead.getValue("PATH");
 
 		if (pathValue.type != RegValueType.SZ && pathValue.type != RegValueType.EXPAND_SZ)
-			throw new RegistryException(envKey.toString ~ `\PATH`, false, "Expected type REG_SZ or REG_EXPAND_SZ, not " ~ dvm.util.Registry.toString(pathValue.type));
+			throw new RegistryException(envKeyRead.toString ~ `\PATH`, false, "Expected type REG_SZ or REG_EXPAND_SZ, not " ~ dvm.util.Registry.toString(pathValue.type));
 		
 		// Check each path
 		string[] pathsWithDMD;
@@ -122,7 +123,10 @@ void checkSystemPath()
 				}
 				
 				try
-					envKey.setValueExpand("PATH", newValue);
+				{
+					scope envKeyRW = new RegistryKey(RegRoot.HKEY_LOCAL_MACHINE, envKeyPath);
+					envKeyRW.setValueExpand("PATH", newValue);
+				}
 				catch(Exception e)
 				{
 					println("DVM was unable to edit your system PATH.");
