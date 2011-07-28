@@ -85,13 +85,15 @@ private:
 	version (Windows)
 		void updateRegistry ()
 		{
-			auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
-			DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
-			
 			if (options.isDefault)
+			{
+				auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
+				DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
+			
 				DvmRegistry.checkSystemPath();
 			
-			broadcastSettingChange("Environment");
+				broadcastSettingChange("Environment");
+			}
 		}
 
 	version (Posix)
