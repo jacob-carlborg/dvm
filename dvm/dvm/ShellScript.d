@@ -149,8 +149,11 @@ class ShellScript
 	
 	ShellScript shebang ()
 	{
-		if (Sh.shebang != "")
-			append(Sh.shebang).nl;
+		version (Posix)
+		{
+			if (Sh.shebang != "")
+				append(Sh.shebang).nl;
+		}
 
 		return this;
 	}
@@ -268,7 +271,8 @@ struct Sh
 		
 	else version (Windows)
 	{
-		const shebang = "";
+		// DMD 1.068 and up optimizes this out causing a linker error
+		//const shebang = "";
 		const echoOff = "@echo off";
 		const separator = ";";
 		
