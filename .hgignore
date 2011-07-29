@@ -1,8 +1,12 @@
+syntax: glob
+
 dake_files
 dsss_objs
 dsss.last
 dakefile
 dvm/dvm/dvm
 .DS_Store
-.map
-.eprj
+*.map
+*.eprj
+*.exe
+bin/dvm
