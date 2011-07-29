@@ -173,7 +173,8 @@ private:
 	version (Windows)
 		void setupRegistry ()
 		{
-			DvmRegistry.updateEnvironment(options.path.binDir);
+			auto defaultCompilerPath = DvmRegistry.getDefaultCompilerPath();
+			DvmRegistry.updateEnvironment(options.path.binDir, defaultCompilerPath);
 			DvmRegistry.checkSystemPath();
 			broadcastSettingChange("Environment");
 			println("DVM has now been installed.");

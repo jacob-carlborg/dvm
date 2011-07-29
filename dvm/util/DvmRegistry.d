@@ -22,9 +22,10 @@ import dvm.util.Registry;
 import dvm.util.Windows;
 import dvm.util.Util;
 
+private string dvmEnvVar = "DVM";
+
 void updateEnvironment (string binDir, string dmdDir="")
 {
-	string dvmEnvVar = "DVM";
 	string dvmEnvVarExpand = "%"~dvmEnvVar~"%";
 	binDir = Path.native(binDir.dup);
 	dmdDir = Path.native(dmdDir.dup);
@@ -46,6 +47,27 @@ void updateEnvironment (string binDir, string dmdDir="")
 
 	else
 		envKey.setValueExpand("PATH", dvmEnvVarExpand);
+}
+
+/// Returns empty string if there's no default compiler
+string getDefaultCompilerPath()
+{
+	scope envKeyRead = new RegistryKey(RegRoot.HKEY_CURRENT_USER, "Environment", RegKeyOpenMode.Open, RegKeyAccess.Read);
+	if (envKeyRead.valueExists(dvmEnvVar))
+	{
+		auto pathValue = envKeyRead.getValue(dvmEnvVar);
+
+		if (pathValue.type == RegValueType.SZ || pathValue.type == RegValueType.EXPAND_SZ)
+		{
+			auto bothPaths = pathValue.asString;
+			auto sepIndex = find(bothPaths, ";");
+			
+			if (sepIndex < sepIndex.max)
+				return bothPaths[0..sepIndex];
+		}
+	}
+	
+	return "";
 }
 
 bool isDMDDir(string path)
