@@ -37,18 +37,7 @@ class Install : Fetch
 		string tmpCompilerPath;
 		string installPath_;
 		Wrapper wrapper;
-		
-		static if (darwin)
-			const platform = "osx";
-		
-		else static if (freebsd)
-			const platform = "freebsd";
-		
-		else static if (linux)
-			const platform = "linux";
-		
-		else static if (Windows)
-			const platform = "windows";
+		string ver;
 	}
 	
 	this ()
@@ -67,17 +56,20 @@ class Install : Fetch
 		install;
 	}
 	
-private:
-	
-	void install ()
+	void install (string ver="")
 	{
-		auto filename = buildFilename;
+		if(ver == "")
+			ver = args.first;
+		
+		this.ver = ver;
+		
+		auto filename = buildFilename(ver);
 		auto url = buildUrl(filename);
 		
 		archivePath = Path.join(options.path.archives, filename);
 		
 		fetch(url, archivePath);		
-		println("Installing: dmd-", args.first);
+		println("Installing: dmd-", ver);
 
 		unpack;
 		moveFiles;
@@ -93,9 +85,11 @@ private:
 			installTango;
 	}
 	
+private:
+
 	void unpack ()
 	{
-		tmpCompilerPath = Path.join(options.path.tmp, "dmd-" ~ args.first);
+		tmpCompilerPath = Path.join(options.path.tmp, "dmd-" ~ ver);
 		verbose("Unpacking:");
 		verbose(options.indentation, "source: ", archivePath);
 		verbose(options.indentation, "destination: ", tmpCompilerPath, '\n');
@@ -104,12 +98,12 @@ private:
 	
 	void moveFiles ()
 	{
-		auto dmd = args.first.length > 0 && args.first[0] == '2' ? "dmd2" : "dmd";
+		auto dmd = ver.length > 0 && ver[0] == '2' ? "dmd2" : "dmd";
 		auto root = Path.join(tmpCompilerPath, dmd);
-		auto platformRoot = Path.join(root, platform);
+		auto platformRoot = Path.join(root, Options.platform);
 		
 		if (!Path.exists(platformRoot))
-			throw new DvmException(format(`The platform "{}" is not compatible with the compiler dmd {}`, platform, args.first), __FILE__, __LINE__);
+			throw new DvmException(format(`The platform "{}" is not compatible with the compiler dmd {}`, Options.platform, ver), __FILE__, __LINE__);
 		
 		auto binSource = getBinSource(platformRoot);
 		auto binDest = Path.join(installPath, options.path.bin);		
@@ -122,15 +116,15 @@ private:
 
 		verbose("Moving:");
 		
-		move(binSource, binDest);
-		move(libSource, libDest);
-		move(srcSource, srcDest);
+		Path.move(binSource, binDest);
+		Path.move(libSource, libDest);
+		Path.move(srcSource, srcDest);
 	}
 
 	void installWrapper ()
 	{
 		wrapper.target = Path.join(installPath, options.path.bin, "dmd" ~ options.path.executableExtension);
-		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ args.first;
+		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ ver;
 
 		version (Windows)
 			wrapper.path ~= ".bat";
@@ -159,7 +153,7 @@ private:
 	{
 		sh.path = options.path.env;
 		Path.createPath(sh.path);
-		sh.path = Path.join(sh.path, "dmd-" ~ args.first ~ options.path.scriptExtension);
+		sh.path = Path.join(sh.path, "dmd-" ~ ver ~ options.path.scriptExtension);
 		
 		verbose("Installing environment: ", sh.path);
 		sh.write;
@@ -231,7 +225,7 @@ private:
 	
 	void setupTangoEnvironment ()
 	{
-		verbose(format(`Installing "{}" as the temporary D compiler`, args.first));
+		verbose(format(`Installing "{}" as the temporary D compiler`, ver));
 		auto path = Environment.get("PATH");
 		path = Path.join(installPath, options.path.bin) ~ options.path.pathSeparator ~ path;
 		Environment.set("PATH", path);
@@ -285,10 +279,10 @@ private:
 		auto vendorSrc = options.path.tangoVendor;
 		auto vendorDest = Path.join(importDest, options.path.std);
 		
-		move(options.path.tangoLib, Path.join(installPath, options.path.lib, options.path.tangoLibName ~ options.path.libExtension));
-		move(vendorSrc, vendorDest);
-		move(tangoSource, tangoDest);
-		move(objectSrc, objectDest);
+		Path.move(options.path.tangoLib, Path.join(installPath, options.path.lib, options.path.tangoLibName ~ options.path.libExtension));
+		Path.move(vendorSrc, vendorDest);
+		Path.move(tangoSource, tangoDest);
+		Path.move(objectSrc, objectDest);
 	}
 	
 	void patchDmdConfForTango ()
@@ -318,37 +312,12 @@ private:
 		File.set(dmdConfPath, content);
 	}
 	
-	void move (string source, string destination)
-	{
-		verbose(options.indentation, "source: ", source);
-		verbose(options.indentation, "destination: ", destination, '\n');		
-		
-		if (Path.exists(destination))
-			Path.remove(destination, true);
-
-		bool createParentOnly = false;
-
-		if (Path.isFile(source))
-			createParentOnly = true;
-		
-		version (Windows)
-			createParentOnly = true;
-		
-		if (createParentOnly)
-			Path.createPath(Path.parse(destination).path);
-
-		else
-			Path.createPath(destination);
-
-		Path.rename(source, destination);
-	}
-	
 	string installPath ()
 	{
 		if (installPath_.length > 0)
 			return installPath_;
 
-		return installPath_ = Path.join(options.path.compilers, "dmd-" ~ args.first);
+		return installPath_ = Path.join(options.path.compilers, "dmd-" ~ ver);
 	}
 	
 	void permission (string path, string mode)
@@ -413,15 +382,4 @@ private:
 
     	throw new DvmException("Could not find the binrary path: " ~ binPath, __FILE__, __LINE__);
     }
-
-	string slashSafeSubstitute (string haystack, string needle, string replacement)
-	{
-		version (Windows)
-		{
-			needle = needle.substitute("/", "\\");
-			replacement = replacement.substitute("/", "\\");
-		}
-			
-		return haystack.substitute(needle, replacement);
-	}
 }
