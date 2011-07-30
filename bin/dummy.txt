@@ -1,0 +1,2 @@
+This file needs to be here because the stupid mercurial can't handle empty directories.
+This directory is used as a build target folder, this is where the built executable is put.
