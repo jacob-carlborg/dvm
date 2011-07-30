@@ -137,9 +137,12 @@ protected:
 		file.write(data);
 	}
 	
-	string buildFilename ()
+	string buildFilename (string ver="")
 	{
-		return "dmd." ~ getDMDVersion ~ ".zip";
+		if (ver == "")
+			ver = getDMDVersion;
+		
+		return "dmd." ~ ver ~ ".zip";
 	}
 	
 	string buildUrl (string filename)

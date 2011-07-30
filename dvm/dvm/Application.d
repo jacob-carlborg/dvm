@@ -105,6 +105,7 @@ class Application
 		commandManager.register("dvm.commands.Fetch.Fetch");
 		commandManager.register("dvm.commands.Use.Use");
 		commandManager.register("dvm.commands.List.List");
+		commandManager.register("dvm.commands.Compile.Compile");
 		commandManager.register("dvm.commands.Uninstall.Uninstall");
 	}
 	
@@ -120,6 +121,7 @@ class Application
 				case "fetch": command = "dvm.commands.Fetch.Fetch"; break;
 				case "use": command = "dvm.commands.Use.Use"; break;
 				case "list": command = "dvm.commands.List.List"; break;
+				case "compile": command = "dvm.commands.Compile.Compile"; break;
 				case "uninstall": command = "dvm.commands.Uninstall.Uninstall"; break;
 				default:
 					return unhandledCommand(args[0]);
