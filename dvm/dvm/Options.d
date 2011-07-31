@@ -37,16 +37,16 @@ class Options
 	    bool is64bit = false;
 
 	static if (darwin)
-		static const platform = "osx";
+		const string platform = "osx";
 	
 	else static if (freebsd)
-		static const platform = "freebsd";
+		const string platform = "freebsd";
 	
 	else static if (linux)
-		static const platform = "linux";
+		const string platform = "linux";
 	
 	else static if (Windows)
-		static const platform = "windows";
+		const string platform = "windows";
 }
 
 private struct Path
