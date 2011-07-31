@@ -90,7 +90,7 @@ protected:
 	
 	void compile (string directory="", bool compileDebug=false)
 	{
-		if(directory == "")
+		if (directory == "")
 		{
 			if (args.any())
 				directory = args.first;
@@ -176,13 +176,13 @@ private:
 	{
 		bool valid = true;
 		
-		if(!Path.exists(Path.join(dmdPath, dmdMakefile)))
+		if (!Path.exists(Path.join(dmdPath, dmdMakefile)))
 			valid = false;
 		
-		if(!Path.exists(Path.join(druntimePath, druntimeMakefile)))
+		if (!Path.exists(Path.join(druntimePath, druntimeMakefile)))
 			valid = false;
 		
-		if(!Path.exists(Path.join(phobosPath, phobosMakefile)))
+		if (!Path.exists(Path.join(phobosPath, phobosMakefile)))
 			valid = false;
 		
 		if (!valid)
@@ -205,7 +205,7 @@ private:
 		latestDMDLib = Path.join(latestDMDPath, "lib");
 		latestDMDBin = Path.join(latestDMDPath, "bin");
 		
-		if(!Path.exists(latestDMDPath))
+		if (!Path.exists(latestDMDPath))
 		{
 			auto install = new Install();
 			install.install(ver);
@@ -227,7 +227,7 @@ private:
 		verbose("Building DMD: ", dmdPath);
 		auto result = system("make -f" ~ patchedDMDMakefile ~ " " ~ targetName);
 		
-		if(result.status != 0)
+		if (result.status != 0)
 			throw new DvmException("Error building DMD's executable", __FILE__, __LINE__);
 		
 		auto dmdExeName = "dmd" ~ options.path.executableExtension;
@@ -243,7 +243,7 @@ private:
 		}
 
 		// Copy needed files from lib/bin directories
-		if(isGitStructure)
+		if (isGitStructure)
 		{
 			verbose("Copying lib/bin directories: ");
 
@@ -251,15 +251,15 @@ private:
 			
 			foreach (srcSubDir, fileSet; fileSets)
 			foreach (info; fileSet)
-			if(!info.folder)
-			if(info.name != dmdExeName && info.name != phobosLibName)
+			if (!info.folder)
+			if (info.name != dmdExeName && info.name != phobosLibName)
 			{
 				auto targetSubDir = srcSubDir ~ bitsLabel;
 
 				auto sourcePath = Path.join(latestDMDPath, srcSubDir, info.name);
 				auto targetPath = Path.join(installPath, targetSubDir, info.name);
 				
-				if(!Path.exists(targetPath))
+				if (!Path.exists(targetPath))
 					Path.copy(sourcePath, targetPath);
 			}
 			
@@ -274,7 +274,7 @@ private:
 		Environment.cwd = druntimePath;
 		auto result = system("make -f" ~ druntimeMakefile);
 
-		if(result.status != 0)
+		if (result.status != 0)
 			throw new DvmException("Error building druntime", __FILE__, __LINE__);
 	}
 	
@@ -289,7 +289,7 @@ private:
 		Environment.cwd = phobosPath;
 		auto result = system("make -f" ~ phobosMakefile ~ " " ~ targetName ~ " " ~ quote("DRUNTIME="~druntimePath));
 		
-		if(result.status != 0)
+		if (result.status != 0)
 			throw new DvmException("Error building phobos", __FILE__, __LINE__);
 
 		// Copy phobos lib
@@ -348,10 +348,10 @@ private:
 
 	string bitsLabel ()
 	{
-		version(Windows)
+		version (Windows)
 			return "";
 		
-		version(OSX)
+		version (OSX)
 			return "";
 		
 		return options.is64bit? "64" : "32";
