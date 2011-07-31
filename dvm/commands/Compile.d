@@ -30,7 +30,6 @@ import dvm.sys.Process;
 import dvm.util.Util;
 import dvm.util.Version;
 
-//TODO: Be more flexible with lib/lib32/lib64 and bin/etc...?
 //TODO: Make sure to support compiling older DMDs (at least release-style).
 //TODO: Auto-install DMC if not available in PATH.
 //TODO: Make it compile DMD1.
@@ -38,7 +37,7 @@ import dvm.util.Version;
 //TODO: Build rdmd if available.
 
 class Compile : Fetch
-{	
+{
 	private
 	{
 		static if (Windows)
@@ -84,12 +83,12 @@ class Compile : Fetch
 	
 	void execute ()
 	{
-		compile();
+		compile("", options.compileDebug);
 	}
 	
 protected:
 	
-	void compile (string directory="")
+	void compile (string directory="", bool compileDebug=false)
 	{
 		if(directory == "")
 		{
@@ -113,7 +112,7 @@ protected:
 		auto saveCwd = Environment.cwd;
 		scope(exit) Environment.cwd = saveCwd;
 		
-		compileDMD;
+		compileDMD(compileDebug);
 		
 		// Temporarily add the new dmd to PATH
 		auto savePath = Environment.get("PATH");
@@ -121,7 +120,7 @@ protected:
 		scope(exit) Environment.set("PATH", savePath);
 		
 		compileDruntime;
-		compilePhobos;
+		compilePhobos(compileDebug);
 	}
 
 private:
@@ -213,16 +212,20 @@ private:
 		}
 	}
 
-	void compileDMD ()
+	void compileDMD (bool compileDebug)
 	{
 		Environment.cwd = dmdPath;
 		
+		string targetName;
+		version (Windows)
+			targetName = compileDebug? "debdmd" : "release";
+
 		version (Windows)
 			patchDMDMake;
 
 		// Build dmd executable
 		verbose("Building DMD: ", dmdPath);
-		auto result = system("make -f" ~ patchedDMDMakefile);
+		auto result = system("make -f" ~ patchedDMDMakefile ~ " " ~ targetName);
 		
 		if(result.status != 0)
 			throw new DvmException("Error building DMD's executable", __FILE__, __LINE__);
@@ -275,12 +278,16 @@ private:
 			throw new DvmException("Error building druntime", __FILE__, __LINE__);
 	}
 	
-	void compilePhobos ()
+	void compilePhobos (bool compileDebug)
 	{
 		verbose("Building phobos: ", phobosPath);
 
+		string targetName;
+		version (Posix)
+			targetName = compileDebug? "debug" : "release";
+
 		Environment.cwd = phobosPath;
-		auto result = system("make -f" ~ phobosMakefile ~ " " ~ quote("DRUNTIME="~druntimePath));
+		auto result = system("make -f" ~ phobosMakefile ~ " " ~ targetName ~ " " ~ quote("DRUNTIME="~druntimePath));
 		
 		if(result.status != 0)
 			throw new DvmException("Error building phobos", __FILE__, __LINE__);
@@ -289,7 +296,7 @@ private:
 		auto sourcePath = phobosPath;
 
 		version (Posix)
-			sourcePath = Path.join(sourcePath, "generated", options.platform, "release", bitsLabel);
+			sourcePath = Path.join(sourcePath, "generated", options.platform, targetName, bitsLabel);
 
 		sourcePath = Path.join(sourcePath, phobosLibName);
 		
