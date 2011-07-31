@@ -190,6 +190,10 @@ class Application
 			options.decline = true;
 		});
 		
+		opts.on("debug", "Compile DMD in debug mode.", {
+			options.compileDebug = true;
+		});
+		
 		opts.on('h', "help", "Show this message and exit.", {
 			help = true;
 		});
