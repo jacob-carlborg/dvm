@@ -43,14 +43,16 @@ class Compile : Fetch
 	{
 		static if (Windows)
 		{
-			const origMakefile    = "win32.mak";
-			const patchedMakefile = "win32-fixed.mak";
+			string origMakefile       = "win32.mak";
+			string secondaryMakefile  = "win32.mak";
+			string patchedDMDMakefile = "win32-fixed.mak";
 		}
 
 		else
 		{
-			const origMakefile    = "posix.mak";
-			const patchedMakefile = "posix.mak";
+			string origMakefile       = "posix.mak";
+			string secondaryMakefile  = options.platform ~ ".mak";
+			string patchedDMDMakefile = "posix.mak";
 		}
 
 		bool isGitStructure;
@@ -69,6 +71,10 @@ class Compile : Fetch
 		string latestDMDLib;
 
 		string phobosLibName;
+
+		string dmdMakefile;
+		string druntimeMakefile;
+		string phobosMakefile;
 	}
 	
 	this ()
@@ -140,7 +146,7 @@ private:
 			dmdPath      = Path.join(base, "src", "dmd");
 			druntimePath = Path.join(base, "src", "druntime");
 			phobosPath   = Path.join(base, "src", "phobos");
-			installPath  = Path.join(base, Options.platform);
+			installPath  = Path.join(base, options.platform);
 		}
 		
 		dmdPath      = Environment.toAbsolute(dmdPath);
@@ -151,20 +157,33 @@ private:
 		installBin   = Path.join(installPath, binName);
 		installLib   = Path.join(installPath, libName);
 		
-		phobosLibName = "phobos" ~ options.path.libExtension;
+		dmdMakefile      = Path.exists(Path.join(dmdPath,      origMakefile))? origMakefile : secondaryMakefile;
+		druntimeMakefile = Path.exists(Path.join(druntimePath, origMakefile))? origMakefile : secondaryMakefile;
+		phobosMakefile   = Path.exists(Path.join(phobosPath,   origMakefile))? origMakefile : secondaryMakefile;
+
+		version (Posix)
+			patchedDMDMakefile = dmdMakefile;
+
+		version (Windows)
+			phobosLibName = "phobos";
+
+		else
+			phobosLibName = "libphobos2";
+
+		phobosLibName = phobosLibName ~ options.path.libExtension;
 	}
 	
 	void verifyStructure ()
 	{
 		bool valid = true;
 		
-		if(!Path.exists(Path.join(dmdPath, origMakefile)))
+		if(!Path.exists(Path.join(dmdPath, dmdMakefile)))
 			valid = false;
 		
-		if(!Path.exists(Path.join(druntimePath, origMakefile)))
+		if(!Path.exists(Path.join(druntimePath, druntimeMakefile)))
 			valid = false;
 		
-		if(!Path.exists(Path.join(phobosPath, origMakefile)))
+		if(!Path.exists(Path.join(phobosPath, phobosMakefile)))
 			valid = false;
 		
 		if (!valid)
@@ -184,8 +203,8 @@ private:
 		auto ver = "2." ~ getLatestDMDVersion("2");
 		latestDMDPath = Path.join(options.path.compilers, "dmd-" ~ ver);
 
-		latestDMDLib = Path.join(latestDMDPath, libName);
-		latestDMDBin = Path.join(latestDMDPath, binName);
+		latestDMDLib = Path.join(latestDMDPath, "lib");
+		latestDMDBin = Path.join(latestDMDPath, "bin");
 		
 		if(!Path.exists(latestDMDPath))
 		{
@@ -203,29 +222,39 @@ private:
 
 		// Build dmd executable
 		verbose("Building DMD: ", dmdPath);
-		auto result = system("make -f" ~ patchedMakefile);
+		auto result = system("make -f" ~ patchedDMDMakefile);
 		
 		if(result.status != 0)
 			throw new DvmException("Error building DMD's executable", __FILE__, __LINE__);
 		
-		// Copy dmd executable
 		auto dmdExeName = "dmd" ~ options.path.executableExtension;
+
+		// Copy dmd executable
 		Path.copy(Path.join(dmdPath, dmdExeName), Path.join(installBin, dmdExeName));
 		
+		// Set executable permissions
+		version (Posix)
+		{
+			Path.permission(Path.join(dmdPath, dmdExeName), "+x");
+			Path.permission(Path.join(installBin, dmdExeName), "+x");
+		}
+
 		// Copy needed files from lib/bin directories
 		if(isGitStructure)
 		{
 			verbose("Copying lib/bin directories: ");
 
-			auto fileSets = [libName(): Path.children(latestDMDLib), binName(): Path.children(latestDMDBin)];
+			auto fileSets = ["lib"[]: Path.children(latestDMDLib), "bin": Path.children(latestDMDBin)];
 			
-			foreach (subDirName, fileSet; fileSets)
+			foreach (srcSubDir, fileSet; fileSets)
 			foreach (info; fileSet)
 			if(!info.folder)
 			if(info.name != dmdExeName && info.name != phobosLibName)
 			{
-				auto sourcePath = Path.join(latestDMDPath, subDirName, info.name);
-				auto targetPath = Path.join(installPath, subDirName, info.name);
+				auto targetSubDir = srcSubDir ~ bitsLabel;
+
+				auto sourcePath = Path.join(latestDMDPath, srcSubDir, info.name);
+				auto targetPath = Path.join(installPath, targetSubDir, info.name);
 				
 				if(!Path.exists(targetPath))
 					Path.copy(sourcePath, targetPath);
@@ -240,7 +269,7 @@ private:
 		verbose("Building druntime: ", druntimePath);
 
 		Environment.cwd = druntimePath;
-		auto result = system("make -f" ~ origMakefile);
+		auto result = system("make -f" ~ druntimeMakefile);
 
 		if(result.status != 0)
 			throw new DvmException("Error building druntime", __FILE__, __LINE__);
@@ -251,12 +280,22 @@ private:
 		verbose("Building phobos: ", phobosPath);
 
 		Environment.cwd = phobosPath;
-		auto result = system("make -f" ~ origMakefile ~ " " ~ quote("DRUNTIME="~druntimePath));
+		auto result = system("make -f" ~ phobosMakefile ~ " " ~ quote("DRUNTIME="~druntimePath));
 		
 		if(result.status != 0)
 			throw new DvmException("Error building phobos", __FILE__, __LINE__);
 
-		Path.copy(Path.join(phobosPath, phobosLibName), Path.join(installLib, phobosLibName));
+		// Copy phobos lib
+		auto sourcePath = phobosPath;
+
+		version (Posix)
+			sourcePath = Path.join(sourcePath, "generated", options.platform, "release", bitsLabel);
+
+		sourcePath = Path.join(sourcePath, phobosLibName);
+		
+		auto targetPath = Path.join(installLib, phobosLibName);
+
+		Path.copy(sourcePath, targetPath);
 	}
 	
 	void patchDmdConf ()
@@ -275,8 +314,8 @@ private:
 	
 	void patchDMDMake ()
 	{
-		auto srcPath  = Path.join(dmdPath, origMakefile);
-		auto destPath = Path.join(dmdPath, patchedMakefile);
+		auto srcPath  = Path.join(dmdPath, dmdMakefile);
+		auto destPath = Path.join(dmdPath, patchedDMDMakefile);
 
 		verbose("Patching:");
 		verbose(options.indentation, "source: ", srcPath);
@@ -285,7 +324,7 @@ private:
 		auto content = cast(string) File.get(srcPath);
 
 		content = content.substitute(`CC=\dm\bin\dmc`, `CC=dmc`);
-		content = content.substitute(origMakefile, patchedMakefile);
+		content = content.substitute(dmdMakefile, patchedDMDMakefile);
 
 		File.set(destPath, content);
 	}
