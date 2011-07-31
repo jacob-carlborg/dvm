@@ -92,7 +92,7 @@ private void copyMoveImpl (string source, string destination, bool doMove)
 	else
 		createPath(destination);
 
-	if(doMove)
+	if (doMove)
 		rename(source, destination);
 	else
 		tango.io.Path.copy(source, destination);
