@@ -19,6 +19,7 @@ import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
 import dvm.commands.Command;
+import dvm.commands.DmcInstall;
 import dvm.commands.Fetch;
 import dvm.commands.Install;
 import dvm.commands.Use;
@@ -104,19 +105,35 @@ protected:
 
 		verbose("Project structure: ", isGitStructure? "Git-style" : "Release-style");
 		
+		version (Windows)
+			installDMC();
+		
 		if (isGitStructure)
 			installLatestDMD; // Need this for sc.ini/dmd.conf and packaged static libs
 		
 		// Save current dir
 		auto saveCwd = Environment.cwd;
 		scope(exit) Environment.cwd = saveCwd;
-		
+
+		// Save PATH
+		auto savePath = Environment.get("PATH");
+		scope(exit) Environment.set("PATH", savePath);
+
+		version (Windows)
+		{
+			// Using the dmc.bat wrapper to compile DMD results in a mysterious 
+			// "paths with spaces" heisenbug that I can't seem to track down.
+			if (Path.exists(Path.join(options.path.compilers, "dmc")))
+			{
+				auto dmcPath = Path.join(options.path.compilers, "dmc", "bin");
+				addEnvPath(dmcPath);
+			}
+		}
+
 		compileDMD(compileDebug);
 		
-		// Temporarily add the new dmd to PATH
-		auto savePath = Environment.get("PATH");
-		Environment.set("PATH", installBin ~ options.path.pathSeparator ~ savePath);
-		scope(exit) Environment.set("PATH", savePath);
+		// Add the new dmd to PATH
+		addEnvPath(installBin);
 		
 		compileDruntime;
 		compilePhobos(compileDebug);
@@ -194,6 +211,22 @@ private:
 			__FILE__, __LINE__);
 		}
 	}
+	
+	version (Windows)
+		void installDMC ()
+		{
+			// Only install if not on PATH
+			auto path = Environment.exePath("dmc.exe");
+			if(path)
+				return;
+			
+			path = Environment.exePath("dmc.bat");
+			if(path)
+				return;
+			
+			auto dmcInstall = new DmcInstall();
+			dmcInstall.execute();
+		}
 	
 	void installLatestDMD ()
 	{
@@ -356,12 +389,17 @@ private:
 		return options.is64bit? "64" : "32";
 	}
 	
-	string quote(string str)
+	string quote (string str)
 	{
 		version (Windows)
 			return format(`"{}"`, str);
 		
 		else
 			return format(`'{}'`, str);
+	}
+	
+	void addEnvPath (string path)
+	{
+		Environment.set("PATH", path ~ options.path.pathSeparator ~ Environment.get("PATH"));
 	}
 }
