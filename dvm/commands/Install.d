@@ -19,6 +19,7 @@ import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
 import dvm.commands.Command;
+import dvm.commands.DmcInstall;
 import dvm.commands.DvmInstall;
 import dvm.commands.Fetch;
 import dvm.commands.Use;
@@ -47,9 +48,15 @@ class Install : Fetch
 	
 	void execute ()
 	{
-		if (args.any() && args.first == "dvm") // special case for the installation of dvm itself
+		// special case for the installation of dvm itself or dmc
+		if (args.any() && (args.first == "dvm" || args.first == "dmc"))
 		{
-			(new DvmInstall).invoke(args);
+			if (args.first == "dvm")
+				(new DvmInstall).invoke(args);
+			
+			else
+				(new DmcInstall).invoke(args);
+				
 			return;
 		}
 		

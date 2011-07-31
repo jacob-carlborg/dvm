@@ -33,7 +33,6 @@ import dvm.util.Version;
 //TODO: Make sure to support compiling older DMDs (at least release-style).
 //TODO: Auto-install DMC if not available in PATH.
 //TODO: Make it compile DMD1.
-//TODO: Option to choose release/debug build.
 //TODO: Build rdmd if available.
 
 class Compile : Fetch

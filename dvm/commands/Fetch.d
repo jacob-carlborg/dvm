@@ -36,12 +36,26 @@ class Fetch : Command
 	
 	void execute ()
 	{
-		auto filename = buildFilename;
-		auto url = buildUrl(filename);
-		fetch(url, Path.join(".", filename));
+		if (args.first == "dmc")
+			fetchDMC;
+
+		else
+		{
+			string filename = buildFilename;
+			string url = buildUrl(filename);
+			fetch(url, Path.join(".", filename));
+		}
 	}
 	
 protected:
+
+	const dmcArchiveName = "dm852c.zip";
+	
+	void fetchDMC (string destinationPath=".")
+	{
+		auto url = "http://ftp.digitalmars.com/Digital_Mars_C++/Patch/" ~ dmcArchiveName;
+		fetch(url, Path.join(destinationPath, dmcArchiveName));
+	}
 	
 	void fetch (string source, string destination)
 	{
