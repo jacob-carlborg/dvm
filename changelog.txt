@@ -1,5 +1,10 @@
 DVM Change Log
 
+Version 0.3.1
+	Bugs Fixed
+	 * "dvm use" changes the default compiler on Windows
+	 * Can't install on Windows without administrator rights
+
 Version 0.3.0
 	New/Change Features
 	 * Added an option for installing the latest compiler
