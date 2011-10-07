@@ -149,7 +149,7 @@ private:
 		auto gitPhobosPath   = Path.join(base, "phobos");
 		auto gitToolsPath    = Path.join(base, "tools");
 		
-		if (Path.exists(gitDMDPath) && Path.exists(gitDruntimePath) && Path.exists(gitPhobosPath))
+		if (Path.exists(gitDMDPath) && Path.exists(gitPhobosPath))
 		{
 			isGitStructure = true;
 			dmdPath      = gitDMDPath;
