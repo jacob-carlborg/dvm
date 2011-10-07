@@ -32,7 +32,7 @@ import dvm.util.Util;
 import dvm.util.Version;
 
 //TODO: Make sure to support compiling older DMDs (at least release-style).
-//TODO: Make it compile DMD1.
+//TODO: Make it compile DMD1 on Windows.
 
 class Compile : Fetch
 {
@@ -53,6 +53,7 @@ class Compile : Fetch
 		}
 
 		bool isGitStructure;
+		bool isD1;
 		
 		string base;
 		string dmdPath;
@@ -180,6 +181,8 @@ private:
 		druntimeMakefile = Path.exists(Path.join(druntimePath, origMakefile))? origMakefile : secondaryMakefile;
 		phobosMakefile   = Path.exists(Path.join(phobosPath,   origMakefile))? origMakefile : secondaryMakefile;
 
+		isD1 = !Path.exists(druntimePath);
+
 		version (Posix)
 			patchedDMDMakefile = dmdMakefile;
 
@@ -187,7 +190,7 @@ private:
 			phobosLibName = "phobos";
 
 		else
-			phobosLibName = "libphobos2";
+			phobosLibName = isD1? "libphobos" : "libphobos2";
 
 		phobosLibName = phobosLibName ~ options.path.libExtension;
 	}
@@ -199,7 +202,7 @@ private:
 		if (!Path.exists(Path.join(dmdPath, dmdMakefile)))
 			valid = false;
 		
-		if (!Path.exists(Path.join(druntimePath, druntimeMakefile)))
+		if (!isD1 && !Path.exists(Path.join(druntimePath, druntimeMakefile)))
 			valid = false;
 		
 		if (!Path.exists(Path.join(phobosPath, phobosMakefile)))
@@ -305,6 +308,9 @@ private:
 	
 	void compileDruntime ()
 	{
+		if (isD1)
+			return;
+		
 		verbose("Building druntime: ", druntimePath);
 
 		Environment.cwd = druntimePath;
@@ -320,7 +326,10 @@ private:
 
 		string targetName;
 		version (Posix)
-			targetName = compileDebug? "debug" : "release";
+		{
+			if (!isD1)
+				targetName = compileDebug? "debug" : "release";
+		}
 
 		Environment.cwd = phobosPath;
 		auto result = system("make -f" ~ phobosMakefile ~ " " ~ targetName ~ " " ~ quote("DRUNTIME="~druntimePath));
@@ -332,7 +341,12 @@ private:
 		auto sourcePath = phobosPath;
 
 		version (Posix)
-			sourcePath = Path.join(sourcePath, "generated", options.platform, targetName, bitsLabel);
+		{
+			if (isD1)
+				sourcePath = Path.join(sourcePath, "lib" ~ bitsLabel);
+			else
+				sourcePath = Path.join(sourcePath, "generated", options.platform, targetName, bitsLabel);
+		}
 
 		sourcePath = Path.join(sourcePath, phobosLibName);
 		
