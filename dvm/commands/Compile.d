@@ -32,9 +32,7 @@ import dvm.util.Util;
 import dvm.util.Version;
 
 //TODO: Make sure to support compiling older DMDs (at least release-style).
-//TODO: Auto-install DMC if not available in PATH.
 //TODO: Make it compile DMD1.
-//TODO: Build rdmd if available.
 
 class Compile : Fetch
 {
@@ -60,6 +58,7 @@ class Compile : Fetch
 		string dmdPath;
 		string druntimePath;
 		string phobosPath;
+		string toolsPath;
 		
 		string installPath;
 		string installBin;
@@ -137,6 +136,7 @@ protected:
 		
 		compileDruntime;
 		compilePhobos(compileDebug);
+		compileRDMD(compileDebug);
 	}
 
 private:
@@ -146,6 +146,7 @@ private:
 		auto gitDMDPath      = Path.join(base, "dmd", "src");
 		auto gitDruntimePath = Path.join(base, "druntime");
 		auto gitPhobosPath   = Path.join(base, "phobos");
+		auto gitToolsPath    = Path.join(base, "tools");
 		
 		if (Path.exists(gitDMDPath) && Path.exists(gitDruntimePath) && Path.exists(gitPhobosPath))
 		{
@@ -153,6 +154,7 @@ private:
 			dmdPath      = gitDMDPath;
 			druntimePath = gitDruntimePath;
 			phobosPath   = gitPhobosPath;
+			toolsPath    = gitToolsPath;
 			installPath  = Path.join(base, "dmd");
 		}
 		else
@@ -161,12 +163,14 @@ private:
 			dmdPath      = Path.join(base, "src", "dmd");
 			druntimePath = Path.join(base, "src", "druntime");
 			phobosPath   = Path.join(base, "src", "phobos");
+			//toolsPath    = ; // N/A: Releases don't include 'rdmd.d'
 			installPath  = Path.join(base, options.platform);
 		}
 		
 		dmdPath      = Environment.toAbsolute(dmdPath);
 		druntimePath = Environment.toAbsolute(druntimePath);
 		phobosPath   = Environment.toAbsolute(phobosPath);
+		toolsPath    = Environment.toAbsolute(toolsPath);
 		installPath  = Environment.toAbsolute(installPath);
 
 		installBin   = Path.join(installPath, binName);
@@ -335,6 +339,25 @@ private:
 		auto targetPath = Path.join(installLib, phobosLibName);
 
 		Path.copy(sourcePath, targetPath);
+	}
+	
+	void compileRDMD (bool compileDebug)
+	{
+		auto rdmdSrc = Path.join(toolsPath, "rdmd.d");
+		if (!isGitStructure || !Path.exists(rdmdSrc))
+			return;
+		
+		verbose("Building RDMD: ", rdmdSrc);
+
+		Environment.cwd = toolsPath;
+		auto args = compileDebug? "-debug -gc" : "-release -inline -O";
+		auto result = system("dmd rdmd.d " ~ args);
+		
+		if (result.status != 0)
+			throw new DvmException("Error building RDMD", __FILE__, __LINE__);
+
+		auto rdmdExeName = "rdmd" ~ options.path.executableExtension;
+		Path.copy(Path.join(toolsPath, rdmdExeName), Path.join(installBin, rdmdExeName));
 	}
 	
 	void patchDmdConf ()
