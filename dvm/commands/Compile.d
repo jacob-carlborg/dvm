@@ -351,7 +351,7 @@ private:
 
 		Environment.cwd = toolsPath;
 		auto args = compileDebug? "-debug -gc" : "-release -inline -O";
-		auto result = system("dmd rdmd.d " ~ args);
+		auto result = system("dmd rdmd.d -wi " ~ args);
 		
 		if (result.status != 0)
 			throw new DvmException("Error building RDMD", __FILE__, __LINE__);
