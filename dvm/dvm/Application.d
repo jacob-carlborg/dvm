@@ -74,7 +74,7 @@ class Application
 				
 			catch (DvmException e)
 			{
-				stderr.format("An error occurred: {}", e).flush;
+				stderr.format("An error occurred: {}", e).newline.flush;
 				return EXIT_FAILURE;
 			}
 			
