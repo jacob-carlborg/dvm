@@ -29,12 +29,25 @@ class Options
 	bool force = false;
 	bool decline = false;
 	bool latest = false;
+	bool compileDebug = false;
 
 	version (D_LP64)
 	    bool is64bit = true;
 
 	else
 	    bool is64bit = false;
+
+	static if (darwin)
+		const string platform = "osx";
+	
+	else static if (freebsd)
+		const string platform = "freebsd";
+	
+	else static if (linux)
+		const string platform = "linux";
+	
+	else static if (Windows)
+		const string platform = "windows";
 }
 
 private struct Path

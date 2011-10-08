@@ -5,4 +5,4 @@ REM      https://github.com/D-Programming-Language/tools
 REM   Then, rdmd can be compiled with DMD 2.053
 REM   Or, you can 'dsss build' if you have dsss, but rdmd is much faster.
 
-rdmd -Jresources --build-only -ofdvm\dvm\dvm -release -O -inline dvm\dvm\dvm.d
+rdmd -Jresources --build-only -ofbin\dvm -release -O -inline dvm\dvm\dvm.d

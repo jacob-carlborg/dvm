@@ -880,3 +880,14 @@ version (Phobos)
 		return i;
 	}
 }
+
+string slashSafeSubstitute (string haystack, string needle, string replacement)
+{
+	version (Windows)
+	{
+		needle = needle.substitute("/", "\\");
+		replacement = replacement.substitute("/", "\\");
+	}
+		
+	return haystack.substitute(needle, replacement);
+}

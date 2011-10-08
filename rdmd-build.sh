@@ -5,4 +5,4 @@
 #   Then, rdmd can be compiled with DMD 2.053
 #   Or, you can 'dsss build' if you have dsss, but rdmd is much faster.
 
-rdmd -Jresources -L-lz --build-only -ofdvm/dvm/dvm -release -O -inline dvm/dvm/dvm.d
+rdmd -Jresources -L-lz --build-only -ofbin/dvm -release -O -inline dvm/dvm/dvm.d
