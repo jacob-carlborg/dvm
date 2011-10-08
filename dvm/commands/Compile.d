@@ -32,7 +32,7 @@ import dvm.util.Util;
 import dvm.util.Version;
 
 //TODO: Make sure to support compiling older DMDs (at least release-style).
-//TODO: Make it compile DMD1 on Windows.
+//TODO: Touch 'dmd\src\phobos\minit.obj' (On Win)
 
 class Compile : Fetch
 {
@@ -56,6 +56,7 @@ class Compile : Fetch
 		bool isD1;
 		
 		string base;
+		string dmdBase;
 		string dmdPath;
 		string druntimePath;
 		string phobosPath;
@@ -130,7 +131,7 @@ protected:
 			}
 		}
 
-		compileDMD(compileDebug);
+		//compileDMD(compileDebug);
 		
 		// Add the new dmd to PATH
 		addEnvPath(installBin);
@@ -152,15 +153,17 @@ private:
 		if (Path.exists(gitDMDPath) && Path.exists(gitPhobosPath))
 		{
 			isGitStructure = true;
+			dmdBase      = Path.join(base, "dmd");
 			dmdPath      = gitDMDPath;
 			druntimePath = gitDruntimePath;
 			phobosPath   = gitPhobosPath;
 			toolsPath    = gitToolsPath;
-			installPath  = Path.join(base, "dmd");
+			installPath  = dmdBase;
 		}
 		else
 		{
 			isGitStructure = false;
+			dmdBase      = base;
 			dmdPath      = Path.join(base, "src", "dmd");
 			druntimePath = Path.join(base, "src", "druntime");
 			phobosPath   = Path.join(base, "src", "phobos");
@@ -168,6 +171,7 @@ private:
 			installPath  = Path.join(base, options.platform);
 		}
 		
+		dmdBase      = Environment.toAbsolute(dmdBase);
 		dmdPath      = Environment.toAbsolute(dmdPath);
 		druntimePath = Environment.toAbsolute(druntimePath);
 		phobosPath   = Environment.toAbsolute(phobosPath);
@@ -330,9 +334,22 @@ private:
 			if (!isD1)
 				targetName = compileDebug? "debug" : "release";
 		}
-
+		
+		string dirDef;
+		string dmdDef;
+		version (Windows)
+		{
+			if (isD1)
+			{
+				dirDef = " " ~ quote("DIR=" ~ dmdBase);
+				dmdDef = " " ~ quote("DMD=" ~ installBin ~ `\dmd`);
+			}
+		}
+		
+		auto druntimeDef = " " ~ quote("DRUNTIME="~druntimePath);
+		
 		Environment.cwd = phobosPath;
-		auto result = system("make -f" ~ phobosMakefile ~ " " ~ targetName ~ " " ~ quote("DRUNTIME="~druntimePath));
+		auto result = system("make -f" ~ phobosMakefile ~ " " ~ targetName ~ druntimeDef ~ dirDef ~ dmdDef);
 		
 		if (result.status != 0)
 			throw new DvmException("Error building phobos", __FILE__, __LINE__);
