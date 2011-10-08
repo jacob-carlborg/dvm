@@ -131,7 +131,7 @@ protected:
 			}
 		}
 
-		//compileDMD(compileDebug);
+		compileDMD(compileDebug);
 		
 		// Add the new dmd to PATH
 		addEnvPath(installBin);
