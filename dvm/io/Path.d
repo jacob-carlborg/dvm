@@ -12,6 +12,8 @@ version (Posix) import tango.stdc.posix.sys.stat;
 import tango.sys.Common;
 
 import dvm.core._;
+import dvm.dvm.Options;
+import dvm.util.Util;
 
 bool isSymlink (string path)
 {
@@ -54,6 +56,46 @@ int remove (string path, bool recursive = false)
 	}
 
 	return removePath(path) ? result + 1 : result;
+}
+
+void copy (string source, string destination)
+{
+	copyMoveImpl(source, destination, false);
+}
+
+void move (string source, string destination)
+{
+	copyMoveImpl(source, destination, true);
+}
+
+private void copyMoveImpl (string source, string destination, bool doMove)
+{
+	auto options = Options.instance;
+	
+	verbose(options.indentation, "source: ", source);
+	verbose(options.indentation, "destination: ", destination, '\n');		
+	
+	if (exists(destination))
+		remove(destination, true);
+
+	bool createParentOnly = false;
+
+	if (isFile(source))
+		createParentOnly = true;
+	
+	version (Windows)
+		createParentOnly = true;
+	
+	if (createParentOnly)
+		createPath(parse(destination).path);
+
+	else
+		createPath(destination);
+
+	if (doMove)
+		rename(source, destination);
+	else
+		tango.io.Path.copy(source, destination);
 }
 
 void validatePath (string path)

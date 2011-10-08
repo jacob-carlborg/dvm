@@ -74,7 +74,7 @@ class Application
 				
 			catch (DvmException e)
 			{
-				stderr.format("An error occurred: {}", e).flush;
+				stderr.format("An error occurred: {}", e).newline.flush;
 				return EXIT_FAILURE;
 			}
 			
@@ -105,6 +105,7 @@ class Application
 		commandManager.register("dvm.commands.Fetch.Fetch");
 		commandManager.register("dvm.commands.Use.Use");
 		commandManager.register("dvm.commands.List.List");
+		commandManager.register("dvm.commands.Compile.Compile");
 		commandManager.register("dvm.commands.Uninstall.Uninstall");
 	}
 	
@@ -120,6 +121,7 @@ class Application
 				case "fetch": command = "dvm.commands.Fetch.Fetch"; break;
 				case "use": command = "dvm.commands.Use.Use"; break;
 				case "list": command = "dvm.commands.List.List"; break;
+				case "compile": command = "dvm.commands.Compile.Compile"; break;
 				case "uninstall": command = "dvm.commands.Uninstall.Uninstall"; break;
 				default:
 					return unhandledCommand(args[0]);
@@ -186,6 +188,10 @@ class Application
 		
 		opts.on("decline", "Answer 'no' to all prompts.", {
 			options.decline = true;
+		});
+		
+		opts.on("debug", "Compile DMD in debug mode.", {
+			options.compileDebug = true;
 		});
 		
 		opts.on('h', "help", "Show this message and exit.", {
