@@ -32,7 +32,6 @@ import dvm.util.Util;
 import dvm.util.Version;
 
 //TODO: Make sure to support compiling older DMDs (at least release-style).
-//TODO: Touch 'dmd\src\phobos\minit.obj' (On Win)
 
 class Compile : Fetch
 {
@@ -327,6 +326,11 @@ private:
 	void compilePhobos (bool compileDebug)
 	{
 		verbose("Building phobos: ", phobosPath);
+		
+		// Rebuilding minit.obj should never be necessary, and doing so requires
+		// an assembler not included in DMC, so force it to never be rebuilt.
+		version (Windows)
+			touch(Path.join(phobosPath, "minit.obj"));
 
 		string targetName;
 		version (Posix)
@@ -455,5 +459,12 @@ private:
 	void addEnvPath (string path)
 	{
 		Environment.set("PATH", path ~ options.path.pathSeparator ~ Environment.get("PATH"));
+	}
+	
+	void touch(string filename)
+	{
+		// Merely opening the file for append and closing doesn't appear to work
+		auto data = File.get(filename);
+		File.set(filename, data);
 	}
 }
