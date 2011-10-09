@@ -61,6 +61,9 @@ class Compile : Fetch
 		string phobosPath;
 		string toolsPath;
 		
+		string installBinName;
+		string installLibName;
+
 		string installPath;
 		string installBin;
 		string installLib;
@@ -176,9 +179,17 @@ private:
 		phobosPath   = Environment.toAbsolute(phobosPath);
 		toolsPath    = Environment.toAbsolute(toolsPath);
 		installPath  = Environment.toAbsolute(installPath);
-
-		installBin   = Path.join(installPath, binName);
-		installLib   = Path.join(installPath, libName);
+		
+		installBinName = "bin";
+		installLibName = "lib";
+		if (!Path.exists(Path.join(installPath, installBinName)))
+		{
+			installBinName ~= bitsLabel;
+			installLibName ~= bitsLabel;
+		}
+		
+		installBin = Path.join(installPath, installBinName);
+		installLib = Path.join(installPath, installLibName);
 		
 		dmdMakefile      = Path.exists(Path.join(dmdPath,      origMakefile))? origMakefile : secondaryMakefile;
 		druntimeMakefile = Path.exists(Path.join(druntimePath, origMakefile))? origMakefile : secondaryMakefile;
@@ -288,7 +299,7 @@ private:
 		if (isGitStructure)
 		{
 			verbose("Copying lib/bin directories: ");
-
+			
 			auto fileSets = ["lib"[]: Path.children(latestDMDLib), "bin": Path.children(latestDMDBin)];
 			
 			foreach (srcSubDir, fileSet; fileSets)
@@ -297,7 +308,7 @@ private:
 			if (info.name != dmdExeName && info.name != phobosLibName)
 			{
 				auto targetSubDir = srcSubDir ~ bitsLabel;
-
+				
 				auto sourcePath = Path.join(latestDMDPath, srcSubDir, info.name);
 				auto targetPath = Path.join(installPath, targetSubDir, info.name);
 				
@@ -364,9 +375,12 @@ private:
 		version (Posix)
 		{
 			if (isD1)
-				sourcePath = Path.join(sourcePath, "lib" ~ bitsLabel);
+				sourcePath = Path.join(sourcePath, "lib");
 			else
-				sourcePath = Path.join(sourcePath, "generated", options.platform, targetName, bitsLabel);
+				sourcePath = Path.join(sourcePath, "generated", options.platform, targetName);
+			
+			if (!Path.exists(Path.join(sourcePath, phobosLibName)))
+				sourcePath = Path.join(sourcePath, bitsLabel);
 		}
 
 		sourcePath = Path.join(sourcePath, phobosLibName);
@@ -404,7 +418,7 @@ private:
 		
 		auto newPath = isGitStructure? "%@P%/../.." : "%@P%/../../src";
 		content = content.slashSafeSubstitute("%@P%/../src", newPath);
-		content = content.slashSafeSubstitute("%@P%/../lib", "%@P%/../"~libName);
+		content = content.slashSafeSubstitute("%@P%/../lib", "%@P%/../"~installLibName);
 		
 		File.set(patchedFile, content);
 	}
@@ -426,24 +440,8 @@ private:
 		File.set(destPath, content);
 	}
 	
-	string binName ()
-	{
-		return "bin" ~ bitsLabel;
-	}
-
-	string libName ()
-	{
-		return "lib" ~ bitsLabel;
-	}
-
 	string bitsLabel ()
 	{
-		version (Windows)
-			return "";
-		
-		version (OSX)
-			return "";
-		
 		return options.is64bit? "64" : "32";
 	}
 	
