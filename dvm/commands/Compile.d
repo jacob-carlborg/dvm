@@ -341,7 +341,18 @@ private:
 		// Rebuilding minit.obj should never be necessary, and doing so requires
 		// an assembler not included in DMC, so force it to never be rebuilt.
 		version (Windows)
-			touch(Path.join(phobosPath, "minit.obj"));
+		{
+			auto minitPath = phobosPath;
+			
+			if (!isD1)
+			{
+				minitPath = druntimePath;
+				if (!Path.exists(Path.join(minitPath, "minit.obj")))
+					minitPath = Path.join(minitPath, "src", "rt");
+			}
+			
+			touch(Path.join(minitPath, "minit.obj"));
+		}
 
 		string targetName;
 		version (Posix)
