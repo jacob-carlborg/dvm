@@ -31,8 +31,6 @@ import dvm.sys.Process;
 import dvm.util.Util;
 import dvm.util.Version;
 
-//TODO: Make sure to support compiling older DMDs (at least release-style).
-
 class Compile : Fetch
 {
 	private
@@ -180,13 +178,8 @@ private:
 		toolsPath    = Environment.toAbsolute(toolsPath);
 		installPath  = Environment.toAbsolute(installPath);
 		
-		installBinName = "bin";
-		installLibName = "lib";
-		if (!Path.exists(Path.join(installPath, installBinName)))
-		{
-			installBinName ~= bitsLabel;
-			installLibName ~= bitsLabel;
-		}
+		installBinName = firstExisting(["bin"[], "bin"~bitsLabel], installPath, null, "bin"~bitsLabel);
+		installLibName = firstExisting(["lib"[], "lib"~bitsLabel], installPath, null, "lib"~bitsLabel);
 		
 		installBin = Path.join(installPath, installBinName);
 		installLib = Path.join(installPath, installLibName);
@@ -342,15 +335,8 @@ private:
 		// an assembler not included in DMC, so force it to never be rebuilt.
 		version (Windows)
 		{
-			auto minitPath = phobosPath;
-			
-			if (!isD1)
-			{
-				minitPath = druntimePath;
-				if (!Path.exists(Path.join(minitPath, "minit.obj")))
-					minitPath = Path.join(minitPath, "src", "rt");
-			}
-			
+			auto minitSearchPaths = [phobosPath, druntimePath, Path.join(druntimePath, "src", "rt")];
+			auto minitPath = firstExisting(minitSearchPaths, null, "minit.obj");
 			touch(Path.join(minitPath, "minit.obj"));
 		}
 
@@ -380,24 +366,15 @@ private:
 		if (result.status != 0)
 			throw new DvmException("Error building phobos", __FILE__, __LINE__);
 
-		// Copy phobos lib
-		auto sourcePath = phobosPath;
-
-		version (Posix)
-		{
-			if (isD1)
-				sourcePath = Path.join(sourcePath, "lib");
-			else
-				sourcePath = Path.join(sourcePath, "generated", options.platform, targetName);
-			
-			if (!Path.exists(Path.join(sourcePath, phobosLibName)))
-				sourcePath = Path.join(sourcePath, bitsLabel);
-		}
-
+		// Find phobos lib
+		auto generatedDir = Path.join(phobosPath, "generated", options.platform, targetName);
+		auto generatedBitsDir = Path.join(generatedDir, bitsLabel);
+		auto searchPaths = [generatedDir, generatedBitsDir, Path.join(phobosPath, "lib"), Path.join(phobosPath, "lib"~bitsLabel), phobosPath];
+		auto sourcePath = firstExisting(searchPaths, null, phobosLibName);
 		sourcePath = Path.join(sourcePath, phobosLibName);
 		
+		// Copy phobos lib
 		auto targetPath = Path.join(installLib, phobosLibName);
-
 		Path.copy(sourcePath, targetPath);
 	}
 	
@@ -475,5 +452,22 @@ private:
 		// Merely opening the file for append and closing doesn't appear to work
 		auto data = File.get(filename);
 		File.set(filename, data);
+	}
+	
+	// Returns the first element of paths for which 'pre/path/post' exists,
+	// or defaultPath if none.
+	string firstExisting(string[] paths, string pre = null, string post = null, string defaultPath = null)
+	{
+		foreach (string path; paths)
+		{
+			auto testPath = path;
+			testPath = pre is null? testPath : Path.join(pre, testPath);
+			testPath = post is null? testPath : Path.join(testPath, post);
+
+			if (Path.exists(testPath))
+				return path;
+		}
+
+		return defaultPath;
 	}
 }
