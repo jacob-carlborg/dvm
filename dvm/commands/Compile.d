@@ -101,6 +101,9 @@ protected:
 		}
 
 		base = Path.normalize(directory);
+		if (base == "")
+			base = ".";
+		
 		analyzeStructure;
 		verifyStructure;
 
