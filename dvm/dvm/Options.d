@@ -70,6 +70,7 @@ private struct Path
 		const libExtension = ".a";
 		const tangoLibName = "libtango";
 		const pathSeparator = ":";
+		const confName = "dmd.conf";
 	}
 	
 	else
@@ -77,6 +78,7 @@ private struct Path
 		const libExtension = ".lib";
 		const tangoLibName = "tango";
 		const pathSeparator = ";";
+		const confName = "sc.ini";
 	}
 	
 	private
@@ -109,7 +111,6 @@ private struct Path
 			const string dvmDir = ".dvm";
 			const string scriptExtension = "";
 			const string executableExtension = "";
-			const string confName = "dmd.conf";
 			const string dvmExecName = "dvm";
 		}
 
@@ -118,7 +119,6 @@ private struct Path
 			const string dvmDir = "dvm";
 			const string scriptExtension = ".bat";
 			const string executableExtension = ".exe";
-			const string confName = "sc.ini";
 			const string dvmExecName = "_dvm";
 		}
 	}
