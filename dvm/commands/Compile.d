@@ -310,6 +310,12 @@ private:
 				
 				if (!Path.exists(targetPath))
 					Path.copy(sourcePath, targetPath);
+					
+				else if (info.name == options.path.confName)
+				{
+					Path.copy(targetPath, targetPath ~ ".dvm-bak");
+					Path.copy(sourcePath, targetPath);
+				}
 			}
 			
 			patchDmdConf();
@@ -410,6 +416,8 @@ private:
 		auto newPath = isGitStructure? "%@P%/../.." : "%@P%/../../src";
 		content = content.slashSafeSubstitute("%@P%/../src", newPath);
 		content = content.slashSafeSubstitute("%@P%/../lib", "%@P%/../"~installLibName);
+		content = content.slashSafeSubstitute("%@P%/../lib3264", "%@P%/../lib64");
+		content = content.slashSafeSubstitute("%@P%/../lib6464", "%@P%/../lib64");
 		
 		File.set(patchedFile, content);
 	}
