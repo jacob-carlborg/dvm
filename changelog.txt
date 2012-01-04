@@ -1,5 +1,9 @@
 DVM Change Log
 
+Version 0.4.0
+	New/Change Features
+	 * Added a "compile" command for compiling DMD, druntime and Phobos from github
+
 Version 0.3.1
 	Bugs Fixed
 	 * "dvm use" changes the default compiler on Windows
