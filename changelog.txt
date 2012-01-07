@@ -1,12 +1,11 @@
 DVM Change Log
 
-Version 0.4.1
-	Bugs Fixed
-	 * Failed to get latest version of DMD
-
 Version 0.4.0
 	New/Change Features
 	 * Added a "compile" command for compiling DMD, druntime and Phobos from github
+
+	Bugs Fixed
+	 * Failed to get latest version of DMD
 
 Version 0.3.1
 	Bugs Fixed
