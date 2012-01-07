@@ -190,28 +190,40 @@ protected:
 		return args.first;
 	}
 	
+	string getDVersion ()
+	{
+		return args.empty() ? "2" : args.first;
+	}
+	
 	string getLatestDMDVersion (string dVersion)
+	{
+		auto pattern = `http:\/\/ftp\.digitalmars\.com\/(dmd\.` ~ dVersion ~ `\.(\d+)\.zip)`;
+		
+		if (auto result = getLatestDMDVersionImpl(pattern))
+			return result;
+			
+		pattern = `https:\/\/github\.com/downloads/D-Programming-Language/dmd/(dmd\.` ~ dVersion ~ `\.(\d+)\.zip)`;
+		
+		if (auto result = getLatestDMDVersionImpl(pattern))
+			return result;
+			
+		throw new DvmException("Failed to get the latest DMD version.", __FILE__, __LINE__);
+	}
+	
+	private string getLatestDMDVersionImpl (string pattern)
 	{
 		auto page = new HttpGet("http://www.digitalmars.com/d/download.html");
 		auto content = cast(string) page.read;
 
-		auto pattern = new Regex.Regex(`http:\/\/ftp\.digitalmars\.com\/(dmd.` ~ dVersion ~ `.(\d+).zip)`);
+		auto regex = new Regex.Regex(pattern);
 		string vers = null;
 
 		foreach (line ; content.split('\n'))
-			if (pattern.test(line))
-				if (pattern[2] > vers)
-					vers = pattern[2];
-
-		if (vers is null)
-			throw new DvmException("Failed to get the latest DMD version.", __FILE__, __LINE__);
+			if (regex.test(line))
+				if (regex[2] > vers)
+					vers = regex[2];
 
 		return vers;
-	}
-
-	string getDVersion ()
-	{
-		return args.empty() ? "2" : args.first;
 	}
 }
 
