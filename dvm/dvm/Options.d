@@ -11,8 +11,8 @@ import tango.sys.Environment;
 import tango.sys.HomeFolder;
 
 import mambo.core.string;
-import dvm.util.Singleton;
-import dvm.util.Version;
+import mambo.util.Singleton;
+import mambo.util.Version;
 
 class Options
 {

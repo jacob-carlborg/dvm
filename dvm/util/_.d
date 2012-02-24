@@ -12,12 +12,7 @@ import dvm.util.Closure;
 import dvm.util.Ctfe;
 
 import dvm.util.OptionParser;
-import dvm.util.Range;
-import dvm.util.Singleton;
-import dvm.util.Traits;
-import dvm.util.Use;
 import dvm.util.Util;
-import dvm.util.Version;
 
 version (Windows):
 	import dvm.util.DvmRegistry;

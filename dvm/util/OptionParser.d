@@ -11,9 +11,10 @@ import tango.text.convert.Format;
 import tango.io.Stdout;
 
 import mambo.core._;
+import mambo.util.Traits;
+
 import dvm.dvm.Options;
 import dvm.dvm.Exceptions;
-import dvm.util.Traits;
 
 class OptionParser
 {

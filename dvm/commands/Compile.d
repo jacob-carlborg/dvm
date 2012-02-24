@@ -18,6 +18,8 @@ import tango.text.convert.Format : format = Format;
 import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
+import mambo.util.Version;
+
 import dvm.commands.Command;
 import dvm.commands.DmcInstall;
 import dvm.commands.Fetch;
@@ -29,7 +31,6 @@ import dvm.dvm._;
 import Path = dvm.io.Path;
 import dvm.sys.Process;
 import dvm.util.Util;
-import dvm.util.Version;
 
 class Compile : Fetch
 {

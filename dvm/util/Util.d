@@ -7,9 +7,9 @@
 module dvm.util.Util;
 
 import mambo.core.io;
-import dvm.dvm.Options;
-import dvm.util.Use;
+import mambo.util.Use;
 
+import dvm.dvm.Options;
 
 Use!(void delegate (), bool) unless (bool value)
 {

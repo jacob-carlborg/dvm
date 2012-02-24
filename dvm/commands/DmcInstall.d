@@ -18,6 +18,8 @@ import tango.text.convert.Format : format = Format;
 import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
+import mambo.util.Version;
+
 import dvm.commands.Command;
 import dvm.commands.DvmInstall;
 import dvm.commands.Fetch;
@@ -27,7 +29,6 @@ import dvm.dvm.Wrapper;
 import dvm.dvm._;
 import Path = dvm.io.Path;
 import dvm.util.Util;
-import dvm.util.Version;
 
 // DMC is Windows-only, but this is allowed on Posix 
 // in case someone wants to try to use it through Wine.

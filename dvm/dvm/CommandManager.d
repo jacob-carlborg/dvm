@@ -7,10 +7,12 @@
 module dvm.dvm.CommandManager;
 
 import tango.text.convert.Format;
+
+import mambo.core._;
+import mambo.util.Singleton;
+
 import dvm.commands.Command;
-import mambo.core.string;
 import dvm.dvm.Options;
-import dvm.util.Singleton;
 
 class CommandManager
 {
