@@ -15,7 +15,7 @@ import tango.io.Stdout;
 import tango.text.Util;
 import tango.text.Unicode;
 
-import dvm.core._;
+import mambo.core._;
 import Path = dvm.io.Path;
 import dvm.io.Console;
 import dvm.util.Registry;

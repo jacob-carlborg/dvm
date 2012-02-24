@@ -6,7 +6,7 @@
  */
 module dvm.dvm.Exceptions;
 
-import dvm.core.string;
+import mambo.core.string;
 
 class DvmException : Exception
 {

@@ -10,7 +10,7 @@ import tango.text.Arguments;
 import tango.text.convert.Format;
 import tango.io.Stdout;
 
-import dvm.core._;
+import mambo.core._;
 import dvm.dvm.Options;
 import dvm.dvm.Exceptions;
 import dvm.util.Traits;

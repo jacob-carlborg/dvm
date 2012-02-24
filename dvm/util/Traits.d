@@ -24,7 +24,7 @@ else
 	version = Phobos;
 }
 
-import dvm.core.string;
+import mambo.core.string;
 
 template isPrimitive (T)
 {

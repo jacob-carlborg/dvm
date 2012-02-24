@@ -8,5 +8,5 @@ module dvm.core._;
 
 public:
 	
-import dvm.core.io;
-import dvm.core.string;
+import mambo.core.io;
+import mambo.core.string;

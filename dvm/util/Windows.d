@@ -8,7 +8,7 @@ module dvm.util.Windows;
 
 version (Windows):
 
-import dvm.core.string;
+import mambo.core.string;
 import dvm.dvm.Exceptions;
 import tango.sys.win32.Types;
 import tango.sys.win32.UserGdi;

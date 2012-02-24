@@ -18,7 +18,7 @@ import tango.text.convert.Format : format = Format;
 import Regex = tango.text.Regex;
 
 import dvm.commands.Command;
-import dvm.core._;
+import mambo.core._;
 import dvm.util._;
 import dvm.dvm._;
 

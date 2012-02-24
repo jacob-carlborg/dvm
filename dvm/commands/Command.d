@@ -7,7 +7,7 @@
 module dvm.commands.Command;
 
 import dvm.dvm._;
-import dvm.core.string;
+import mambo.core.string;
 import Path = dvm.io.Path;
 
 abstract class Command

@@ -9,7 +9,7 @@ module dvm.dvm.ShellScript;
 import tango.io.device.File;
 import tango.text.convert.Format : format = Format;
 
-import dvm.core._;
+import mambo.core._;
 
 class ShellScript
 {

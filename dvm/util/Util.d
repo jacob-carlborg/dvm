@@ -6,7 +6,7 @@
  */
 module dvm.util.Util;
 
-import dvm.core.io;
+import mambo.core.io;
 import dvm.dvm.Options;
 import dvm.util.Use;
 

@@ -11,7 +11,7 @@ import tango.io.Stdout;
 import tango.text.Util;
 import tango.text.Unicode;
 
-import dvm.core._;
+import mambo.core._;
 import dvm.dvm.Options;
 import dvm.util.Util;
 

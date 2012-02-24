@@ -8,7 +8,7 @@ module dvm.dvm.CommandManager;
 
 import tango.text.convert.Format;
 import dvm.commands.Command;
-import dvm.core._;
+import mambo.core.string;
 import dvm.dvm.Options;
 import dvm.util.Singleton;
 

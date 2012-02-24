@@ -8,7 +8,7 @@ module dvm.sys.Process;
 
 import tango.sys.Process;
 import tango.io.Stdout;
-import dvm.core.string;
+import mambo.core.string;
 
 version (darwin)
 {

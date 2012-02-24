@@ -10,7 +10,7 @@ import tango.io.device.File;
 import tango.text.Util;
 
 import dvm.commands.Command;
-import dvm.core._;
+import mambo.core._;
 import Path = dvm.io.Path;
 import dvm.util._;
 

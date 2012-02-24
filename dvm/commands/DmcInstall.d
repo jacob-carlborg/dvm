@@ -22,7 +22,7 @@ import dvm.commands.Command;
 import dvm.commands.DvmInstall;
 import dvm.commands.Fetch;
 import dvm.commands.Use;
-import dvm.core._;
+import mambo.core._;
 import dvm.dvm.Wrapper;
 import dvm.dvm._;
 import Path = dvm.io.Path;

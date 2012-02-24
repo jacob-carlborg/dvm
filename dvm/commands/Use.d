@@ -10,7 +10,7 @@ import dvm.util.Util;
 import tango.core.Exception;
 import tango.text.convert.Format : format = Format;
 
-import dvm.core._;
+import mambo.core._;
 import dvm.dvm.Options;
 import dvm.dvm.ShellScript;
 import dvm.dvm.Wrapper;

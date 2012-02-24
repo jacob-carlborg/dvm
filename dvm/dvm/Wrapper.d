@@ -6,7 +6,7 @@
  */
 module dvm.dvm.Wrapper;
 
-import dvm.core._;
+import mambo.core._;
 import dvm.dvm.ShellScript;
 import dvm.io.Path;
 

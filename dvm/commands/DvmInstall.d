@@ -11,7 +11,7 @@ import tango.sys.HomeFolder;
 import tango.text.convert.Format : format = Format;
 import tango.text.Util;
 
-import dvm.core._;
+import mambo.core._;
 import Path = dvm.io.Path;
 import dvm.commands.Command;
 import dvm.dvm.Exceptions;

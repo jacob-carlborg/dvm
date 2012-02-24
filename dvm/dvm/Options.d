@@ -10,7 +10,7 @@ import tango.io.Path;
 import tango.sys.Environment;
 import tango.sys.HomeFolder;
 
-import dvm.core.string;
+import mambo.core.string;
 import dvm.util.Singleton;
 import dvm.util.Version;
 

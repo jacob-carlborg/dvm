@@ -6,7 +6,7 @@
  */
 module dvm.util.Ctfe;
 
-import dvm.core.string;
+import mambo.core.string;
 import dvm.util.Traits;
 
 template format (ARGS...)

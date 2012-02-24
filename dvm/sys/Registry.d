@@ -13,7 +13,7 @@ import tango.sys.win32.UserGdi;
 import tango.text.Util;
 import tango.util.Convert;
 
-import dvm.core.string;
+import mambo.core.string;
 import dvm.dvm.Exceptions;
 import dvm.util.Windows;
 

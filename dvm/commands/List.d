@@ -8,7 +8,7 @@ module dvm.commands.List;
 
 import tango.io.vfs.FileFolder;
 
-import dvm.core._;
+import mambo.core._;
 import dvm.commands.Command;
 import dvm.io.Path;
 

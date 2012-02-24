@@ -8,3 +8,4 @@ dvm/dvm/dvm
 *.eprj
 *.exe
 bin/dvm
+*.deps

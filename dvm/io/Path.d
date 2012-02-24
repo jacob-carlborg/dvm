@@ -6,12 +6,14 @@
  */
 module dvm.io.Path;
 
+import std.conv;
+
 import tango.core.Exception;
 public import tango.io.Path;
 version (Posix) import tango.stdc.posix.sys.stat;
 import tango.sys.Common;
 
-import dvm.core._;
+import mambo.core.string;
 import dvm.dvm.Options;
 import dvm.util.Util;
 
@@ -234,5 +236,5 @@ private ushort permission (string path)
 	if (stat((path ~ '\0').ptr, &buffer) == -1)	
 		throw new IOException(path ~ ": " ~ SysError.lastMsg);
 	
-	return buffer.st_mode & 0777;
+	return buffer.st_mode & octal!(777);
 }

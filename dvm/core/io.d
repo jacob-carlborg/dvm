@@ -12,7 +12,7 @@ version (Tango)
 	import tango.io.Stdout;
 	import tango.io.Console;
 	
-	import dvm.core.string;
+	import mambo.core.string;
 }
 
 else 
