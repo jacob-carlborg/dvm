@@ -1,5 +1,9 @@
 # DVM Change Log
 
+## Version 0.4.1
+### Bugs Fixed
+* Issue 5: Missing executable permission on some files
+
 ## Version 0.4.0
 ### New/Change Features
 * Added a `compile` command for compiling DMD, druntime and Phobos from github
