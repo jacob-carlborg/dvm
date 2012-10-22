@@ -143,17 +143,16 @@ private:
 	void setPermissions ()
 	{
 		verbose("Setting permissions:");
-		
-		permission(Path.join(installPath, options.path.bin, "dmd"), "+x");
-		permission(Path.join(installPath, options.path.bin, "dumpobj"), "+x");
-		permission(Path.join(installPath, options.path.bin, "obj2asm"), "+x");
 
-		auto rdmdPath = Path.join(installPath, options.path.bin, "rdmd");
+		setExecutableIfExists(Path.join(installPath, options.path.bin, "ddemangle"));
+		setExecutableIfExists(Path.join(installPath, options.path.bin, "dman"));
+		setExecutableIfExists(Path.join(installPath, options.path.bin, "dmd"));
+		setExecutableIfExists(Path.join(installPath, options.path.bin, "dumpobj"));
+		setExecutableIfExists(Path.join(installPath, options.path.bin, "obj2asm"));
+		setExecutableIfExists(Path.join(installPath, options.path.bin, "rdmd"));
+		setExecutableIfExists(Path.join(installPath, options.path.bin, "shell"));
 
-		if (Path.exists(rdmdPath))
-	        permission(rdmdPath, "+x");
-
-		permission(wrapper.path, "+x");
+		setExecutableIfExists(wrapper.path);
 	}
 	
 	void installEnvironment (ShellScript sh)
@@ -388,5 +387,11 @@ private:
     		return binPath;
 
     	throw new DvmException("Could not find the binrary path: " ~ binPath, __FILE__, __LINE__);
-    }
+	}
+
+	void setExecutableIfExists (string path)
+	{
+		if (Path.exists(path))
+			permission(path, "+x");
+	}
 }
