@@ -143,14 +143,15 @@ private:
 	void setPermissions ()
 	{
 		verbose("Setting permissions:");
+		auto binPath = Path.join(installPath, options.path.bin);
 
-		setExecutableIfExists(Path.join(installPath, options.path.bin, "ddemangle"));
-		setExecutableIfExists(Path.join(installPath, options.path.bin, "dman"));
-		setExecutableIfExists(Path.join(installPath, options.path.bin, "dmd"));
-		setExecutableIfExists(Path.join(installPath, options.path.bin, "dumpobj"));
-		setExecutableIfExists(Path.join(installPath, options.path.bin, "obj2asm"));
-		setExecutableIfExists(Path.join(installPath, options.path.bin, "rdmd"));
-		setExecutableIfExists(Path.join(installPath, options.path.bin, "shell"));
+		setExecutableIfExists(binPath, "ddemangle"));
+		setExecutableIfExists(binPath, "dman"));
+		setExecutableIfExists(binPath, "dmd"));
+		setExecutableIfExists(binPath, "dumpobj"));
+		setExecutableIfExists(binPath, "obj2asm"));
+		setExecutableIfExists(binPath, "rdmd"));
+		setExecutableIfExists(binPath, "shell"));
 
 		setExecutableIfExists(wrapper.path);
 	}
