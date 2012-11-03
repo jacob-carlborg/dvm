@@ -187,7 +187,11 @@ protected:
 			return args.first = vers ~ "." ~ getLatestDMDVersion(vers);
 		}
 
-		return args.first;
+		else
+		{
+			validateArguments();
+			return args.first;
+		}
 	}
 	
 	string getDVersion ()
@@ -224,6 +228,15 @@ protected:
 					vers = regex[2];
 
 		return vers;
+	}
+
+	void validateArguments (string errorMessage = null)
+	{
+		if (errorMessage.empty())
+			errorMessage = "Cannot fetch a compiler without specifying a version";
+
+		if (args.empty)
+			throw new DvmException(errorMessage, __FILE__, __LINE__);
 	}
 }
 
