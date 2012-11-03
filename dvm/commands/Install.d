@@ -65,9 +65,11 @@ class Install : Fetch
 	
 	void install (string ver="")
 	{
+		validateArguments();
+
 		if(ver == "")
 			ver = args.first;
-		
+
 		this.ver = ver;
 		
 		auto filename = buildFilename(ver);
@@ -394,5 +396,11 @@ private:
 	{
 		if (Path.exists(path))
 			permission(path, "+x");
+	}
+
+	void validateArguments ()
+	{
+		if (args.empty)
+			throw new DvmException("Cannot install a compiler without specifying a version", __FILE__, __LINE__);
 	}
 }
