@@ -63,12 +63,10 @@ class Install : Fetch
 		install;
 	}
 	
-	void install (string ver="")
+	void install (string ver = "")
 	{
-		validateArguments();
-
 		if(ver == "")
-			ver = args.first;
+			ver = getDMDVersion();
 
 		this.ver = ver;
 		
@@ -76,7 +74,7 @@ class Install : Fetch
 		auto url = buildUrl(filename);
 		
 		archivePath = Path.join(options.path.archives, filename);
-		
+
 		fetch(url, archivePath);		
 		println("Installing: dmd-", ver);
 
@@ -398,9 +396,11 @@ private:
 			permission(path, "+x");
 	}
 
-	void validateArguments ()
+	void validateArguments (string errorMessage = null)
 	{
-		if (args.empty)
-			throw new DvmException("Cannot install a compiler without specifying a version", __FILE__, __LINE__);
+		if (errorMessage.empty())
+			errorMessage = "Cannot install a compiler without specifying a version";
+
+		super.validateArguments(errorMessage);
 	}
 }
