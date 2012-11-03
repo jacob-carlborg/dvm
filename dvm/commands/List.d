@@ -26,11 +26,19 @@ class List : Command
 
 	void execute ()
 	{
+		auto errorMessage = "No installed D compilers";
+
+		if (!Path.exists(options.path.compilers))
+		{
+			println(errorMessage);
+			return;
+		}
+
 		scope folder = new FileFolder(options.path.compilers);
 
 		if (folder.self.folders == 0)
 		{
-			println("No installed D compilers");
+			println(errorMessage);
 			return;
 		}
 		
