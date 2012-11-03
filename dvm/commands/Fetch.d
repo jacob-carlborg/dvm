@@ -161,9 +161,24 @@ protected:
 	
 	string buildUrl (string filename)
 	{
+		auto url = githubUrl(filename);
+
+		if (urlExists(url))
+			return url;
+
+		return digitalMarsUrl(filename);
+	}
+
+	string digitalMarsUrl (string filename)
+	{
 		return "http://ftp.digitalmars.com/" ~ filename;
 	}
-	
+
+	string githubUrl (string filename)
+	{
+		return "http://cloud.github.com/downloads/D-Programming-Language/dmd/" ~ filename;
+	}
+
 	void createPath (string path)
 	{
 		if (!Path.exists(path))
@@ -178,7 +193,17 @@ protected:
 		else if (!page.isResponseOK)
 			throw new IOException(format(`An unexpected error occurred. The resource "{}" responded with the message "{}" and the status code {}.`, url, page.getResponse.getReason, page.getResponse.getStatus));
 	}
-	
+
+	bool urlExists (string url, float timeout = 5f)
+	{
+		scope page = new HttpGet(url);
+		page.setTimeout(timeout);
+		page.enableRedirect();
+		page.open();
+
+		return page.isResponseOK;
+	}
+
 	string getDMDVersion ()
 	{
 		if (options.latest)
@@ -201,12 +226,12 @@ protected:
 	
 	string getLatestDMDVersion (string dVersion)
 	{
-		auto pattern = `http:\/\/ftp\.digitalmars\.com\/(dmd\.` ~ dVersion ~ `\.(\d+)\.zip)`;
+		auto pattern = `https:\/\/github\.com/downloads/D-Programming-Language/dmd/(dmd\.` ~ dVersion ~ `\.(\d+)\.zip)`;
 		
 		if (auto result = getLatestDMDVersionImpl(pattern))
 			return result;
 			
-		pattern = `https:\/\/github\.com/downloads/D-Programming-Language/dmd/(dmd\.` ~ dVersion ~ `\.(\d+)\.zip)`;
+		pattern = `http:\/\/ftp\.digitalmars\.com\/(dmd\.` ~ dVersion ~ `\.(\d+)\.zip)`;
 		
 		if (auto result = getLatestDMDVersionImpl(pattern))
 			return result;
@@ -216,7 +241,7 @@ protected:
 	
 	private string getLatestDMDVersionImpl (string pattern)
 	{
-		auto page = new HttpGet("http://www.digitalmars.com/d/download.html");
+		scope page = new HttpGet("http://www.digitalmars.com/d/download.html");
 		auto content = cast(string) page.read;
 
 		auto regex = new Regex.Regex(pattern);
