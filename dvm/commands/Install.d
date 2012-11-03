@@ -145,13 +145,13 @@ private:
 		verbose("Setting permissions:");
 		auto binPath = Path.join(installPath, options.path.bin);
 
-		setExecutableIfExists(binPath, "ddemangle"));
-		setExecutableIfExists(binPath, "dman"));
-		setExecutableIfExists(binPath, "dmd"));
-		setExecutableIfExists(binPath, "dumpobj"));
-		setExecutableIfExists(binPath, "obj2asm"));
-		setExecutableIfExists(binPath, "rdmd"));
-		setExecutableIfExists(binPath, "shell"));
+		setExecutableIfExists(Path.join(binPath, "ddemangle"));
+		setExecutableIfExists(Path.join(binPath, "dman"));
+		setExecutableIfExists(Path.join(binPath, "dmd"));
+		setExecutableIfExists(Path.join(binPath, "dumpobj"));
+		setExecutableIfExists(Path.join(binPath, "obj2asm"));
+		setExecutableIfExists(Path.join(binPath, "rdmd"));
+		setExecutableIfExists(Path.join(binPath, "shell"));
 
 		setExecutableIfExists(wrapper.path);
 	}
