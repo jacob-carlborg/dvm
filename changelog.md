@@ -1,8 +1,14 @@
 # DVM Change Log
 
 ## Version 0.4.1
+### New/Changed Features
+* Issue 2: Fetch zips from github for DMD 2.057+
+
 ### Bugs Fixed
 * Issue 5: Missing executable permission on some files
+* Issue 9: dvm list throw an Exception when no compiler is yet installed
+* Issue 11: Fails when version not explicitly specified
+* Issue 13: Segmentation fault with -l
 
 ## Version 0.4.0
 ### New/Change Features
