@@ -41,6 +41,9 @@ particular if you had any problems with the previous shell scripts not working.
 * Install a D compiler (DMD): `$ dvm install 2.060`
 * Install a D compiler (DMD) with Tango as the standard library: `$ dvm install 1.068 -t`
 
+If you're running a Linux 64bit operating system you most likely want to install a 64bit
+version of DMD. Add the `--64bit` flag to install a 64bit version of DMD.
+
 ### Use a Compiler
 
 * Use a D compiler (DMD): `$ dvm use 2.060`
