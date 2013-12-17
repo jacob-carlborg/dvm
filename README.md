@@ -61,9 +61,8 @@ The source code is available under the [Boost Software License 1.0](http://www.b
 
 ## Build Dependencies
 
-* A D1 compiler: http://www.digitalmars.com/d/1.0/changelog.html
+* DMD 1.072: http://www.digitalmars.com/d/1.0/changelog.html
 * Tango: http://www.dsource.org/projects/tango (revision 5620 or newer)
-* DSSS: http://www.dsource.org/projects/dsss
 * zlib: http://zlib.net
 * Git: http://git-scm.com (to clone the repository) 
 
@@ -71,4 +70,4 @@ The source code is available under the [Boost Software License 1.0](http://www.b
 
 1. Clone the repository: `$ git clone git://github.com/jacob-carlborg/dvm.git`
 2. Change to the newly created directory
-3. Run: `$ dsss build`
+3. Run: `$ ./build_release.sh`
