@@ -8,7 +8,6 @@ module dvm.commands.Use;
 
 import dvm.util.Util;
 import tango.core.Exception;
-import tango.text.convert.Format : format = Format;
 
 import mambo.core._;
 import dvm.dvm.Options;
@@ -65,8 +64,8 @@ private:
 
 	void installWrapper ()
 	{
-		wrapper.target = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin, "dmd" ~ options.path.executableExtension);
-		wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc" ~ options.path.scriptExtension);
+		wrapper.target = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin, "dmd" ~ options.path.executableExtension).assumeUnique;
+		wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc" ~ options.path.scriptExtension).assumeUnique;
 
 		verbose("Installing wrapper: " ~ wrapper.path);
 
@@ -142,7 +141,7 @@ private:
 		if (envPath_.length > 0)
 			return envPath_;
 		
-		return envPath_ = native(join(options.path.env, "dmd-" ~ args.first ~ options.path.scriptExtension));
+		return envPath_ = native(join(options.path.env, "dmd-" ~ args.first ~ options.path.scriptExtension)).assumeUnique;
 	}
 }
 

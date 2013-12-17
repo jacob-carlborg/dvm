@@ -45,7 +45,7 @@ int remove (string path, bool recursive = false)
 		
 	foreach (info ; children(path))
 	{
-		string fullPath = info.path ~ info.name;
+		string fullPath = (info.path ~ info.name).assumeUnique;
 		
 		if (isSymlink(fullPath))
 			continue;
@@ -106,6 +106,21 @@ void validatePath (string path)
 		throw new IOException("File not found \"" ~ path ~ "\"");
 }
 
+string join (const(char)[][] paths ...)
+{
+	return tango.io.Path.join(paths).assumeUnique;
+}
+
+string native (const(char)[] path)
+{
+	return tango.io.Path.native(path.toMutable).assumeUnique;
+}
+
+string normalize (const(char)[] path)
+{
+	return tango.io.Path.normalize(path).assumeUnique;
+}
+
 version (Posix):
 
 enum Owner
@@ -135,7 +150,7 @@ enum Others
 void permission (string path, ushort mode)
 {
 	if (chmod((path ~ '\0').ptr, mode) == -1)
-		throw new IOException(path ~ ": " ~ SysError.lastMsg);
+		throw new IOException(path ~ ": " ~ SysError.lastMsg.assumeUnique);
 }
 
 private template permissions (alias reference)
@@ -234,7 +249,7 @@ private ushort permission (string path)
 	stat_t buffer;
 	
 	if (stat((path ~ '\0').ptr, &buffer) == -1)	
-		throw new IOException(path ~ ": " ~ SysError.lastMsg);
+		throw new IOException(path ~ ": " ~ SysError.lastMsg.assumeUnique);
 	
 	return buffer.st_mode & octal!(777);
 }

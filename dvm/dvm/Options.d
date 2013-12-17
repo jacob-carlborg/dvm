@@ -129,7 +129,7 @@ private struct Path
 			return home_;
 		
 		version (Posix)
-			return home_ = homeFolder;
+			return home_ = homeFolder.assumeUnique;
 
 		version (Windows)
 			return home_ = standard(Environment.get("APPDATA"));
@@ -140,7 +140,7 @@ private struct Path
 		if (dvm_.length > 0)
 			return dvm_;
 
-		return dvm_ = join(home, dvmDir);
+		return dvm_ = join(home, dvmDir).assumeUnique;
 	}
 	
 	string dvmExecutable ()
@@ -148,7 +148,7 @@ private struct Path
 		if (dvmExecutable_.length > 0)
 			return dvmExecutable_;
 		
-		return dvmExecutable_ = join(binDir, dvmExecName ~ executableExtension);
+		return dvmExecutable_ = join(binDir, dvmExecName ~ executableExtension).assumeUnique;
 	}
 	
 	string dvmScript ()
@@ -162,7 +162,7 @@ private struct Path
 		version (Windows)
 			auto dir = binDir;
 
-		return dvmScript_ = join(dir, "dvm" ~ scriptExtension);
+		return dvmScript_ = join(dir, "dvm" ~ scriptExtension).assumeUnique;
 	}
 	
 	string env ()
@@ -170,7 +170,7 @@ private struct Path
 		if (env_.length > 0)
 			return env_;
 		
-		return env_ = join(dvm, "env");
+		return env_ = join(dvm, "env").assumeUnique;
 	}
 
 	string compilers ()
@@ -178,7 +178,7 @@ private struct Path
 		if (compilers_.length > 0)
 			return compilers_;
 
-		return compilers_ = join(dvm, "compilers");
+		return compilers_ = join(dvm, "compilers").assumeUnique;
 	}
 
 	string archives ()
@@ -186,7 +186,7 @@ private struct Path
 		if (archives_.length > 0)
 			return archives_;
 
-		return archives_ = join(dvm, "archives");
+		return archives_ = join(dvm, "archives").assumeUnique;
 	}
 
 	string result ()
@@ -194,7 +194,7 @@ private struct Path
 		if (result_.length > 0)
 			return result_;
 
-		return result_ = join(tmp, "result" ~ scriptExtension);
+		return result_ = join(tmp, "result" ~ scriptExtension).assumeUnique;
 	}
 	
 	string scripts ()
@@ -202,7 +202,7 @@ private struct Path
 		if (scripts_.length > 0)
 			return scripts_;
 		
-		return scripts_ = join(dvm, "scripts");
+		return scripts_ = join(dvm, "scripts").assumeUnique;
 	}
 
 	string binDir ()
@@ -210,7 +210,7 @@ private struct Path
 		if (binDir_.length > 0)
 			return binDir_;
 		
-		return binDir_ = join(dvm, "bin");
+		return binDir_ = join(dvm, "bin").assumeUnique;
 	}
 
 	string tmp ()
@@ -218,7 +218,7 @@ private struct Path
 		if (tmp_.length > 0)
 			return tmp_;
 
-		return tmp_ = join(dvm, "tmp");
+		return tmp_ = join(dvm, "tmp").assumeUnique;
 	}
 	
 	string conf ()
@@ -226,7 +226,7 @@ private struct Path
 		if (conf_.length > 0)
 			return conf_;
 		
-		return conf_ = join(bin, confName);
+		return conf_ = join(bin, confName).assumeUnique;
 	}
 	
 	string tangoZip ()
@@ -234,7 +234,7 @@ private struct Path
 		if (tangoZip_.length > 0)
 			return tangoZip_;
 		
-		return tangoZip_ = join(tmp, "tango.zip");
+		return tangoZip_ = join(tmp, "tango.zip").assumeUnique;
 	}
 	
 	string tangoTmp ()
@@ -242,7 +242,7 @@ private struct Path
 		if (tangoTmp_.length > 0)
 			return tangoTmp_;
 		
-		return tangoTmp_ = join(tangoUnarchived, "trunk");
+		return tangoTmp_ = join(tangoUnarchived, "trunk").assumeUnique;
 	}
 	
 	string tangoUnarchived ()
@@ -250,7 +250,7 @@ private struct Path
 		if (tangoUnarchived_.length > 0)
 			return tangoUnarchived_;
 		
-		return tangoUnarchived_ = join(tmp, "tango", "head");
+		return tangoUnarchived_ = join(tmp, "tango", "head").assumeUnique;
 	}
 	
 	string tangoBob ()
@@ -259,24 +259,24 @@ private struct Path
 			return tangoBob_;
 
 		auto suffix = Options.instance.is64bit ? "64" : "32";
-		auto path = join(tangoTmp, "build", "bin");
+		auto path = join(tangoTmp, "build", "bin").assumeUnique;
 		
 		version (darwin)
-			path = join(path, "osx" ~ suffix);
+			path = join(path, "osx" ~ suffix).assumeUnique;
 		
 		else version (freebsd)
-			path = join(path, "freebsd" ~ suffix);
+			path = join(path, "freebsd" ~ suffix).assumeUnique;
 		
 		else version (linux)
-			path = join(path, "linux" ~ suffix);
+			path = join(path, "linux" ~ suffix).assumeUnique;
 		
 		else version (Windows)
-			path = join(path, "win" ~ suffix);
+			path = join(path, "win" ~ suffix).assumeUnique;
 		
 		else
 			static assert(false, "Unhandled platform for installing Tango");
 		
-		return tangoBob_ = join(path, "bob" ~ executableExtension);
+		return tangoBob_ = join(path, "bob" ~ executableExtension).assumeUnique;
 	}
 	
 	string tangoLib ()
@@ -284,7 +284,7 @@ private struct Path
 		if (tangoLib_.length > 0)
 			return tangoLib_;
 		
-		return tangoLib_ = join(tangoTmp, tangoLibName ~ libExtension);
+		return tangoLib_ = join(tangoTmp, tangoLibName ~ libExtension).assumeUnique;
 	}
 	
 	string tangoSrc ()
@@ -292,7 +292,7 @@ private struct Path
 		if (tangoSrc_.length)
 			return tangoSrc_;
 		
-		return tangoSrc_ = join(tangoTmp, "tango");
+		return tangoSrc_ = join(tangoTmp, "tango").assumeUnique;
 	}
 	
 	string tangoObject ()
@@ -300,7 +300,7 @@ private struct Path
 		if (tangoObject_.length > 0)
 			return tangoObject_;
 		
-		return tangoObject_ = join(tangoTmp, object_di);
+		return tangoObject_ = join(tangoTmp, object_di).assumeUnique;
 	}
 	
 	string tangoVendor ()
@@ -308,7 +308,7 @@ private struct Path
 		if (tangoVendor_.length > 0)
 			return tangoVendor_;
 		
-		return tangoVendor_ = join(tangoSrc, "core", "vendor", std);
+		return tangoVendor_ = join(tangoSrc, "core", "vendor", std).assumeUnique;
 	}
 
 	string defaultEnv ()
@@ -316,7 +316,7 @@ private struct Path
 		if (defaultEnv_.length > 0)
 			return defaultEnv_;
 
-		return defaultEnv_ = join(env, "default");
+		return defaultEnv_ = join(env, "default").assumeUnique;
 	}
 
 	string defaultBin ()
@@ -324,6 +324,6 @@ private struct Path
 		if (defaultBin_.length > 0)
 			return defaultBin_;
 
-		return defaultBin_ = join(binDir, "dvm-default-dc" ~ scriptExtension);
+		return defaultBin_ = join(binDir, "dvm-default-dc" ~ scriptExtension).assumeUnique;
 	}
 }

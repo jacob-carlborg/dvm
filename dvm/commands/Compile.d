@@ -14,7 +14,6 @@ import tango.sys.Common;
 import tango.sys.Environment;
 import tango.sys.Process;
 import tango.sys.win32.Types;
-import tango.text.convert.Format : format = Format;
 import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
@@ -175,12 +174,12 @@ private:
 			installPath  = Path.join(base, options.platform);
 		}
 		
-		dmdBase      = Environment.toAbsolute(dmdBase);
-		dmdPath      = Environment.toAbsolute(dmdPath);
-		druntimePath = Environment.toAbsolute(druntimePath);
-		phobosPath   = Environment.toAbsolute(phobosPath);
-		toolsPath    = Environment.toAbsolute(toolsPath);
-		installPath  = Environment.toAbsolute(installPath);
+		dmdBase      = Environment.toAbsolute(dmdBase.toMutable).assumeUnique;
+		dmdPath      = Environment.toAbsolute(dmdPath.toMutable).assumeUnique;
+		druntimePath = Environment.toAbsolute(druntimePath.toMutable).assumeUnique;
+		phobosPath   = Environment.toAbsolute(phobosPath.toMutable).assumeUnique;
+		toolsPath    = Environment.toAbsolute(toolsPath.toMutable).assumeUnique;
+		installPath  = Environment.toAbsolute(installPath.toMutable).assumeUnique;
 		
 		installBinName = firstExisting(["bin"[], "bin"~bitsLabel], installPath, null, "bin"~bitsLabel);
 		installLibName = firstExisting(["lib"[], "lib"~bitsLabel], installPath, null, "lib"~bitsLabel);
@@ -275,7 +274,7 @@ private:
 
 		// Build dmd executable
 		verbose("Building DMD: ", dmdPath);
-		auto result = system("make -f" ~ patchedDMDMakefile ~ " " ~ targetName);
+		auto result = system(("make -f" ~ patchedDMDMakefile ~ " " ~ targetName).toMutable);
 		
 		if (result.status != 0)
 			throw new DvmException("Error building DMD's executable", __FILE__, __LINE__);
@@ -304,10 +303,10 @@ private:
 			if (!info.folder)
 			if (info.name != dmdExeName && info.name != phobosLibName)
 			{
-				auto targetSubDir = srcSubDir ~ bitsLabel;
+				auto targetSubDir = (srcSubDir ~ bitsLabel).assumeUnique;
 				
-				auto sourcePath = Path.join(latestDMDPath, srcSubDir, info.name);
-				auto targetPath = Path.join(installPath, targetSubDir, info.name);
+				auto sourcePath = Path.join(latestDMDPath, srcSubDir, info.name.assumeUnique);
+				auto targetPath = Path.join(installPath, targetSubDir, info.name.assumeUnique);
 				
 				if (!Path.exists(targetPath))
 					Path.copy(sourcePath, targetPath);
@@ -331,7 +330,7 @@ private:
 		verbose("Building druntime: ", druntimePath);
 
 		Environment.cwd = druntimePath;
-		auto result = system("make -f" ~ druntimeMakefile);
+		auto result = system(("make -f" ~ druntimeMakefile).toMutable);
 
 		if (result.status != 0)
 			throw new DvmException("Error building druntime", __FILE__, __LINE__);
@@ -371,7 +370,7 @@ private:
 		auto druntimeDef = " " ~ quote("DRUNTIME="~druntimePath);
 		
 		Environment.cwd = phobosPath;
-		auto result = system("make -f" ~ phobosMakefile ~ " " ~ targetName ~ druntimeDef ~ dirDef ~ dmdDef);
+		auto result = system(("make -f" ~ phobosMakefile ~ " " ~ targetName ~ druntimeDef ~ dirDef ~ dmdDef).toMutable);
 		
 		if (result.status != 0)
 			throw new DvmException("Error building phobos", __FILE__, __LINE__);
@@ -434,8 +433,8 @@ private:
 		
 		auto content = cast(string) File.get(srcPath);
 
-		content = content.substitute(`CC=\dm\bin\dmc`, `CC=dmc`);
-		content = content.substitute(dmdMakefile, patchedDMDMakefile);
+		content = content.substitute(`CC=\dm\bin\dmc`, `CC=dmc`).assumeUnique;
+		content = content.substitute(dmdMakefile, patchedDMDMakefile).assumeUnique;
 
 		File.set(destPath, content);
 	}

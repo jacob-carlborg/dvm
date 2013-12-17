@@ -14,7 +14,6 @@ import tango.sys.Common;
 import tango.sys.Environment;
 import tango.sys.Process;
 import tango.sys.win32.Types;
-import tango.text.convert.Format : format = Format;
 import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 

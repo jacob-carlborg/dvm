@@ -6,9 +6,10 @@
  */
 module dvm.commands.DvmInstall;
 
+import std.file : thisExePath;
+
 import tango.io.device.File;
 import tango.sys.HomeFolder;
-import tango.text.convert.Format : format = Format;
 import tango.text.Util;
 
 import mambo.core._;
@@ -16,7 +17,6 @@ import Path = dvm.io.Path;
 import dvm.commands.Command;
 import dvm.dvm.Exceptions;
 import dvm.dvm.ShellScript;
-import dvm.sys.Process;
 import dvm.util.Util;
 version (Windows) import DvmRegistry = dvm.util.DvmRegistry;
 version (Windows) import dvm.util.Windows;
@@ -79,7 +79,7 @@ private:
 
 		createPath(options.path.dvm);
 		createPath(options.path.archives);
-		createPath(Path.join(options.path.dvm, options.path.bin));
+		createPath(Path.join(options.path.dvm, options.path.bin).assumeUnique);
 		createPath(options.path.compilers);
 		createPath(options.path.env);
 		createPath(options.path.scripts);
@@ -90,8 +90,8 @@ private:
 	void copyExecutable ()
 	{
 		verbose("Copying executable:");
-		verbose("getProcessPath: ", getProcessPath);
-		copy(getProcessPath, options.path.dvmExecutable);
+		verbose("thisExePath: ", thisExePath);
+		copy(thisExePath, options.path.dvmExecutable);
 	}
 	
 	void writeScript ()
@@ -110,7 +110,7 @@ private:
 	version (Posix)
 		void installBashInclude (ShellScript sh)
 		{
-			auto home = homeFolder;
+			auto home = homeFolder.assumeUnique;
 			auto bashrc = Path.join(home, ".bashrc");
 			auto bash_profile = Path.join(home, ".bash_profile");
 			string shPath;

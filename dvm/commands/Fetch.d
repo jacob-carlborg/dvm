@@ -6,6 +6,8 @@
  */
 module dvm.commands.Fetch;
 
+import std.algorithm : splitter;
+
 import tango.core.Exception;
 import tango.io.device.File;
 import tango.io.model.IConduit;
@@ -14,7 +16,6 @@ import tango.net.InternetAddress;
 import tango.net.device.Socket;
 import tango.net.http.HttpGet;
 import tango.net.http.HttpConst;
-import tango.text.convert.Format : format = Format;
 import Regex = tango.text.Regex;
 
 import dvm.commands.Command;
@@ -43,7 +44,7 @@ class Fetch : Command
 		{
 			string filename = buildFilename;
 			string url = buildUrl(filename);
-			fetch(url, Path.join(".", filename));
+			fetch(url, Path.join(".", filename).assumeUnique);
 		}
 	}
 	
@@ -54,7 +55,7 @@ protected:
 	void fetchDMC (string destinationPath=".")
 	{
 		auto url = "http://ftp.digitalmars.com/Digital_Mars_C++/Patch/" ~ dmcArchiveName;
-		fetch(url, Path.join(destinationPath, dmcArchiveName));
+		fetch(url, Path.join(destinationPath, dmcArchiveName).assumeUnique);
 	}
 	
 	void fetch (string source, string destination)
@@ -247,17 +248,17 @@ protected:
 		auto regex = new Regex.Regex(pattern);
 		string vers = null;
 
-		foreach (line ; content.split('\n'))
+		foreach (line ; content.splitter('\n'))
 			if (regex.test(line))
 				if (regex[2] > vers)
-					vers = regex[2];
+					vers = regex[2].assumeUnique;
 
 		return vers;
 	}
 
 	void validateArguments (string errorMessage = null)
 	{
-		if (errorMessage.empty())
+		if (errorMessage.isEmpty)
 			errorMessage = "Cannot fetch a compiler without specifying a version";
 
 		if (args.empty)

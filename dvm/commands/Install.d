@@ -14,8 +14,6 @@ import tango.sys.Common;
 import tango.sys.Environment;
 import tango.sys.Process;
 import tango.sys.win32.Types;
-import tango.text.convert.Format : format = Format;
-import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
 import mambo.util.Version;
@@ -111,7 +109,7 @@ private:
 		auto platformRoot = Path.join(root, Options.platform);
 		
 		if (!Path.exists(platformRoot))
-			throw new DvmException(format(`The platform "{}" is not compatible with the compiler dmd {}`, Options.platform, ver), __FILE__, __LINE__);
+			throw new DvmException(mambo.core.string.format(`The platform "{}" is not compatible with the compiler dmd {}`, Options.platform, ver), __FILE__, __LINE__);
 		
 		auto binSource = getBinSource(platformRoot);
 		auto binDest = Path.join(installPath, options.path.bin);		
@@ -399,7 +397,7 @@ private:
 
 	void validateArguments (string errorMessage = null)
 	{
-		if (errorMessage.empty())
+		if (errorMessage.isEmpty)
 			errorMessage = "Cannot install a compiler without specifying a version";
 
 		super.validateArguments(errorMessage);

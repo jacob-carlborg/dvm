@@ -36,8 +36,8 @@ struct Wrapper
 	
 	private void createContent ()
 	{
-		native(path);
-		native(target);
+		native(path.toMutable);
+		native(target.toMutable);
 		
 		sh = new ShellScript(path);
 		auto dmd = "dmd";

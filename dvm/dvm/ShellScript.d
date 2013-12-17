@@ -7,7 +7,6 @@
 module dvm.dvm.ShellScript;
 
 import tango.io.device.File;
-import tango.text.convert.Format : format = Format;
 
 import mambo.core._;
 
@@ -311,4 +310,17 @@ struct Sh
 			return quote ? format(`"%{}%"`, name) : '%' ~ name ~ '%';
 		}
 	}
+}
+
+string slashSafeSubstitute (string haystack, string needle, string replacement)
+{
+	import tango.text.Util;
+
+	version (Windows)
+	{
+		needle = needle.substitute("/", "\\");
+		replacement = replacement.substitute("/", "\\");
+	}
+	
+	return haystack.substitute(needle, replacement).assumeUnique;
 }

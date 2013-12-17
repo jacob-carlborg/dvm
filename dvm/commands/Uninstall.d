@@ -42,9 +42,9 @@ private:
 		
 		auto dmd = "dmd-" ~ args.first;
 		
-		removeFile(Path.join(options.path.compilers, dmd));
-		removeFile(Path.join(options.path.env, dmd));
-		removeFile(Path.join(options.path.dvm, options.path.bin, dmd));
+		removeFile(Path.join(options.path.compilers, dmd).assumeUnique);
+		removeFile(Path.join(options.path.env, dmd).assumeUnique);
+		removeFile(Path.join(options.path.dvm, options.path.bin, dmd).assumeUnique);
 	}
 	
 	void removeFile (string path)

@@ -118,7 +118,7 @@ char[] getProcessPath (char[] buf = null)
 /// Waits for process to finish.
 /// Params: 'args' is same as in tango.sys.Process.new(true, char[][] args...)
 /// Returns: Process.Result (containing status code and reason the process ended)
-Process.Result system(char[][] args...)
+Process.Result system(string[] args...)
 {
 	Process p;
 	auto result = system(p, args);
@@ -128,7 +128,7 @@ Process.Result system(char[][] args...)
 
 /// Has extra param to retreive the Process object used so you can obtain extra information.
 /// Make sure to call p.close() when you're done with it.
-Process.Result system(out Process p, char[][] args...)
+Process.Result system(out Process p, string[] args...)
 {
 	p = new Process(true, args);
 	p.redirect = Redirect.None;

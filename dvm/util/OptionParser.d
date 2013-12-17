@@ -61,7 +61,7 @@ class OptionParser
 	
 	OptionParser on (char shortOption, string longOption, string helpText, void delegate (string) dg)
 	{	
-		arguments(longOption).aliased(shortOption).help(helpText).params(1).bind(cast(string delegate (string)) dg);
+		arguments(longOption).aliased(shortOption).help(helpText).params(1).bind(cast(const(char)[] delegate (const(char)[])) dg);
 		buildHelpText(shortOption, longOption, helpText);
 		
 		return this;
@@ -69,7 +69,7 @@ class OptionParser
 	
 	OptionParser on (string longOption, string helpText, void delegate (string) dg)
 	{	
-		arguments(longOption).help(helpText).params(1).bind(cast(string delegate (string)) dg);
+		arguments(longOption).help(helpText).params(1).bind(cast(const(char)[] delegate (const(char)[])) dg);
 		buildHelpText(longOption, helpText);
 		
 		return this;
@@ -84,9 +84,9 @@ class OptionParser
 	OptionParser parse (string input, bool sloppy = false)
 	{
 		if (!arguments.parse(input, sloppy))
-			throw new InvalidOptionException(arguments.errors(&stderr.layout.sprint), __FILE__, __LINE__);
+			throw new InvalidOptionException(arguments.errors(&stderr.layout.sprint).assumeUnique, __FILE__, __LINE__);
 
-		handleArgs(arguments(null).assigned);
+		handleArgs(cast(string[]) arguments(null).assigned);
 		
 		return this;
 	}
@@ -94,16 +94,16 @@ class OptionParser
 	OptionParser parse (string[] input, bool sloppy = false)
 	{
 		if (!arguments.parse(input, sloppy))
-			throw new InvalidOptionException(arguments.errors(&stderr.layout.sprint), __FILE__, __LINE__);
+			throw new InvalidOptionException(arguments.errors(&stderr.layout.sprint).assumeUnique, __FILE__, __LINE__);
 
-		handleArgs(arguments(null).assigned);
+		handleArgs(cast(string[]) arguments(null).assigned);
 
 		return this;
 	}
 	
 	override string toString ()
 	{
-		return format("{}\n{}", banner, buildHelpText);
+		return format("{}\n{}", banner, buildHelpText).assumeUnique;
 	}
 	
 	private void handleArgs (string[] args)

@@ -15,6 +15,7 @@ import tango.text.Arguments;
 import tango.text.convert.Format : Format;
 
 import dvm.dvm._;
+import dvm.util._;
 import mambo.core._;
 import mambo.util._;
 
