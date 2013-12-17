@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ -s "$HOME/.dvm/scripts/dvm" ] ; then
-    . "$HOME/.dvm/scripts/dvm" ;
-    dvm use 1.072
-fi
+#   This requires the latest rdmd in git (from 2011-05-14 or newer):
+#      https://github.com/D-Programming-Language/tools
+#   Then, rdmd can be compiled with DMD 2.053
+#   Or, you can 'dsss build' if you have dsss, but rdmd is much faster.
 
-rdmd -Jresources -L-lz --build-only -ofbin/dvm -debug -L-macosx_version_min -L10.6 "$@" dvm/dvm/dvm.d
+rdmd -Jresources -L-lz --build-only -ofbin/dvm -release -O -inline -L-ltango dvm/dvm/dvm.d
