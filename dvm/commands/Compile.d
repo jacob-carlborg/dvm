@@ -83,7 +83,7 @@ class Compile : Fetch
 		super("compile", "Compiles DMD and standard library.");
 	}
 	
-	void execute ()
+	override void execute ()
 	{
 		compile("", options.compileDebug);
 	}

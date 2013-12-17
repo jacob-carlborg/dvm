@@ -101,7 +101,7 @@ class OptionParser
 		return this;
 	}
 	
-	string toString ()
+	override string toString ()
 	{
 		return format("{}\n{}", banner, buildHelpText);
 	}

@@ -32,7 +32,7 @@ class Use : Command
 		super("use", "Setup current shell to use a specific D compiler version.");
 	}
 	
-	void execute ()
+	override void execute ()
 	{
 		loadEnvironment;
 		installWrapper;

@@ -24,7 +24,7 @@ class List : Command
 		super("list", "Show currently installed D compilers.");
 	}
 
-	void execute ()
+	override void execute ()
 	{
 		auto errorMessage = "No installed D compilers";
 

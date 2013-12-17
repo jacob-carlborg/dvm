@@ -34,7 +34,7 @@ class Fetch : Command
 		super("fetch", "Fetch a D compiler but don't install it.");
 	}
 	
-	void execute ()
+	override void execute ()
 	{
 		if (args.first == "dmc")
 			fetchDMC;

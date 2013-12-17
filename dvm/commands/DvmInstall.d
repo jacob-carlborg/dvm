@@ -35,7 +35,7 @@ class DvmInstall : Command
 			const dvmScript = import("dvm.bat");
 	}
 	
-	void execute ()
+	override void execute ()
 	{
 		install;
 	}

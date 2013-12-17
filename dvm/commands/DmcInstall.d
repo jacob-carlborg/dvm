@@ -43,7 +43,7 @@ class DmcInstall : Fetch
 		string installPath_;
 	}
 	
-	void execute ()
+	override void execute ()
 	{
 		install;
 	}

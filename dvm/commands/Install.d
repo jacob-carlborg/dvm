@@ -47,7 +47,7 @@ class Install : Fetch
 		super("install", "Install one or many D versions.");
 	}
 	
-	void execute ()
+	override void execute ()
 	{
 		// special case for the installation of dvm itself or dmc
 		if (args.any() && (args.first == "dvm" || args.first == "dmc"))

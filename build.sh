@@ -5,4 +5,4 @@ if [ -s "$HOME/.dvm/scripts/dvm" ] ; then
     dvm use 2.064
 fi
 
-rdmd -Jresources -L-lz -L-ltango --build-only -ofbin/dvm -debug -gc -L-macosx_version_min -L10.6 "$@" dvm/dvm/dvm.d
+rdmd -Imambo -Jresources -L-lz -L-ltango --build-only -ofbin/dvm -debug -gc -L-macosx_version_min -L10.6 "$@" dvm/dvm/dvm.d

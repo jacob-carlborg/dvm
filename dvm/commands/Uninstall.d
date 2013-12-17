@@ -28,7 +28,7 @@ class Uninstall : Command
 		super("uninstall", "Uninstall one or many D compilers.");
 	}
 
-	void execute ()
+	override void execute ()
 	{
 		println("Uninstalling dmd-", args.first);
 		removeFiles;
