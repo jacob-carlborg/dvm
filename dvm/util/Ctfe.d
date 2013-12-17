@@ -12,15 +12,15 @@ import mambo.util.Traits;
 template format (ARGS...)
 {
 	static if (ARGS.length == 0)
-		const format = "";
+		enum format = "";
 	
 	else
 	{
 		static if (is(typeof(ARGS[0]) : string))
-			const format = ARGS[0] ~ format!(ARGS[1 .. $]);
+			enum format = ARGS[0] ~ format!(ARGS[1 .. $]);
 		
 		else
-			const format = toString_!(ARGS[0]) ~ format!(ARGS[1 .. $]);
+			enum format = toString_!(ARGS[0]) ~ format!(ARGS[1 .. $]);
 	}
 }
 
@@ -28,32 +28,32 @@ private
 {
 	template toString_ (T)
 	{
-		const toString_ = T.stringof;
+		enum toString_ = T.stringof;
 	}
 
 	template toString_ (int i)
 	{
-		const toString_ = itoa!(i);
+		enum toString_ = itoa!(i);
 	}
 
 	template toString_ (long l)
 	{
-		const toString_ = itoa!(l);
+		enum toString_ = itoa!(l);
 	}
 
 	template toString_ (bool b)
 	{
-		const toString_ = b ? "true" : "false";
+		enum toString_ = b ? "true" : "false";
 	}
 
 	template toString_ (float f)
 	{
-		const toString_ = "";
+		enum toString_ = "";
 	}
 	
 	template toString_ (alias a)
 	{
-		const toString_ = a.stringof;
+		enum toString_ = a.stringof;
 	}
 }
 
@@ -142,17 +142,17 @@ private:
 	
 template decimalDigit (int n)	// [3]
 {
-	const decimalDigit = "0123456789"[n .. n + 1];
+	enum decimalDigit = "0123456789"[n .. n + 1];
 } 
 
 template itoa (long n)
 {   
 	static if (n < 0)
-		const itoa = "-" ~ itoa!(-n); 
+		enum itoa = "-" ~ itoa!(-n); 
   
 	else static if (n < 10)
-		const itoa = decimalDigit!(n); 
+		enum itoa = decimalDigit!(n); 
   
 	else
-		const itoa = itoa!(n / 10L) ~ decimalDigit!(n % 10L); 
+		enum itoa = itoa!(n / 10L) ~ decimalDigit!(n % 10L); 
 }

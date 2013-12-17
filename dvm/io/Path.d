@@ -140,7 +140,7 @@ void permission (string path, ushort mode)
 
 private template permissions (alias reference)
 {
-	const permissions = "if (add)
+	enum permissions = "if (add)
 	{
 		if (read) m |= " ~ reference.stringof ~ ".Read;
 		if (write) m |= " ~ reference.stringof ~ ".Write;

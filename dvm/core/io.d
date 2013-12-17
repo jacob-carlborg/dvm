@@ -28,7 +28,7 @@ void print (A...)(A args)
 {
 	version (Tango)
 	{
-		static const string fmt = "{}{}{}{}{}{}{}{}"
+		enum string fmt = "{}{}{}{}{}{}{}{}"
 					        	  "{}{}{}{}{}{}{}{}"
 					        	  "{}{}{}{}{}{}{}{}";
 				
@@ -52,7 +52,7 @@ void println (A...)(A args)
 {
 	version (Tango)
 	{
-		static const string fmt = "{}{}{}{}{}{}{}{}"
+		enum string fmt = "{}{}{}{}{}{}{}{}"
 					        	  "{}{}{}{}{}{}{}{}"
 					        	  "{}{}{}{}{}{}{}{}";
 

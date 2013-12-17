@@ -25,14 +25,14 @@ class DvmInstall : Command
 {	
 	private
 	{
-		const postInstallInstructions = import("post_install_instructions.txt");
-		const failedInstallInstructions = import("failed_install_instructions.txt");
+		enum postInstallInstructions = import("post_install_instructions.txt");
+		enum failedInstallInstructions = import("failed_install_instructions.txt");
 
 		version (Posix)
-			const dvmScript = import("dvm.sh");
+			enum dvmScript = import("dvm.sh");
 		
 		else
-			const dvmScript = import("dvm.bat");
+			enum dvmScript = import("dvm.bat");
 	}
 	
 	override void execute ()

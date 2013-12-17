@@ -28,7 +28,7 @@ import mambo.core.string;
 
 template isPrimitive (T)
 {
-	const bool isPrimitive = is(T == bool) ||
+	enum isPrimitive = is(T == bool) ||
 						is(T == byte) ||
 						is(T == cdouble) ||
 						//is(T == cent) ||
@@ -55,80 +55,80 @@ template isPrimitive (T)
 
 template isChar (T)
 {
-	const bool isChar = is(T == char) || is(T == wchar) || is(T == dchar);
+	enum isChar = is(T == char) || is(T == wchar) || is(T == dchar);
 }
 
 template isClass (T)
 {
-	const bool isClass = is(T == class);
+	enum isClass = is(T == class);
 }
 
 template isInterface (T)
 {
-	const bool isInterface = is(T == interface);
+	enum isInterface = is(T == interface);
 }
 
 template isObject (T)
 {
-	const bool isObject = isClass!(T) || isInterface!(T);
+	enum isObject = isClass!(T) || isInterface!(T);
 }
 
 template isStruct (T)
 {
-	const bool isStruct = is(T == struct);
+	enum isStruct = is(T == struct);
 }
 
 template isArray (T)
 {
 	static if (is(T U : U[]))
-		const bool isArray = true;
+		enum isArray = true;
 	
 	else
-		const bool isArray = false;
+		enum isArray = false;
 }
 
 template isString (T)
 {
-	const bool isString = is(T : string) || is(T : wstring) || is(T : dstring);
+	enum isString = is(T : string) || is(T : wstring) || is(T : dstring);
 }
 
 template isAssociativeArray (T)
 {
-	const bool isAssociativeArray = is(typeof(T.init.values[0])[typeof(T.init.keys[0])] == T);
+	enum isAssociativeArray = is(typeof(T.init.values[0])[typeof(T.init.keys[0])] == T);
 }
 
 template isPointer (T)
 {
 	static if (is(T U : U*))
-		const bool isPointer = true;
+		enum isPointer = true;
 	
 	else
-		const bool isPointer = false;
+		enum isPointer = false;
 }
 
 template isFunctionPointer (T)
 {
-	const bool isFunctionPointer = is(typeof(*T) == function);
+	enum isFunctionPointer = is(typeof(*T) == function);
 }
 
 template isEnum (T)
 {
-	const bool isEnum = is(T == enum);
+	enum isEnum = is(T == enum);
 }
 
 template isReference (T)
 {
-	const bool isReference = isObject!(T) || isPointer!(T);
+	enum isReference = isObject!(T) || isPointer!(T);
 }
 
 template isTypeDef (T)
 {
-	const bool isTypeDef = is(T == typedef);
+	enum isTypeDef = is(T == typedef);
 }
 
 template isVoid (T)
 {
-	const bool isVoid = is(T == void);
+	enum isVoid = is(T == void);
 }
 
 template BaseTypeOfArray (T)

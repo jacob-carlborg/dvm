@@ -219,7 +219,7 @@ private:
 	
 	void fetchTango ()
 	{
-		const tangoUrl = "http://dsource.org/projects/tango/changeset/head/trunk?old_path=%2F&format=zip";
+		enum tangoUrl = "http://dsource.org/projects/tango/changeset/head/trunk?old_path=%2F&format=zip";
 		fetch(tangoUrl, options.path.tangoZip);
 	}
 	

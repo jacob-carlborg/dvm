@@ -18,9 +18,9 @@ class Options
 {
 	mixin Singleton;
 	
-	const string indentation = "    ";
-	const int numberOfIndentations = 1;
-	const Path path = Path();
+	enum indentation = "    ";
+	enum numberOfIndentations = 1;
+	enum path = Path();
 	
 	bool verbose = false;
 	bool tango = false;
@@ -38,47 +38,47 @@ class Options
 	    bool is64bit = false;
 
 	static if (darwin)
-		const string platform = "osx";
+		enum platform = "osx";
 	
 	else static if (freebsd)
-		const string platform = "freebsd";
+		enum platform = "freebsd";
 	
 	else static if (linux)
-		const string platform = "linux";
+		enum platform = "linux";
 	
 	else static if (Windows)
-		const string platform = "windows";
+		enum platform = "windows";
 }
 
 private struct Path
 {
-	const bin = "bin";
-	const bin32 = "bin32";
-	const bin64 = "bin64";
-	const src = "src";
-	const lib = "lib";
-	const lib32 = "lib32";
-	const lib64 = "lib64";
-	const import_ = "import";
-	const license = "license.txt";
-	const readme = "README.TXT";
-	const std = "std";
-	const object_di = "object.di";
-	
+	enum bin = "bin";
+	enum bin32 = "bin32";
+	enum bin64 = "bin64";
+	enum src = "src";
+	enum lib = "lib";
+	enum lib32 = "lib32";
+	enum lib64 = "lib64";
+	enum import_ = "import";
+	enum license = "license.txt";
+	enum readme = "README.TXT";
+	enum std = "std";
+	enum object_di = "object.di";
+
 	version (Posix)
 	{
-		const libExtension = ".a";
-		const tangoLibName = "libtango";
-		const pathSeparator = ":";
-		const confName = "dmd.conf";
+		enum libExtension = ".a";
+		enum tangoLibName = "libtango";
+		enum pathSeparator = ":";
+		enum confName = "dmd.conf";
 	}
-	
+
 	else
 	{
-		const libExtension = ".lib";
-		const tangoLibName = "tango";
-		const pathSeparator = ";";
-		const confName = "sc.ini";
+		enum libExtension = ".lib";
+		enum tangoLibName = "tango";
+		enum pathSeparator = ";";
+		enum confName = "sc.ini";
 	}
 	
 	private
@@ -108,18 +108,18 @@ private struct Path
 		
 		version (Posix)
 		{
-			const string dvmDir = ".dvm";
-			const string scriptExtension = "";
-			const string executableExtension = "";
-			const string dvmExecName = "dvm";
+			enum string dvmDir = ".dvm";
+			enum string scriptExtension = "";
+			enum string executableExtension = "";
+			enum string dvmExecName = "dvm";
 		}
 
 		else version (Windows)
 		{
-			const string dvmDir = "dvm";
-			const string scriptExtension = ".bat";
-			const string executableExtension = ".exe";
-			const string dvmExecName = "_dvm";
+			enum string dvmDir = "dvm";
+			enum string scriptExtension = ".bat";
+			enum string executableExtension = ".exe";
+			enum string dvmExecName = "_dvm";
 		}
 	}
 	

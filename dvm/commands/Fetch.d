@@ -49,7 +49,7 @@ class Fetch : Command
 	
 protected:
 
-	const dmcArchiveName = "dm852c.zip";
+	enum dmcArchiveName = "dm852c.zip";
 	
 	void fetchDMC (string destinationPath=".")
 	{
@@ -90,24 +90,24 @@ protected:
 		// load in chunks in order to display progress
 		int contentLength = page.getResponseHeaders.getInt(HttpHeader.ContentLength);
 
-		const int width = 40;
+		enum width = 40;
 		int num = width;
 
 		version (Posix)
 		{
-			const clearLine = "\033[1K"; // clear backwards
-			const saveCursor = "\0337";
-			const restoreCursor = "\0338";
+			enum clearLine = "\033[1K"; // clear backwards
+			enum saveCursor = "\0337";
+			enum restoreCursor = "\0338";
 		}
 		
 		else
 		{
-			const clearLine = "\r";
+			enum clearLine = "\r";
 			
 			// Leaving these empty string causes a linker error:
 			// http://d.puremagic.com/issues/show_bug.cgi?id=4315
-			const saveCursor = "\0";
-			const restoreCursor = "\0";
+			enum saveCursor = "\0";
+			enum restoreCursor = "\0";
 		}
 		
 		print(saveCursor);

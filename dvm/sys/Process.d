@@ -72,7 +72,7 @@ char[] getProcessPath (char[] buf = null)
 	
 	else version (freebsd)
 	{
-		const size_t len = 1024;
+		enum size_t len = 1024;
 		
 		if (len > buf.length)
 			buf ~= new char[len - buf.length];
@@ -84,7 +84,7 @@ char[] getProcessPath (char[] buf = null)
 	
 	else version (linux)
 	{
-		const size_t len = 1024;
+		enum size_t len = 1024;
 		
 		if (len > buf.length)
 			buf ~= new char[len - buf.length];
@@ -96,7 +96,7 @@ char[] getProcessPath (char[] buf = null)
 	
 	else version (Windows)
 	{
-		const size_t len = MAX_PATH + 1; // Don't forget the null char
+		enum size_t len = MAX_PATH + 1; // Don't forget the null char
 		
 		if (len > buf.length)
 			buf ~= new char[len - buf.length];

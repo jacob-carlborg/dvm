@@ -178,7 +178,7 @@ class ShellScript
 	
 	ShellScript append (Args...) (Args args)
 	{
-		static const string fmt = "{}{}{}{}{}{}{}{}"
+		enum fmt = "{}{}{}{}{}{}{}{}"
 					  "{}{}{}{}{}{}{}{}"
 					  "{}{}{}{}{}{}{}{}";
 		
@@ -218,8 +218,8 @@ struct Sh
 		
 	version (Posix)
 	{
-		const shebang = "#!/bin/sh";
-		const separator = ":";
+		enum shebang = "#!/bin/sh";
+		enum separator = ":";
 		
 		string allArgs (bool quote = true)
 		{
@@ -272,9 +272,9 @@ struct Sh
 	else version (Windows)
 	{
 		// DMD 1.068 and up optimizes this out causing a linker error
-		//const shebang = "";
-		const echoOff = "@echo off";
-		const separator = ";";
+		//enum shebang = "";
+		enum echoOff = "@echo off";
+		enum separator = ";";
 		
 		string allArgs (bool quote = true)
 		{
