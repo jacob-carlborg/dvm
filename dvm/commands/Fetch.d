@@ -7,6 +7,7 @@
 module dvm.commands.Fetch;
 
 import std.algorithm : splitter;
+import std.regex;
 
 import tango.core.Exception;
 import tango.io.device.File;
@@ -16,7 +17,6 @@ import tango.net.InternetAddress;
 import tango.net.device.Socket;
 import tango.net.http.HttpGet;
 import tango.net.http.HttpConst;
-import Regex = tango.text.Regex;
 
 import dvm.commands.Command;
 import mambo.core._;
@@ -224,34 +224,37 @@ protected:
 	{
 		return args.empty() ? "2" : args.first;
 	}
-	
+
 	string getLatestDMDVersion (string dVersion)
 	{
-		auto pattern = `https:\/\/github\.com/downloads/D-Programming-Language/dmd/(dmd\.` ~ dVersion ~ `\.(\d+)\.zip)`;
-		
+		auto dmdPattern = r"(?:dmd\." ~ dVersion ~ r"\.([\d.]+)\.zip)";
+		auto pattern = regex(r"http:\/\/downloads\.dlang\.org\/releases\/(?:\d+)\/" ~ dmdPattern);
+
 		if (auto result = getLatestDMDVersionImpl(pattern))
 			return result;
-			
-		pattern = `http:\/\/ftp\.digitalmars\.com\/(dmd\.` ~ dVersion ~ `\.(\d+)\.zip)`;
-		
+
+		pattern = regex(r"http:\/\/ftp\.digitalmars\.com\/" ~ dmdPattern);
+
 		if (auto result = getLatestDMDVersionImpl(pattern))
 			return result;
-			
+
 		throw new DvmException("Failed to get the latest DMD version.", __FILE__, __LINE__);
 	}
-	
-	private string getLatestDMDVersionImpl (string pattern)
+
+	private string getLatestDMDVersionImpl (Regex!(char) regex)
 	{
-		scope page = new HttpGet("http://www.digitalmars.com/d/download.html");
+		scope page = new HttpGet("http://dlang.org/download.html");
 		auto content = cast(string) page.read;
 
-		auto regex = new Regex.Regex(pattern);
 		string vers = null;
 
 		foreach (line ; content.splitter('\n'))
-			if (regex.test(line))
-				if (regex[2] > vers)
-					vers = regex[2].assumeUnique;
+		{
+			auto match = line.matchFirst(regex);
+
+			if (match.any && match[1] > vers)
+				vers = match[1];
+		}
 
 		return vers;
 	}
