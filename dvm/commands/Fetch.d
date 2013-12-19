@@ -79,6 +79,19 @@ protected:
 	
 	void[] downloadFile (string url)
 	{
+		static void print (A...)(A args)
+		{
+			import tango.io.Stdout;
+
+			static enum string fmt = "{}{}{}{}{}{}{}{}"
+						        	 "{}{}{}{}{}{}{}{}"
+						        	 "{}{}{}{}{}{}{}{}";
+
+			static assert (A.length <= fmt.length / 2, "mambo.io.print :: too many arguments");
+
+			Stdout.format(fmt[0 .. args.length * 2], args).flush;
+		}
+
 		auto page = new HttpGet(url);
 		page.setTimeout(30f);
 		auto buffer = page.open;
