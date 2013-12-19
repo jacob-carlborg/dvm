@@ -1,5 +1,13 @@
 # DVM Change Log
 
+## Version 0.4.2
+### New/Changed Features
+* Ported to D2
+* Add support for fetching the latest version of the compiler
+
+### Bugs Fixed
+* Fails to get the latest version of the compiler
+
 ## Version 0.4.1
 ### New/Changed Features
 * Issue 2: Fetch zips from github for DMD 2.057+
