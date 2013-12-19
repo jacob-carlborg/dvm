@@ -5,7 +5,7 @@ if [ -s "$HOME/.dvm/scripts/dvm" ] ; then
     dvm use 2.064.2
 fi
 
-if [ `uname` == "Darwin" ] ; then
+if [ "$(uname)" = "Darwin" ] ; then
     extra_linker_flags="-L-macosx_version_min -L10.6"
 else
     extra_linker_flags=""
