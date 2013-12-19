@@ -37,7 +37,7 @@ class Fetch : Command
 	
 	override void execute ()
 	{
-		if (args.first == "dmc")
+		if (args.any && args.first == "dmc")
 			fetchDMC;
 
 		else
