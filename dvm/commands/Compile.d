@@ -305,9 +305,9 @@ private:
 			{
 				auto targetSubDir = (srcSubDir ~ bitsLabel).assumeUnique;
 				
-				auto sourcePath = Path.join(latestDMDPath, srcSubDir, info.name.assumeUnique);
-				auto targetPath = Path.join(installPath, targetSubDir, info.name.assumeUnique);
-				
+				auto sourcePath = Path.join(latestDMDPath, srcSubDir, info.name);
+				auto targetPath = Path.join(installPath, targetSubDir, info.name);
+
 				if (!Path.exists(targetPath))
 					Path.copy(sourcePath, targetPath);
 					
