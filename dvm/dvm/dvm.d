@@ -7,7 +7,6 @@
 module dvm.dvm.dvm;
 
 import dvm.dvm.Application;
-import mambo.core.string;
 
 int main (string[] args)
 {

@@ -12,7 +12,6 @@ version (Windows):
 
 import tango.io.Console;
 import tango.io.Stdout;
-import tango.text.Util;
 import tango.text.Unicode;
 
 import mambo.core._;
@@ -41,7 +40,7 @@ void updateEnvironment (string binDir, string dmdDir="")
 		if (path.type != RegValueType.SZ && path.type != RegValueType.EXPAND_SZ)
 			throw new RegistryException(envKey.toString ~ `\PATH`, false, "Expected type REG_SZ or REG_EXPAND_SZ, not " ~ dvm.util.Registry.toString(path.type));
 		
-		if (path.asString.find(dvmEnvVarExpand) == size_t.max)
+		if (!path.asString.contains(dvmEnvVarExpand))
 			envKey.setValueExpand("PATH", dvmEnvVarExpand ~ ";" ~ path.asString);
 	}
 
@@ -60,7 +59,7 @@ string getDefaultCompilerPath()
 		if (pathValue.type == RegValueType.SZ || pathValue.type == RegValueType.EXPAND_SZ)
 		{
 			auto bothPaths = pathValue.asString;
-			auto sepIndex = find(bothPaths, ";");
+			auto sepIndex = bothPaths.indexOf(";");
 			
 			if (sepIndex < sepIndex.max)
 				return bothPaths[0..sepIndex];

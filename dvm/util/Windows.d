@@ -23,7 +23,7 @@ class WinAPIException : DvmException
 	LONG code;
 	string windowsMsg;
 	
-	this (LONG code, string msg = "", string file = "", long line = 0)
+	this (LONG code, string msg = "", string file = __FILE__, size_t line = __LINE__)
 	{
 		this.code = code;
 
@@ -55,9 +55,9 @@ class WinAPIException : DvmException
 	}
 }
 
-private alias dvm.core.string.toString16z toString16z;
+private alias mambo.core.string.toString16z toString16z;
 
-wchar* toString16z (string str)
+immutable(wchar)* toString16z (string str)
 {
 	return to!(wstring)(str).toString16z();
 }
@@ -84,7 +84,7 @@ string expandEnvironmentStrings(string str)
 {
 	auto wstr = toString16z(str);
 	
-	wstring result;
+	wchar[] result;
 	result.length = 32_000 / wchar.sizeof;
 	
 	auto resultLength = ExpandEnvironmentStringsW(wstr, result.ptr, result.length);

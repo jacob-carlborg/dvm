@@ -10,7 +10,6 @@ version (Windows):
 
 import tango.sys.win32.Types;
 import tango.sys.win32.UserGdi;
-import tango.text.Util;
 import tango.util.Convert;
 
 import mambo.core.string;
@@ -97,7 +96,7 @@ enum RegKeyAccess
 
 enum RegValueType : DWORD
 {
-	Unknown = DWORD.max,
+	Unknown = .DWORD.max,
 
 	BINARY = REG_BINARY,
 	DWORD = REG_DWORD,
@@ -186,7 +185,7 @@ class RegistryException : WinAPIException
 /// Conversion Functions ///////////////////////////
 
 private alias dvm.util.Windows.toString16z toString16z;
-private alias dvm.core.string.toString16z toString16z;
+private alias mambo.core.string.toString16z toString16z;
 
 ubyte[] toRegDWord (ref uint val)
 {
@@ -350,6 +349,7 @@ bool regValueExists (HKEY hKey, string valueName)
 		return true;
 
 	errorValue(result, valueName, "Couldn't check if value exists");
+	return false;
 }
 
 void regDeleteKey (HKEY hKey, string subKey)

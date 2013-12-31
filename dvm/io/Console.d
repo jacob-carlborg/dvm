@@ -9,7 +9,6 @@ module dvm.io.Console;
 import tango.io.Console;
 import tango.io.Stdout;
 import tango.text.Util;
-import tango.text.Unicode;
 
 import mambo.core._;
 import dvm.dvm.Options;
@@ -30,9 +29,9 @@ Get validated input. Won't return until user enters valid input:
 	}
 	auto result = prompt("What beverage?", &accept, "Not on menu, try again!");
 +/
-string prompt(string promptMsg, bool delegate(string) accept=null, string rejectedMsg="")
+string prompt(string promptMsg, bool delegate(const(char)[]) accept=null, string rejectedMsg="")
 {
-	string input;
+	char[] input;
 	while (true)
 	{
 		Stdout(promptMsg).flush;
@@ -54,20 +53,20 @@ string prompt(string promptMsg, bool delegate(string) accept=null, string reject
 		}
 	}
 	
-	return input;
+	return input.assumeUnique;
 }
 
 /// Returns 'true' for "Yes"
 /// Obeys --force and --decline
 bool promptYesNo()
 {
-	bool matches(char ch, string str)
+	bool matches(char ch, const(char)[] str)
 	{
 		str = toLower(str);
 		return str != "" && str[0] == ch;
 	}
 	
-	bool accept(string str)
+	bool accept(const(char)[] str)
 	{
 		return matches('y', str) || matches('n', str);
 	}

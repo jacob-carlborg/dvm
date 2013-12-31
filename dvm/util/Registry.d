@@ -68,7 +68,7 @@ scope final class RegistryKey
 	}
 	
 	/// toString ////////////////////////
-	string toString()
+	override string toString()
 	{
 		return dvm.sys.Registry.toString(_root) ~ `\` ~ _subKey;
 	}
@@ -162,7 +162,11 @@ scope final class RegistryKey
 	bool valueExists(string valueName)
 	{
 		try return regValueExists(_hKey, valueName);
-		catch(WinAPIException e) errorValue(e, valueName);
+		catch(WinAPIException e)
+		{
+			errorValue(e, valueName);
+			return false;
+		}
 	}
 	
 	/// Registry Functions: setValue //////////////////////////////
@@ -224,36 +228,60 @@ scope final class RegistryKey
 	RegQueryResult getValue(string valueName)
 	{
 		try return regQueryValue(_hKey, valueName);
-		catch(WinAPIException e) errorValue(e, valueName);
+		catch(WinAPIException e)
+		{
+			errorValue(e, valueName);
+			return RegQueryResult.init;
+		}
 	}
 
 	string getValueString(string valueName)
 	{
 		try return regQueryValue!(RegValueType.SZ)(_hKey, valueName);
-		catch(WinAPIException e) errorValue(e, valueName);
+		catch(WinAPIException e)
+		{
+			errorValue(e, valueName);
+			return null;
+		}
 	}
 
 	string getValueExpandString(string valueName)
 	{
 		try return regQueryValue!(RegValueType.EXPAND_SZ)(_hKey, valueName);
-		catch(WinAPIException e) errorValue(e, valueName);
+		catch(WinAPIException e)
+		{
+			errorValue(e, valueName);
+			return null;
+		}
 	}
 
 	string[] getValueStringArray(string valueName)
 	{
 		try return regQueryValue!(RegValueType.MULTI_SZ)(_hKey, valueName);
-		catch(WinAPIException e) errorValue(e, valueName);
+		catch(WinAPIException e)
+		{
+			errorValue(e, valueName);
+			return null;
+		}
 	}
 
 	ubyte[] getValueBinary(string valueName)
 	{
 		try return regQueryValue!(RegValueType.BINARY)(_hKey, valueName);
-		catch(WinAPIException e) errorValue(e, valueName);
+		catch(WinAPIException e)
+		{
+			errorValue(e, valueName);
+			return null;
+		}
 	}
 
 	uint getValueUInt(string valueName)
 	{
 		try return regQueryValue!(RegValueType.DWORD)(_hKey, valueName);
-		catch(WinAPIException e) errorValue(e, valueName);
+		catch(WinAPIException e)
+		{
+			errorValue(e, valueName);
+			return uint.max;
+		}
 	}
 }

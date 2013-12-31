@@ -6,13 +6,14 @@
  */
 module dvm.dvm.Options;
 
-import tango.io.Path;
 import tango.sys.Environment;
 import tango.sys.HomeFolder;
 
 import mambo.core.string;
 import mambo.util.Singleton;
 import mambo.util.Version;
+
+import dvm.io.Path;
 
 class Options
 {

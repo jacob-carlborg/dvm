@@ -233,11 +233,11 @@ private:
 		void installDMC ()
 		{
 			// Only install if not on PATH
-			auto path = Environment.exePath("dmc.exe");
+			auto path = Environment.exePath("dmc.exe".toMutable);
 			if(path)
 				return;
 			
-			path = Environment.exePath("dmc.bat");
+			path = Environment.exePath("dmc.bat".toMutable);
 			if(path)
 				return;
 			

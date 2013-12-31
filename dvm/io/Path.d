@@ -121,6 +121,11 @@ string normalize (const(char)[] path)
 	return tango.io.Path.normalize(path).assumeUnique;
 }
 
+string standard (const(char)[] path)
+{
+	return tango.io.Path.standard(path.toMutable).assumeUnique;
+}
+
 version (Posix):
 
 enum Owner

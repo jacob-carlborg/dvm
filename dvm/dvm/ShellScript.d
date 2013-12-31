@@ -318,8 +318,8 @@ string slashSafeSubstitute (string haystack, string needle, string replacement)
 
 	version (Windows)
 	{
-		needle = needle.substitute("/", "\\");
-		replacement = replacement.substitute("/", "\\");
+		needle = needle.substitute("/", "\\").assumeUnique;
+		replacement = replacement.substitute("/", "\\").assumeUnique;
 	}
 	
 	return haystack.substitute(needle, replacement).assumeUnique;
