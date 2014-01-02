@@ -38,17 +38,20 @@ class Options
 	else
 	    bool is64bit = false;
 
-	static if (darwin)
+	version (OSX)
 		enum platform = "osx";
 	
-	else static if (freebsd)
+	else version (FreeBSD)
 		enum platform = "freebsd";
 	
-	else static if (linux)
+	else version (linux)
 		enum platform = "linux";
 	
-	else static if (Windows)
+	else version (Windows)
 		enum platform = "windows";
+
+	else
+		static assert (false, "Platform not supported");
 }
 
 private struct Path
@@ -262,10 +265,10 @@ private struct Path
 		auto suffix = Options.instance.is64bit ? "64" : "32";
 		auto path = join(tangoTmp, "build", "bin").assumeUnique;
 		
-		version (darwin)
+		version (OSX)
 			path = join(path, "osx" ~ suffix).assumeUnique;
 		
-		else version (freebsd)
+		else version (FreeBSD)
 			path = join(path, "freebsd" ~ suffix).assumeUnique;
 		
 		else version (linux)
