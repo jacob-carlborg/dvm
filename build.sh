@@ -11,4 +11,11 @@ else
 	extra_linker_flags=""
 fi
 
-rdmd -Imambo -Jresources -L-lz -L-ltango --build-only -ofbin/dvm -debug -gc $extra_linker_flags "$@" dvm/dvm/dvm.d
+if [ "$1" = "release" ] ; then
+	extra_flags="-release -O -inline"
+	shift
+else
+	extra_flags="-debug -g"
+fi
+
+rdmd -Imambo -Jresources -L-lz -L-ltango --build-only -ofbin/dvm $extra_flags $extra_linker_flags "$@" dvm/dvm/dvm.d
