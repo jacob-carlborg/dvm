@@ -10,7 +10,7 @@ D2 version in another.
 
 ### General Installation Instructions:
 
-1. Download the DVM tool form: https://github.com/jacob-carlborg/dvm/downloads
+1. Download the DVM tool form: https://github.com/jacob-carlborg/dvm/releases
 2. Add executable permissions to the downloaded file.
 3. Run the installation: `$ ./<dvm> install dvm` (where `<dvm>` is the name of the downloaded file) 
 
@@ -18,16 +18,20 @@ D2 version in another.
 
 #### Mac OS X:
 
-	$ curl -L -o dvm https://github.com/downloads/jacob-carlborg/dvm/dvm-0.4.1-osx && chmod +x dvm && ./dvm install dvm
+	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.2/dvm-0.4.2-osx && chmod +x dvm && ./dvm install dvm
+
+#### Linux 64bit
+
+	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.2/dvm-0.4.2-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
 
 #### Linux 32bit
 
-	$ curl -L -o dvm https://github.com/downloads/jacob-carlborg/dvm/dvm-0.4.1-linux-32 && chmod +x dvm && ./dvm install dvm 
+	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.2/dvm-0.4.2-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
 
 #### Windows
 
 Follow the general installation instructions.
-https://github.com/downloads/jacob-carlborg/dvm/dvm-0.4.1-win.exe
+https://github.com/jacob-carlborg/dvm/releases/download/v0.4.2/dvm-0.4.2-win.exe
 
 #### Upgrading from 0.2.0 to 0.3.0
 
@@ -38,16 +42,13 @@ particular if you had any problems with the previous shell scripts not working.
 
 ### Install Compilers
 
-* Install a D compiler (DMD): `$ dvm install 2.060`
-* Install a D compiler (DMD) with Tango as the standard library: `$ dvm install 1.068 -t`
-
-If you're running a Linux 64bit operating system you most likely want to install a 64bit
-version of DMD. Add the `--64bit` flag to install a 64bit version of DMD.
+* Install a D compiler (DMD): `$ dvm install 2.064.2`
+* Install a D compiler (DMD) with Tango as the standard library: `$ dvm install 1.072 -t`
 
 ### Use a Compiler
 
-* Use a D compiler (DMD): `$ dvm use 2.060`
-* Use a D compiler (DMD) and set it to default: `$ dvm use 2.060 -d`
+* Use a D compiler (DMD): `$ dvm use 2.064.2`
+* Use a D compiler (DMD) and set it to default: `$ dvm use 2.064.2 -d`
 * Show usage information: `$ dvm -h`
 
 ## License
@@ -57,12 +58,11 @@ The source code is available under the [Boost Software License 1.0](http://www.b
 ## Limitations
 
 * Currently DMD is the only supported compiler
-* The Linux 64bit version had to be withdrawn due to a bug in Tango
 
 ## Build Dependencies
 
-* DMD 1.072: http://www.digitalmars.com/d/1.0/changelog.html
-* Tango: http://www.dsource.org/projects/tango (revision 5620 or newer)
+* DMD 2.064.2 or later: http://dlang.org/download.html
+* Tango: https://github.com/SiegeLord/Tango-D2
 * zlib: http://zlib.net
 * Git: http://git-scm.com (to clone the repository) 
 
