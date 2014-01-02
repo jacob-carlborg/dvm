@@ -4,6 +4,7 @@
 ### New/Changed Features
 * Ported to D2
 * Add support for fetching the latest version of the compiler
+* Bring back support for 64bit Linux
 
 ### Bugs Fixed
 * Fails to get the latest version of the compiler
