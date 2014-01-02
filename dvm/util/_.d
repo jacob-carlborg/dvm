@@ -7,9 +7,6 @@
 module dvm.util._;
 
 public:
-	
-import dvm.util.Closure;
-import dvm.util.Ctfe;
 
 import dvm.util.OptionParser;
 import dvm.util.Util;
