@@ -68,6 +68,11 @@ The source code is available under the [Boost Software License 1.0](http://www.b
 
 ## Build Instructions
 
-1. Clone the repository: `$ git clone git://github.com/jacob-carlborg/dvm.git`
+1. Clone the repository: `$ git clone --recursive git://github.com/jacob-carlborg/dvm.git`
 2. Change to the newly created directory
-3. Run: `$ ./build_release.sh`
+3. <dl>
+	<dt>Posix</dt>
+	<dd>run: `$ ./build.sh release`</dd>
+	<dt>Windows</dt>
+	<dd>run: `$ build.bat release`</dd>
+</dl>
