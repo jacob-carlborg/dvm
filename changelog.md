@@ -1,5 +1,12 @@
 # DVM Change Log
 
+## Version 0.4.3
+### New/Changed Features
+* Add support for Dub
+
+### Bugs Fixed
+* Fix issue "unexpected redirect for method GET"
+
 ## Version 0.4.2
 ### New/Changed Features
 * Ported to D2
