@@ -18,20 +18,20 @@ D2 version in another.
 
 #### Mac OS X:
 
-	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.2/dvm-0.4.2-osx && chmod +x dvm && ./dvm install dvm
+	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-osx && chmod +x dvm && ./dvm install dvm
 
 #### Linux 64bit
 
-	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.2/dvm-0.4.2-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
+	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
 
 #### Linux 32bit
 
-	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.2/dvm-0.4.2-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
+	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
 
 #### Windows
 
 Follow the general installation instructions.
-https://github.com/jacob-carlborg/dvm/releases/download/v0.4.2/dvm-0.4.2-win.exe
+https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-win.exe
 
 #### Upgrading from 0.2.0 to 0.3.0
 
@@ -61,18 +61,8 @@ The source code is available under the [Boost Software License 1.0](http://www.b
 
 ## Build Dependencies
 
-* DMD 2.064.2 or later: http://dlang.org/download.html
-* Tango: https://github.com/SiegeLord/Tango-D2
-* zlib: http://zlib.net
-* Git: http://git-scm.com (to clone the repository) 
+* [Dub](http://code.dlang.org/download)
 
 ## Build Instructions
 
-1. Clone the repository: `$ git clone --recursive git://github.com/jacob-carlborg/dvm.git`
-2. Change to the newly created directory
-3. <dl>
-	<dt>Posix</dt>
-	<dd>run: `$ ./build.sh release`</dd>
-	<dt>Windows</dt>
-	<dd>run: `$ build.bat release`</dd>
-</dl>
+1. Run Dub in the directory of the cloned repository: `$ dub build`
