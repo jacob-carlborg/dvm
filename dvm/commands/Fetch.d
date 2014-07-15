@@ -175,22 +175,12 @@ protected:
 	
 	string buildUrl (string filename)
 	{
-		auto url = githubUrl(filename);
-
-		if (urlExists(url))
-			return url;
-
 		return digitalMarsUrl(filename);
 	}
 
 	string digitalMarsUrl (string filename)
 	{
 		return "http://ftp.digitalmars.com/" ~ filename;
-	}
-
-	string githubUrl (string filename)
-	{
-		return "http://cloud.github.com/downloads/D-Programming-Language/dmd/" ~ filename;
 	}
 
 	void createPath (string path)
