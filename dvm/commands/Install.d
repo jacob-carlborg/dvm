@@ -36,6 +36,7 @@ class Install : Fetch
 		string archivePath;
 		string tmpCompilerPath;
 		string installPath_;
+		string binDestination_;
 		Wrapper wrapper;
 		string ver;
 	}
@@ -85,7 +86,6 @@ class Install : Fetch
 			setPermissions;
 
 		installEnvironment(createEnvironment);
-		patchDmdConf;
 		
 		if (options.tango)
 			installTango;
@@ -107,29 +107,30 @@ private:
 		auto dmd = ver.length > 0 && ver[0] == '2' ? "dmd2" : "dmd";
 		auto root = Path.join(tmpCompilerPath, dmd);
 		auto platformRoot = Path.join(root, Options.platform);
-		
+
 		if (!Path.exists(platformRoot))
 			throw new DvmException(mambo.core.string.format(`The platform "{}" is not compatible with the compiler dmd {}`, Options.platform, ver), __FILE__, __LINE__);
 		
 		auto binSource = getBinSource(platformRoot);
-		auto binDest = Path.join(installPath, options.path.bin);		
-	 
-		auto libSource = getLibSource(platformRoot);
-		auto libDest = Path.join(installPath, options.path.lib);
 
 		auto srcSource = Path.join(root, options.path.src);
 		auto srcDest = Path.join(installPath, options.path.src);
 
 		verbose("Moving:");
-		
-		Path.move(binSource, binDest);
-		Path.move(libSource, libDest);
+
+		foreach (path ; getLibSources(platformRoot))
+		{
+			auto dest = Path.join(installPath, options.platform, path.destination);
+			Path.move(path.source, dest);
+		}
+
+		Path.move(binSource, binDestination);
 		Path.move(srcSource, srcDest);
 	}
 
 	void installWrapper ()
 	{
-		wrapper.target = Path.join(installPath, options.path.bin, "dmd" ~ options.path.executableExtension);
+		wrapper.target = Path.join(binDestination, "dmd" ~ options.path.executableExtension);
 		wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmd-") ~ ver;
 
 		version (Windows)
@@ -142,15 +143,15 @@ private:
 	void setPermissions ()
 	{
 		verbose("Setting permissions:");
-		auto binPath = Path.join(installPath, options.path.bin);
 
-		setExecutableIfExists(Path.join(binPath, "ddemangle"));
-		setExecutableIfExists(Path.join(binPath, "dman"));
-		setExecutableIfExists(Path.join(binPath, "dmd"));
-		setExecutableIfExists(Path.join(binPath, "dumpobj"));
-		setExecutableIfExists(Path.join(binPath, "obj2asm"));
-		setExecutableIfExists(Path.join(binPath, "rdmd"));
-		setExecutableIfExists(Path.join(binPath, "shell"));
+		setExecutableIfExists(Path.join(binDestination, "ddemangle"));
+		setExecutableIfExists(Path.join(binDestination, "dman"));
+		setExecutableIfExists(Path.join(binDestination, "dmd"));
+		setExecutableIfExists(Path.join(binDestination, "dumpobj"));
+		setExecutableIfExists(Path.join(binDestination, "dustmite"));
+		setExecutableIfExists(Path.join(binDestination, "obj2asm"));
+		setExecutableIfExists(Path.join(binDestination, "rdmd"));
+		setExecutableIfExists(Path.join(binDestination, "shell"));
 
 		setExecutableIfExists(wrapper.path);
 	}
@@ -170,7 +171,7 @@ private:
 		auto sh = new ShellScript;
 		sh.echoOff;
 		
-		auto envPath = Path.join(installPath, options.path.bin);
+		auto envPath = binDestination;
 		auto binPath = Path.join(options.path.dvm, options.path.bin);
 		
 		version (Posix)
@@ -185,22 +186,6 @@ private:
 		}
 		
 		return sh;
-	}
-	
-	void patchDmdConf (bool tango = false)
-	{
-		auto dmdConfPath = Path.join(installPath, options.path.conf);
-		
-		verbose("Patching: ", dmdConfPath);
-		
-		auto src = tango ? "-I%@P%/../import -defaultlib=tango -debuglib=tango -version=Tango" : "-I%@P%/../src/phobos";
-		auto content = cast(string) File.get(dmdConfPath);
-		
-		content = content.slashSafeSubstitute("-I%@P%/../../src/phobos", src);
-		content = content.slashSafeSubstitute("-I%@P%/../../src/druntime/import", "-I%@P%/../src/druntime/import");
-		content = content.slashSafeSubstitute("-L-L%@P%/../lib32", "-L-L%@P%/../lib");
-		
-		File.set(dmdConfPath, content);
 	}
 	
 	void installTango ()
@@ -233,7 +218,7 @@ private:
 	{
 		verbose(format(`Installing "{}" as the temporary D compiler`, ver));
 		auto path = Environment.get("PATH");
-		path = Path.join(installPath, options.path.bin) ~ options.path.pathSeparator ~ path;
+		path = binDestination ~ options.path.pathSeparator ~ path;
 		Environment.set("PATH", path);
 	}
 
@@ -284,8 +269,10 @@ private:
 		
 		auto vendorSrc = options.path.tangoVendor;
 		auto vendorDest = Path.join(importDest, options.path.std);
-		
-		Path.move(options.path.tangoLib, Path.join(installPath, options.path.lib, options.path.tangoLibName ~ options.path.libExtension));
+
+		auto libPath = options.is64bit ? options.path.lib64 : options.path.lib32;
+
+		Path.move(options.path.tangoLib, Path.join(installPath, options.platform, libPath, options.path.tangoLibName ~ options.path.libExtension));
 		Path.move(vendorSrc, vendorDest);
 		Path.move(tangoSource, tangoDest);
 		Path.move(objectSrc, objectDest);
@@ -293,15 +280,15 @@ private:
 	
 	void patchDmdConfForTango ()
 	{
-		auto dmdConfPath = Path.join(installPath, options.path.conf);
+		auto dmdConfPath = Path.join(binDestination, options.path.confName);
 		
 		verbose("Patching: ", dmdConfPath);
 		
-		string newInclude = "-I%@P%/../import";
+		string newInclude = "-I%@P%/../../import";
 		string newArgs = " -defaultlib=tango -debuglib=tango -version=Tango";
 		string content = cast(string) File.get(dmdConfPath);
 		
-		string oldInclude1 = "-I%@P%/../src/phobos";
+		string oldInclude1 = "-I%@P%/../../src/phobos";
 		string oldInclude2 = "-I%@P%/../../src/druntime/import";
 		version (Windows)
 		{
@@ -337,30 +324,34 @@ private:
 		}
 	}
 	
-	string getLibSource (string platformRoot)
+	SourceDestination[] getLibSources (string platformRoot)
 	{
-		string libPath = Path.join(platformRoot, options.path.lib);
-		
-		if (Path.exists(libPath))
-			return libPath;
-		
-		if (options.is64bit)
-		{
-			libPath = Path.join(platformRoot, options.path.lib64);
-			
-			if (Path.exists(libPath))
-				return libPath;
-			
-			else
-				throw new DvmException("There is no 64bit compiler available on this platform", __FILE__, __LINE__);
-		}
+		SourceDestination[] paths;
 
-		libPath = Path.join(platformRoot, options.path.lib32);
+		if (auto path = getLibSource(platformRoot, options.path.lib))
+			paths ~= path;
 
-		if (Path.exists(libPath))
-			return libPath;
+		if (auto path = getLibSource(platformRoot, options.path.lib32))
+			paths ~= path;
 
-		throw new DvmException("Could not find the library path: " ~ libPath, __FILE__, __LINE__);
+		if (auto path = getLibSource(platformRoot, options.path.lib64))
+			paths ~= path;
+
+		if (paths.isEmpty)
+			throw new DvmException("Could not find any library paths", __FILE__, __LINE__);
+
+		return paths;
+	}
+
+	SourceDestination getLibSource (string platformRoot, string libPath)
+	{
+		auto path = Path.join(platformRoot, libPath);
+
+		if (Path.exists(path))
+			return SourceDestination(path, libPath);
+
+		else
+			return SourceDestination.invalid;
 	}
 
 	string getBinSource (string platformRoot)
@@ -401,5 +392,31 @@ private:
 			errorMessage = "Cannot install a compiler without specifying a version";
 
 		super.validateArguments(errorMessage);
+	}
+
+	struct SourceDestination
+	{
+		string source;
+		string destination;
+
+		bool isValid ()
+		{
+			return source.any && destination.any;
+		}
+
+		bool opCast (T : bool) ()
+		{
+			return isValid;
+		}
+
+		static SourceDestination invalid ()
+		{
+			return SourceDestination(null, null);
+		}
+	}
+
+	string binDestination ()
+	{
+		return binDestination_ = binDestination_.any ? binDestination_ : Path.join(installPath, options.platform, options.path.bin);
 	}
 }
