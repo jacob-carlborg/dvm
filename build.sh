@@ -18,4 +18,4 @@ else
 	extra_flags="-debug -g"
 fi
 
-rdmd -Imambo -Jresources -L-lz -L-ltango --build-only -ofbin/dvm $extra_flags $extra_linker_flags "$@" dvm/dvm/dvm.d
+${RDMD:-rdmd} --exclude=tango -Imambo -Jresources -L-lz -L-ltango --build-only -ofbin/dvm $extra_flags $extra_linker_flags "$@" dvm/dvm/dvm.d
