@@ -20,8 +20,6 @@
 		"dvm/util/Windows.d"
 	],
 
-	"lflags-osx": ["-macosx_version_min", "10.6"],
-
 	"buildRequirements": ["silenceWarnings"],
 
 	"dependencies": {
