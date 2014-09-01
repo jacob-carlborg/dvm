@@ -9,3 +9,5 @@ dvm/dvm/dvm
 *.exe
 bin/dvm
 *.deps
+.dub
+bin/*
