@@ -64,7 +64,7 @@ private:
 
 	void installWrapper ()
 	{
-		wrapper.target = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin, "dmd" ~ options.path.executableExtension).assumeUnique;
+		wrapper.target = wrapperTarget(args.first);
 		wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc" ~ options.path.scriptExtension).assumeUnique;
 
 		verbose("Installing wrapper: " ~ wrapper.path);
@@ -142,6 +142,15 @@ private:
 			return envPath_;
 		
 		return envPath_ = native(join(options.path.env, "dmd-" ~ args.first ~ options.path.scriptExtension)).assumeUnique;
+	}
+
+	string wrapperTarget (string compilerVersion)
+	{
+		auto basePath = join(options.path.compilers, "dmd-" ~ compilerVersion);
+		auto executable = "dmd" ~ options.path.executableExtension;
+		auto path = join(basePath, options.platform, options.path.bin, executable);
+
+		return exists(path) ? path : join(basePath, options.path.bin, executable);
 	}
 }
 
