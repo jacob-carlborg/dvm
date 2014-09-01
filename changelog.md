@@ -3,9 +3,12 @@
 ## Version 0.4.3
 ### New/Changed Features
 * Add support for Dub
+* Since issue 23 has been fixed this means that now both 32 and 64bit
+libraries are supported simultaneously
 
 ### Bugs Fixed
 * Fix issue "unexpected redirect for method GET"
+* [Issue 23](https://github.com/jacob-carlborg/dvm/issues/23): Leave DMD directory structure as-is
 
 ## Version 0.4.2
 ### New/Changed Features
