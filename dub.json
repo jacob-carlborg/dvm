@@ -23,6 +23,6 @@
 	"buildRequirements": ["silenceWarnings"],
 
 	"dependencies": {
-		"mambo": "0.0.2"
+		"mambo": "0.0.3"
 	}
 }
