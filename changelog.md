@@ -3,6 +3,8 @@
 ## Unreleased
 ### New/Changed Features
 * Download DMD from `downloads.dlang.org` (fallback to `ftp.digitalmars.com`)
+* Set a user agent when fetching compilers. The user agent will be in the form
+of `dvm/<version> (<architecture>-<operating system>)`
 
 ## Version 0.4.3
 ### New/Changed Features

@@ -150,7 +150,7 @@ class Application
         auto help = false;
 
         opts.banner = "Usage: dvm [options] command [arg]";
-        opts.separator("Version 0.4.3");
+        opts.separator("Version " ~ dvm.dvm.Version.Version);
         opts.separator("");
         opts.separator("Commands:");
         opts.separator(commands);

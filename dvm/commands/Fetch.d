@@ -52,6 +52,7 @@ class Fetch : Command
 
 protected:
 
+    enum userAgent = buildUserAgent();
     enum dmcArchiveName = "dm852c.zip";
 
     void fetchDMC (string destinationPath=".")
@@ -96,6 +97,7 @@ protected:
 
         auto page = new HttpGet(url);
         page.setTimeout(30f);
+        page.getRequestHeaders.add(HttpHeader.UserAgent, userAgent);
         auto buffer = page.open;
 
         scope(exit)
@@ -297,6 +299,18 @@ protected:
         auto parts = version_.split("-");
         return parts.length == 2 && parts[1].first == 'b';
     }
+}
+
+string buildUserAgent ()
+{
+    import std.system;
+    import std.string;
+
+    version (X86) auto architecture = "i386";
+    else version (X86_64) auto architecture = "x86_64";
+    else static assert("Unhandled platform");
+
+    return format("dvm/%s (%s-%s)", dvm.dvm.Version.Version, architecture, os);
 }
 
 template FetchImpl ()
