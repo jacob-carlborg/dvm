@@ -71,7 +71,7 @@ class Install : Fetch
         this.ver = ver;
 
         auto filename = buildFilename(ver);
-        auto url = buildUrl(filename);
+        auto url = buildUrl(ver, filename);
 
         archivePath = Path.join(options.path.archives, filename);
 

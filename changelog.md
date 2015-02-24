@@ -1,5 +1,9 @@
 # DVM Change Log
 
+## Unreleased
+### New/Changed Features
+* Download DMD from `downloads.dlang.org` (fallback to `ftp.digitalmars.com`)
+
 ## Version 0.4.3
 ### New/Changed Features
 * Add support for Dub

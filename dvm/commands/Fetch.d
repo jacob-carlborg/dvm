@@ -7,6 +7,7 @@
 module dvm.commands.Fetch;
 
 import std.algorithm : splitter;
+import std.string : split;
 import std.regex;
 
 import tango.core.Exception;
@@ -42,8 +43,9 @@ class Fetch : Command
 
         else
         {
-            string filename = buildFilename;
-            string url = buildUrl(filename);
+            auto version_ = getDMDVersion();
+            string filename = buildFilename(version_);
+            string url = buildUrl(version_, filename);
             fetch(url, Path.join(".", filename).assumeUnique);
         }
     }
@@ -173,14 +175,33 @@ protected:
         return "dmd." ~ ver ~ ".zip";
     }
 
-    string buildUrl (string filename)
+    string buildUrl (string version_, string filename)
     {
+        auto url = dlangUrl(version_, filename);
+        println(url);
+        if (urlExists(url))
+            return url;
+
         return digitalMarsUrl(filename);
     }
 
     string digitalMarsUrl (string filename)
     {
         return "http://ftp.digitalmars.com/" ~ filename;
+    }
+
+    string dlangUrl (string version_, string filename)
+    {
+        enum baseUrl = "http://downloads.dlang.org/";
+        string releases = "releases";
+
+        if (isPreRelease(version_))
+        {
+            releases = "pre-releases";
+            version_ = version_.split("-").first;
+        }
+
+        return format(baseUrl ~ "{}/{}.x/{}/{}", releases, version_.first, version_, filename);
     }
 
     void createPath (string path)
@@ -269,6 +290,12 @@ protected:
 
         if (args.empty)
             throw new DvmException(errorMessage, __FILE__, __LINE__);
+    }
+
+    bool isPreRelease (string version_)
+    {
+        auto parts = version_.split("-");
+        return parts.length == 2 && parts[1].first == 'b';
     }
 }
 
