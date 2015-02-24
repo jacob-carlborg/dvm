@@ -22,162 +22,162 @@ version (Windows) import DvmRegistry = dvm.util.DvmRegistry;
 version (Windows) import dvm.util.Windows;
 
 class DvmInstall : Command
-{	
-	private
-	{
-		enum postInstallInstructions = import("post_install_instructions.txt");
-		enum failedInstallInstructions = import("failed_install_instructions.txt");
+{    
+    private
+    {
+        enum postInstallInstructions = import("post_install_instructions.txt");
+        enum failedInstallInstructions = import("failed_install_instructions.txt");
 
-		version (Posix)
-			enum dvmScript = import("dvm.sh");
-		
-		else
-			enum dvmScript = import("dvm.bat");
-	}
-	
-	override void execute ()
-	{
-		install;
-	}
-	
+        version (Posix)
+            enum dvmScript = import("dvm.sh");
+        
+        else
+            enum dvmScript = import("dvm.bat");
+    }
+    
+    override void execute ()
+    {
+        install;
+    }
+    
 private:
-	
-	void install ()
-	{
-		if (Path.exists(options.path.dvm))
-			return update;
-		
-		verbose("Installing dvm to: ", options.path.dvm);
-		createPaths;
-		copyExecutable;
-		writeScript;
+    
+    void install ()
+    {
+        if (Path.exists(options.path.dvm))
+            return update;
+        
+        verbose("Installing dvm to: ", options.path.dvm);
+        createPaths;
+        copyExecutable;
+        writeScript;
 
-		version (Posix)
-		{
-			setPermissions;
-			installBashInclude(createBashInclude);
-		}
-		
-		version (Windows)
-			setupRegistry;
-	}
+        version (Posix)
+        {
+            setPermissions;
+            installBashInclude(createBashInclude);
+        }
+        
+        version (Windows)
+            setupRegistry;
+    }
 
-	void update ()
-	{
-		createPaths;
-	    copyExecutable;
-	    writeScript;
-	    setPermissions;
+    void update ()
+    {
+        createPaths;
+        copyExecutable;
+        writeScript;
+        setPermissions;
 
-		version (Windows)
-			setupRegistry;
-	}
-	
-	void createPaths ()
-	{
-		verbose("Creating paths:");
+        version (Windows)
+            setupRegistry;
+    }
+    
+    void createPaths ()
+    {
+        verbose("Creating paths:");
 
-		createPath(options.path.dvm);
-		createPath(options.path.archives);
-		createPath(Path.join(options.path.dvm, options.path.bin).assumeUnique);
-		createPath(options.path.compilers);
-		createPath(options.path.env);
-		createPath(options.path.scripts);
-		
-		verbose();
-	}
+        createPath(options.path.dvm);
+        createPath(options.path.archives);
+        createPath(Path.join(options.path.dvm, options.path.bin).assumeUnique);
+        createPath(options.path.compilers);
+        createPath(options.path.env);
+        createPath(options.path.scripts);
+        
+        verbose();
+    }
 
-	void copyExecutable ()
-	{
-		verbose("Copying executable:");
-		verbose("thisExePath: ", thisExePath);
-		copy(thisExePath, options.path.dvmExecutable);
-	}
-	
-	void writeScript ()
-	{
-		verbose("Writing script to: ", options.path.dvmScript);
-		File.set(options.path.dvmScript, dvmScript);
-	}
+    void copyExecutable ()
+    {
+        verbose("Copying executable:");
+        verbose("thisExePath: ", thisExePath);
+        copy(thisExePath, options.path.dvmExecutable);
+    }
+    
+    void writeScript ()
+    {
+        verbose("Writing script to: ", options.path.dvmScript);
+        File.set(options.path.dvmScript, dvmScript);
+    }
 
-	void setPermissions ()
-	{
-		verbose("Setting permissions:");
-		permission(options.path.dvmScript, "+x");
-		permission(options.path.dvmExecutable, "+x");
-	}
-	
-	version (Posix)
-		void installBashInclude (ShellScript sh)
-		{
-			auto home = homeFolder.assumeUnique;
-			auto bashrc = Path.join(home, ".bashrc");
-			auto bash_profile = Path.join(home, ".bash_profile");
-			string shPath;
+    void setPermissions ()
+    {
+        verbose("Setting permissions:");
+        permission(options.path.dvmScript, "+x");
+        permission(options.path.dvmExecutable, "+x");
+    }
+    
+    version (Posix)
+        void installBashInclude (ShellScript sh)
+        {
+            auto home = homeFolder.assumeUnique;
+            auto bashrc = Path.join(home, ".bashrc");
+            auto bash_profile = Path.join(home, ".bash_profile");
+            string shPath;
 
-			if (Path.exists(bashrc))
-				shPath = bashrc;
+            if (Path.exists(bashrc))
+                shPath = bashrc;
 
-			else if (Path.exists(bash_profile))
-				shPath = bash_profile;
+            else if (Path.exists(bash_profile))
+                shPath = bash_profile;
 
-			else
-				throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:{}{}`,
-												bashrc, bash_profile, "\n\n", failedInstallInstructions), __FILE__, __LINE__);
+            else
+                throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:{}{}`,
+                                                bashrc, bash_profile, "\n\n", failedInstallInstructions), __FILE__, __LINE__);
 
-			verbose("Installing dvm in the shell loading file: ", shPath);
-			File.append(shPath, sh.content);
+            verbose("Installing dvm in the shell loading file: ", shPath);
+            File.append(shPath, sh.content);
 
-			println(postInstallInstructions);
-		}
+            println(postInstallInstructions);
+        }
 
-	void createPath (string path)
-	{
-		verbose(options.indentation, path);
-		if(!Path.exists(path))
-			Path.createFolder(path);
-	}
-	
-	void permission (string path, string mode)
-	{
-		version (Posix)
-		{
-			verbose(options.indentation, "mode: " ~ mode);
-			verbose(options.indentation, "file: " ~ path, '\n');
-			
-			Path.permission(path, mode);
-		}
-	}
-	
-	void copy (string source, string destination)
-	{		
-		verbose(options.indentation, "source: ", source);
-		verbose(options.indentation, "destination: ", destination, '\n');
+    void createPath (string path)
+    {
+        verbose(options.indentation, path);
+        if(!Path.exists(path))
+            Path.createFolder(path);
+    }
+    
+    void permission (string path, string mode)
+    {
+        version (Posix)
+        {
+            verbose(options.indentation, "mode: " ~ mode);
+            verbose(options.indentation, "file: " ~ path, '\n');
+            
+            Path.permission(path, mode);
+        }
+    }
+    
+    void copy (string source, string destination)
+    {        
+        verbose(options.indentation, "source: ", source);
+        verbose(options.indentation, "destination: ", destination, '\n');
 
-		Path.copy(source, destination);
-	}
-	
-	ShellScript createBashInclude ()
-	{
-		auto sh = new ShellScript;
-		sh.nl.nl;
-		sh.comment("This loads DVM into a shell session.").nl;
+        Path.copy(source, destination);
+    }
+    
+    ShellScript createBashInclude ()
+    {
+        auto sh = new ShellScript;
+        sh.nl.nl;
+        sh.comment("This loads DVM into a shell session.").nl;
 
-		sh.ifFileIsNotEmpty(options.path.dvmScript, {
-			sh.source(options.path.dvmScript);
-		});
-		
-		return sh;
-	}
-	
-	version (Windows)
-		void setupRegistry ()
-		{
-			auto defaultCompilerPath = DvmRegistry.getDefaultCompilerPath();
-			DvmRegistry.updateEnvironment(options.path.binDir, defaultCompilerPath);
-			DvmRegistry.checkSystemPath();
-			broadcastSettingChange("Environment");
-			println("DVM has now been installed.");
-			println("To use dvm, you may need to open a new command prompt.");
-		}
+        sh.ifFileIsNotEmpty(options.path.dvmScript, {
+            sh.source(options.path.dvmScript);
+        });
+        
+        return sh;
+    }
+    
+    version (Windows)
+        void setupRegistry ()
+        {
+            auto defaultCompilerPath = DvmRegistry.getDefaultCompilerPath();
+            DvmRegistry.updateEnvironment(options.path.binDir, defaultCompilerPath);
+            DvmRegistry.checkSystemPath();
+            broadcastSettingChange("Environment");
+            println("DVM has now been installed.");
+            println("To use dvm, you may need to open a new command prompt.");
+        }
 }

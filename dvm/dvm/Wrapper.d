@@ -12,45 +12,45 @@ import dvm.io.Path;
 
 struct Wrapper
 {
-	string path;
-	string target;
-	
-	private ShellScript sh;
-	
-	static Wrapper opCall (string path = "", string target = "")
-	{
-		Wrapper wrapper;
-		
-		wrapper.path = path;
-		wrapper.target = target;
-		
-		return wrapper;
-	}
-	
-	void write ()
-	{
-		createContent;
-		sh.path = path;
-		sh.write;
-	}
-	
-	private void createContent ()
-	{
-		native(path.toMutable);
-		native(target.toMutable);
-		
-		sh = new ShellScript(path);
-		auto dmd = "dmd";
-		auto dmdPath = Sh.quote(target);
+    string path;
+    string target;
+    
+    private ShellScript sh;
+    
+    static Wrapper opCall (string path = "", string target = "")
+    {
+        Wrapper wrapper;
+        
+        wrapper.path = path;
+        wrapper.target = target;
+        
+        return wrapper;
+    }
+    
+    void write ()
+    {
+        createContent;
+        sh.path = path;
+        sh.write;
+    }
+    
+    private void createContent ()
+    {
+        native(path.toMutable);
+        native(target.toMutable);
+        
+        sh = new ShellScript(path);
+        auto dmd = "dmd";
+        auto dmdPath = Sh.quote(target);
 
-		sh.shebang;
-		sh.echoOff;
-		sh.nl;
-		
-		sh.ifFileIsNotEmpty(dmdPath, {
-			sh.exec(dmdPath, Sh.allArgs);
-		}, {
-			sh.printError(format(`Missing target: "{}"`, target), true);
-		});
-	}
+        sh.shebang;
+        sh.echoOff;
+        sh.nl;
+        
+        sh.ifFileIsNotEmpty(dmdPath, {
+            sh.exec(dmdPath, Sh.allArgs);
+        }, {
+            sh.printError(format(`Missing target: "{}"`, target), true);
+        });
+    }
 }

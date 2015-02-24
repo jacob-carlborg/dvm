@@ -20,143 +20,143 @@ version (Windows) import dvm.util.Windows;
 
 class Use : Command
 {
-	private
-	{
-		string envPath_;
-		Wrapper wrapper;
-	}
-	
-	this ()
-	{
-		super("use", "Setup current shell to use a specific D compiler version.");
-	}
-	
-	override void execute ()
-	{
-		loadEnvironment;
-		installWrapper;
+    private
+    {
+        string envPath_;
+        Wrapper wrapper;
+    }
+    
+    this ()
+    {
+        super("use", "Setup current shell to use a specific D compiler version.");
+    }
+    
+    override void execute ()
+    {
+        loadEnvironment;
+        installWrapper;
 
-		version (Posix)
-			setPermissions;
+        version (Posix)
+            setPermissions;
 
-		version (Windows)
-			updateRegistry;
-	}
-	
+        version (Windows)
+            updateRegistry;
+    }
+    
 private:
-	
-	void loadEnvironment ()
-	{
-		auto shellScript = createShellScript;
+    
+    void loadEnvironment ()
+    {
+        auto shellScript = createShellScript;
 
-		auto current = options.isDefault ? "default" : "current";
-		verbose(format(`Installing "{}" as the {} D compiler`, args.first, current));
+        auto current = options.isDefault ? "default" : "current";
+        verbose(format(`Installing "{}" as the {} D compiler`, args.first, current));
 
-		writeShellScript(shellScript, options.path.result);
+        writeShellScript(shellScript, options.path.result);
 
-		version (Posix)
-			if (options.isDefault)
-			{
-				verbose("Installing environment: ", options.path.defaultEnv);
-				copy(options.path.result, options.path.defaultEnv);
-			}
-	}
+        version (Posix)
+            if (options.isDefault)
+            {
+                verbose("Installing environment: ", options.path.defaultEnv);
+                copy(options.path.result, options.path.defaultEnv);
+            }
+    }
 
-	void installWrapper ()
-	{
-		wrapper.target = wrapperTarget(args.first);
-		wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc" ~ options.path.scriptExtension).assumeUnique;
+    void installWrapper ()
+    {
+        wrapper.target = wrapperTarget(args.first);
+        wrapper.path = join(options.path.dvm, options.path.bin, "dvm-current-dc" ~ options.path.scriptExtension).assumeUnique;
 
-		verbose("Installing wrapper: " ~ wrapper.path);
+        verbose("Installing wrapper: " ~ wrapper.path);
 
-		if (exists(wrapper.path))
-			dvm.io.Path.remove(wrapper.path);
+        if (exists(wrapper.path))
+            dvm.io.Path.remove(wrapper.path);
 
-		wrapper.write;
+        wrapper.write;
 
-		if (options.isDefault)
-		{
-			verbose("Installing wrapper: ", options.path.defaultBin);
-			copy(wrapper.path, options.path.defaultBin);
-		}
-	}
+        if (options.isDefault)
+        {
+            verbose("Installing wrapper: ", options.path.defaultBin);
+            copy(wrapper.path, options.path.defaultBin);
+        }
+    }
 
-	version (Windows)
-		void updateRegistry ()
-		{
-			if (options.isDefault)
-			{
-				auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
-				DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
-			
-				DvmRegistry.checkSystemPath();
-			
-				broadcastSettingChange("Environment");
-			}
-		}
+    version (Windows)
+        void updateRegistry ()
+        {
+            if (options.isDefault)
+            {
+                auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
+                DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
+            
+                DvmRegistry.checkSystemPath();
+            
+                broadcastSettingChange("Environment");
+            }
+        }
 
-	version (Posix)
-		void setPermissions ()
-		{
-			verbose("Setting permissions:");
+    version (Posix)
+        void setPermissions ()
+        {
+            verbose("Setting permissions:");
 
-			setPermission(wrapper.path, "+x");
+            setPermission(wrapper.path, "+x");
 
-			if (options.isDefault)
-				setPermission(options.path.defaultBin, "+x");
-		}
+            if (options.isDefault)
+                setPermission(options.path.defaultBin, "+x");
+        }
 
-	version (Posix)
-		void setPermission (string path, string mode)
-		{
-			verbose(options.indentation, "mode: ", mode);
-			verbose(options.indentation, "file: ", path);
+    version (Posix)
+        void setPermission (string path, string mode)
+        {
+            verbose(options.indentation, "mode: ", mode);
+            verbose(options.indentation, "file: ", path);
 
-			permission(path, mode);
-		}
-	
-	ShellScript createShellScript ()
-	{
-		verbose("Creating shell script");
-		auto sh = new ShellScript;
-		sh.echoOff;
-		sh.source(Sh.quote(envPath));
-		
-		return sh;
-	}
-	
-	void writeShellScript (ShellScript sh, string path)
-	{
-		validatePath(envPath);
-		sh.path = path;
-		
-		if (!exists(options.path.tmp))
-			createFolder(options.path.tmp);
-		
-		sh.write;
-	}
-	
-	string envPath ()
-	{
-		if (envPath_.length > 0)
-			return envPath_;
-		
-		return envPath_ = native(join(options.path.env, "dmd-" ~ args.first ~ options.path.scriptExtension)).assumeUnique;
-	}
+            permission(path, mode);
+        }
+    
+    ShellScript createShellScript ()
+    {
+        verbose("Creating shell script");
+        auto sh = new ShellScript;
+        sh.echoOff;
+        sh.source(Sh.quote(envPath));
+        
+        return sh;
+    }
+    
+    void writeShellScript (ShellScript sh, string path)
+    {
+        validatePath(envPath);
+        sh.path = path;
+        
+        if (!exists(options.path.tmp))
+            createFolder(options.path.tmp);
+        
+        sh.write;
+    }
+    
+    string envPath ()
+    {
+        if (envPath_.length > 0)
+            return envPath_;
+        
+        return envPath_ = native(join(options.path.env, "dmd-" ~ args.first ~ options.path.scriptExtension)).assumeUnique;
+    }
 
-	string wrapperTarget (string compilerVersion)
-	{
-		auto basePath = join(options.path.compilers, "dmd-" ~ compilerVersion);
-		auto executable = "dmd" ~ options.path.executableExtension;
-		auto path = join(basePath, options.platform, options.path.bin, executable);
+    string wrapperTarget (string compilerVersion)
+    {
+        auto basePath = join(options.path.compilers, "dmd-" ~ compilerVersion);
+        auto executable = "dmd" ~ options.path.executableExtension;
+        auto path = join(basePath, options.platform, options.path.bin, executable);
 
-		return exists(path) ? path : join(basePath, options.path.bin, executable);
-	}
+        return exists(path) ? path : join(basePath, options.path.bin, executable);
+    }
 }
 
 template UseImpl ()
 {
 
-	
+    
 
 }

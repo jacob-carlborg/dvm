@@ -10,23 +10,23 @@ import mambo.core.string;
 
 class DvmException : Exception
 {
-	template Constructor ()
-	{
-		this (string message, string file, size_t line)
-		{
-			super(message, file, line);
-		}
-	}
+    template Constructor ()
+    {
+        this (string message, string file, size_t line)
+        {
+            super(message, file, line);
+        }
+    }
 
-	mixin Constructor;
+    mixin Constructor;
 }
 
 class MissingArgumentException : DvmException
 {
-	mixin Constructor;
+    mixin Constructor;
 }
 
 class InvalidOptionException : DvmException
 {
-	mixin Constructor;
+    mixin Constructor;
 }

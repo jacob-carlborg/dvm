@@ -14,42 +14,42 @@ import dvm.io.Path;
 
 class List : Command
 {
-	this (string name, string summary = "")
-	{
-		super(name, summary);
-	}
+    this (string name, string summary = "")
+    {
+        super(name, summary);
+    }
 
-	this ()
-	{
-		super("list", "Show currently installed D compilers.");
-	}
+    this ()
+    {
+        super("list", "Show currently installed D compilers.");
+    }
 
-	override void execute ()
-	{
-		auto errorMessage = "No installed D compilers";
+    override void execute ()
+    {
+        auto errorMessage = "No installed D compilers";
 
-		if (!Path.exists(options.path.compilers))
-		{
-			println(errorMessage);
-			return;
-		}
+        if (!Path.exists(options.path.compilers))
+        {
+            println(errorMessage);
+            return;
+        }
 
-		scope folder = new FileFolder(options.path.compilers);
+        scope folder = new FileFolder(options.path.compilers);
 
-		if (folder.self.folders == 0)
-		{
-			println(errorMessage);
-			return;
-		}
-		
-		println("Installed D compilers:\n");
-		
-		foreach (file ; folder)
-			println(stripPath(file.toString));
-	}
-	
-	private string stripPath (string name)
-	{
-		return parse(name).file;
-	}
+        if (folder.self.folders == 0)
+        {
+            println(errorMessage);
+            return;
+        }
+        
+        println("Installed D compilers:\n");
+        
+        foreach (file ; folder)
+            println(stripPath(file.toString));
+    }
+    
+    private string stripPath (string name)
+    {
+        return parse(name).file;
+    }
 }

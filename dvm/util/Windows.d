@@ -20,82 +20,82 @@ extern (Windows) DWORD FormatMessageW (DWORD, LPCVOID, DWORD, DWORD, LPWSTR*, DW
 
 class WinAPIException : DvmException
 {
-	LONG code;
-	string windowsMsg;
-	
-	this (LONG code, string msg = "", string file = __FILE__, size_t line = __LINE__)
-	{
-		this.code = code;
+    LONG code;
+    string windowsMsg;
+    
+    this (LONG code, string msg = "", string file = __FILE__, size_t line = __LINE__)
+    {
+        this.code = code;
 
-		if(windowsMsg == "")
-			windowsMsg = getMessage(code);
+        if(windowsMsg == "")
+            windowsMsg = getMessage(code);
 
-		super(msg == "" ? windowsMsg : msg, file, line);
-	}
-	
-	static string getMessage (DWORD errorCode)
-	{
-		wchar* pMsg;
+        super(msg == "" ? windowsMsg : msg, file, line);
+    }
+    
+    static string getMessage (DWORD errorCode)
+    {
+        wchar* pMsg;
 
-		auto result = FormatMessageW(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-			FORMAT_MESSAGE_FROM_SYSTEM     |
-			FORMAT_MESSAGE_IGNORE_INSERTS,
-			null, errorCode, 0, &pMsg, 0, null
-		);
-		
-		if(result == 0)
-			return "Unknown WinAPI Error";
+        auto result = FormatMessageW(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+            FORMAT_MESSAGE_FROM_SYSTEM     |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            null, errorCode, 0, &pMsg, 0, null
+        );
+        
+        if(result == 0)
+            return "Unknown WinAPI Error";
 
-		scope (exit)
-			LocalFree(pMsg);
+        scope (exit)
+            LocalFree(pMsg);
 
-		auto msg = fromString16z(pMsg);
-		return to!(string)(msg);
-	}
+        auto msg = fromString16z(pMsg);
+        return to!(string)(msg);
+    }
 }
 
 private alias mambo.core.string.toString16z toString16z;
 
 immutable(wchar)* toString16z (string str)
 {
-	return to!(wstring)(str).toString16z();
+    return to!(wstring)(str).toString16z();
 }
 
 /// For more info, see: http://msdn.microsoft.com/en-us/library/ms725497(VS.85).aspx
 void broadcastSettingChange (string settingName, uint timeout=1)
 {
-	auto result = SendMessageTimeoutW(
-		HWND_BROADCAST, WM_SETTINGCHANGE,
-		0, cast(LPARAM)(settingName.toString16z()),
-		SMTO_ABORTIFHUNG, timeout, null
-	);
-	
-	if(result == 0)
-	{
-		auto errCode = GetLastError();
+    auto result = SendMessageTimeoutW(
+        HWND_BROADCAST, WM_SETTINGCHANGE,
+        0, cast(LPARAM)(settingName.toString16z()),
+        SMTO_ABORTIFHUNG, timeout, null
+    );
+    
+    if(result == 0)
+    {
+        auto errCode = GetLastError();
 
-		if (errCode != ERROR_SUCCESS)
-			throw new WinAPIException(errCode, "Problem broadcasting WM_SETTINGCHANGE of '" ~ settingName ~ "'", __FILE__, __LINE__);
-	}
+        if (errCode != ERROR_SUCCESS)
+            throw new WinAPIException(errCode, "Problem broadcasting WM_SETTINGCHANGE of '" ~ settingName ~ "'", __FILE__, __LINE__);
+    }
 }
 
 string expandEnvironmentStrings(string str)
 {
-	auto wstr = toString16z(str);
-	
-	wchar[] result;
-	result.length = 32_000 / wchar.sizeof;
-	
-	auto resultLength = ExpandEnvironmentStringsW(wstr, result.ptr, result.length);
+    auto wstr = toString16z(str);
+    
+    wchar[] result;
+    result.length = 32_000 / wchar.sizeof;
+    
+    auto resultLength = ExpandEnvironmentStringsW(wstr, result.ptr, result.length);
 
-	if(resultLength == 0)
-	{
-		auto errCode = GetLastError();
+    if(resultLength == 0)
+    {
+        auto errCode = GetLastError();
 
-		if (errCode != ERROR_SUCCESS)
-			throw new WinAPIException(errCode, "Problem expanding environment variables", __FILE__, __LINE__);
-	}
-	
-	return to!(string)(result[0..resultLength-1]);
+        if (errCode != ERROR_SUCCESS)
+            throw new WinAPIException(errCode, "Problem expanding environment variables", __FILE__, __LINE__);
+    }
+    
+    return to!(string)(result[0..resultLength-1]);
 }

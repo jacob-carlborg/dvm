@@ -16,43 +16,43 @@ import dvm.util._;
 
 class Uninstall : Command
 {
-	private string installPath_;
-	
-	this (string name, string summary = "")
-	{
-		super(name, summary);
-	}
+    private string installPath_;
+    
+    this (string name, string summary = "")
+    {
+        super(name, summary);
+    }
 
-	this ()
-	{
-		super("uninstall", "Uninstall one or many D compilers.");
-	}
+    this ()
+    {
+        super("uninstall", "Uninstall one or many D compilers.");
+    }
 
-	override void execute ()
-	{
-		println("Uninstalling dmd-", args.first);
-		removeFiles;
-	}
-	
+    override void execute ()
+    {
+        println("Uninstalling dmd-", args.first);
+        removeFiles;
+    }
+    
 private:
-	
-	void removeFiles ()
-	{
-		verbose("Removing files:");
-		
-		auto dmd = "dmd-" ~ args.first;
-		
-		removeFile(Path.join(options.path.compilers, dmd).assumeUnique);
-		removeFile(Path.join(options.path.env, dmd).assumeUnique);
-		removeFile(Path.join(options.path.dvm, options.path.bin, dmd).assumeUnique);
-	}
-	
-	void removeFile (string path)
-	{
-		if (!Path.exists(path))
-			return;
-		
-		verbose(options.indentation, path);
-		Path.remove(path, true);
-	}
+    
+    void removeFiles ()
+    {
+        verbose("Removing files:");
+        
+        auto dmd = "dmd-" ~ args.first;
+        
+        removeFile(Path.join(options.path.compilers, dmd).assumeUnique);
+        removeFile(Path.join(options.path.env, dmd).assumeUnique);
+        removeFile(Path.join(options.path.dvm, options.path.bin, dmd).assumeUnique);
+    }
+    
+    void removeFile (string path)
+    {
+        if (!Path.exists(path))
+            return;
+        
+        verbose(options.indentation, path);
+        Path.remove(path, true);
+    }
 }

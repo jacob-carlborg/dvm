@@ -12,5 +12,5 @@ import dvm.util.OptionParser;
 import dvm.util.Util;
 
 version (Windows):
-	import dvm.util.DvmRegistry;
-	import dvm.util.Windows;
+    import dvm.util.DvmRegistry;
+    import dvm.util.Windows;

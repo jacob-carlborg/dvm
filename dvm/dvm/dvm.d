@@ -10,5 +10,5 @@ import dvm.dvm.Application;
 
 int main (string[] args)
 {
-	return Application.instance.run(args);
+    return Application.instance.run(args);
 }

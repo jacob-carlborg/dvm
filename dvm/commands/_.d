@@ -7,7 +7,7 @@
 module dvm.commands._;
 
 public:
-	
+    
 import dvm.commands.Command;
 import dvm.commands.Compile;
 import dvm.commands.DvmInstall;

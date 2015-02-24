@@ -14,19 +14,19 @@ import tango.sys.Process;
 /// Returns: Process.Result (containing status code and reason the process ended)
 Process.Result system(string[] args...)
 {
-	Process p;
-	auto result = system(p, args);
-	p.close;
-	return result;
+    Process p;
+    auto result = system(p, args);
+    p.close;
+    return result;
 }
 
 /// Has extra param to retreive the Process object used so you can obtain extra information.
 /// Make sure to call p.close() when you're done with it.
 Process.Result system(out Process p, string[] args...)
 {
-	p = new Process(true, args);
-	p.redirect = Redirect.None;
-	p.execute();
-	auto result = p.wait();
-	return result;
+    p = new Process(true, args);
+    p.redirect = Redirect.None;
+    p.execute();
+    auto result = p.wait();
+    return result;
 }

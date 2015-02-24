@@ -18,7 +18,7 @@ fi # <= be sure to close the if at the end of the .bashrc.
 
 # This loads DVM into a shell session.
 if [[ -s "$HOME/.dvm/scripts/dvm" ]] ; then
-	. "$HOME/.dvm/scripts/dvm"
+    . "$HOME/.dvm/scripts/dvm"
 fi
 
 EOF - This marks the end of the .bashrc file

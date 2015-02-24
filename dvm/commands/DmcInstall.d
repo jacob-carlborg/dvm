@@ -33,66 +33,66 @@ import dvm.util.Util;
 // in case someone wants to try to use it through Wine.
 
 class DmcInstall : Fetch
-{	
-	private
-	{
-		string archivePath;
-		string tmpCompilerPath;
-		Wrapper wrapper;
-		string installPath_;
-	}
-	
-	override void execute ()
-	{
-		install;
-	}
-	
+{    
+    private
+    {
+        string archivePath;
+        string tmpCompilerPath;
+        Wrapper wrapper;
+        string installPath_;
+    }
+    
+    override void execute ()
+    {
+        install;
+    }
+    
 private:
 
-	void install ()
-	{
-		archivePath = Path.join(options.path.archives, dmcArchiveName);
-		
-		fetchDMC(options.path.archives);
-		println("Installing: dmc");
+    void install ()
+    {
+        archivePath = Path.join(options.path.archives, dmcArchiveName);
+        
+        fetchDMC(options.path.archives);
+        println("Installing: dmc");
 
-		unpack;
-		moveFiles;
-		
-		version (Windows)
-			installWrapper;
-	}
+        unpack;
+        moveFiles;
+        
+        version (Windows)
+            installWrapper;
+    }
 
-	void unpack ()
-	{
-		tmpCompilerPath = Path.join(options.path.tmp, "dmc");
-		verbose("Unpacking:");
-		verbose(options.indentation, "source: ", archivePath);
-		verbose(options.indentation, "destination: ", tmpCompilerPath, '\n');
-		extractArchive(archivePath, tmpCompilerPath);
-	}
-	
-	void moveFiles ()
-	{
-		verbose("Moving:");
-		Path.move(Path.join(tmpCompilerPath, "dm"), installPath);
-	}
+    void unpack ()
+    {
+        tmpCompilerPath = Path.join(options.path.tmp, "dmc");
+        verbose("Unpacking:");
+        verbose(options.indentation, "source: ", archivePath);
+        verbose(options.indentation, "destination: ", tmpCompilerPath, '\n');
+        extractArchive(archivePath, tmpCompilerPath);
+    }
+    
+    void moveFiles ()
+    {
+        verbose("Moving:");
+        Path.move(Path.join(tmpCompilerPath, "dm"), installPath);
+    }
 
-	version (Windows)
-		void installWrapper ()
-		{
-			wrapper.target = Path.join(installPath, options.path.bin, "dmc.exe");
-			wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmc.bat");
+    version (Windows)
+        void installWrapper ()
+        {
+            wrapper.target = Path.join(installPath, options.path.bin, "dmc.exe");
+            wrapper.path = Path.join(options.path.dvm, options.path.bin, "dmc.bat");
 
-			verbose("Installing wrapper: " ~ wrapper.path);
-			wrapper.write;
-		}
-	
-	string installPath ()
-	{
-		if (installPath_.length > 0)
-			return installPath_;
+            verbose("Installing wrapper: " ~ wrapper.path);
+            wrapper.write;
+        }
+    
+    string installPath ()
+    {
+        if (installPath_.length > 0)
+            return installPath_;
 
-		return installPath_ = Path.join(options.path.compilers, "dmc");
-	}
+        return installPath_ = Path.join(options.path.compilers, "dmc");
+    }
 }

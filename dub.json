@@ -1,28 +1,28 @@
 {
-	"name": "dvm",
-	"description": "A tool for installing and managing D compilers",
-	"authors": ["Jacob Carlborg"],
-	"homepage": "https://github.com/jacob-carlborg/dvm",
-	"license": "BSL-1.0",
-	"copyright": "Copyright (c) 2010-2014 Jacob Carlborg. All rights reserved.",
+    "name": "dvm",
+    "description": "A tool for installing and managing D compilers",
+    "authors": ["Jacob Carlborg"],
+    "homepage": "https://github.com/jacob-carlborg/dvm",
+    "license": "BSL-1.0",
+    "copyright": "Copyright (c) 2010-2014 Jacob Carlborg. All rights reserved.",
 
-	"mainSourceFile": "dvm/dvm/dvm.d",
-	"targetType": "executable",
-	"targetName": "dvm",
-	"targetPath": "bin",
-	"sourcePaths": ["dvm"],
-	"importPaths": ["dvm"],
-	"stringImportPaths": ["resources"],
+    "mainSourceFile": "dvm/dvm/dvm.d",
+    "targetType": "executable",
+    "targetName": "dvm",
+    "targetPath": "bin",
+    "sourcePaths": ["dvm"],
+    "importPaths": ["dvm"],
+    "stringImportPaths": ["resources"],
 
-	"excludedSourceFiles-posix": [
-		"dvm/util/DvmRegistry.d",
-		"dvm/util/Registry.d",
-		"dvm/util/Windows.d"
-	],
+    "excludedSourceFiles-posix": [
+        "dvm/util/DvmRegistry.d",
+        "dvm/util/Registry.d",
+        "dvm/util/Windows.d"
+    ],
 
-	"buildRequirements": ["silenceWarnings"],
+    "buildRequirements": ["silenceWarnings"],
 
-	"dependencies": {
-		"mambo": "0.0.3"
-	}
+    "dependencies": {
+        "mambo": "0.0.3"
+    }
 }

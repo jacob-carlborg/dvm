@@ -18,15 +18,15 @@ D2 version in another.
 
 #### Mac OS X:
 
-	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-osx && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-osx && chmod +x dvm && ./dvm install dvm
 
 #### Linux 64bit
 
-	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
 
 #### Linux 32bit
 
-	$ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
 
 #### Windows
 
