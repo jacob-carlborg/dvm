@@ -17,7 +17,7 @@ import dvm.util._;
 class Uninstall : Command
 {
     private string installPath_;
-    
+
     this (string name, string summary = "")
     {
         super(name, summary);
@@ -33,25 +33,25 @@ class Uninstall : Command
         println("Uninstalling dmd-", args.first);
         removeFiles;
     }
-    
+
 private:
-    
+
     void removeFiles ()
     {
         verbose("Removing files:");
-        
+
         auto dmd = "dmd-" ~ args.first;
-        
+
         removeFile(Path.join(options.path.compilers, dmd).assumeUnique);
         removeFile(Path.join(options.path.env, dmd).assumeUnique);
         removeFile(Path.join(options.path.dvm, options.path.bin, dmd).assumeUnique);
     }
-    
+
     void removeFile (string path)
     {
         if (!Path.exists(path))
             return;
-        
+
         verbose(options.indentation, path);
         Path.remove(path, true);
     }

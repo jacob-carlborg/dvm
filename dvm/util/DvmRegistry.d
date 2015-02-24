@@ -32,14 +32,14 @@ void updateEnvironment (string binDir, string dmdDir="")
 
     scope envKey = new RegistryKey(RegRoot.HKEY_CURRENT_USER, "Environment");
     envKey.setValue(dvmEnvVar, dvmEnvValue);
-    
+
     if (envKey.valueExists("PATH"))
     {
         auto path = envKey.getValue("PATH");
 
         if (path.type != RegValueType.SZ && path.type != RegValueType.EXPAND_SZ)
             throw new RegistryException(envKey.toString ~ `\PATH`, false, "Expected type REG_SZ or REG_EXPAND_SZ, not " ~ dvm.util.Registry.toString(path.type));
-        
+
         if (!path.asString.contains(dvmEnvVarExpand))
             envKey.setValueExpand("PATH", dvmEnvVarExpand ~ ";" ~ path.asString);
     }
@@ -60,25 +60,25 @@ string getDefaultCompilerPath()
         {
             auto bothPaths = pathValue.asString;
             auto sepIndex = bothPaths.indexOf(";");
-            
+
             if (sepIndex < sepIndex.max)
                 return bothPaths[0..sepIndex];
         }
     }
-    
+
     return "";
 }
 
 bool isDMDDir(string path)
 {
     path = expandEnvironmentStrings(path);
-    
+
     foreach (singlePath; split(path, ";"))
     {
         Path.native(singlePath);
         if (singlePath.length != 0 && singlePath[$-1] != '\\')
             singlePath ~= '\\';
-        
+
         if (Path.exists(singlePath) && Path.isFolder(singlePath))
         {
             if ( (Path.exists(singlePath~"dmd.exe") && Path.isFile(singlePath~"dmd.exe")) ||
@@ -86,7 +86,7 @@ bool isDMDDir(string path)
                 return true;
         }
     }
-    
+
     return false;
 }
 
@@ -100,7 +100,7 @@ void checkSystemPath()
 
         if (pathValue.type != RegValueType.SZ && pathValue.type != RegValueType.EXPAND_SZ)
             throw new RegistryException(envKeyRead.toString ~ `\PATH`, false, "Expected type REG_SZ or REG_EXPAND_SZ, not " ~ dvm.util.Registry.toString(pathValue.type));
-        
+
         // Check each path
         string[] pathsWithDMD;
         string[] pathsWithoutDMD;
@@ -111,15 +111,15 @@ void checkSystemPath()
             else
                 pathsWithoutDMD ~= path;
         }
-        
+
         // DMD found in system PATH?
         if (pathsWithDMD.length > 0)
         {
             println("Your system PATH appears to already contain DMD:");
-            
+
             foreach (path; pathsWithDMD)
                 println("  ", path);
-                
+
             println("");
             println("The above path(s) must be removed from your system PATH or else DVM won't");
             println("be able to set your \"default\" compiler. (However, you can still use DVM");
@@ -128,7 +128,7 @@ void checkSystemPath()
             println("Would you like DVM to automatically remove those existing DMD entries from");
             println("your system path? (If 'yes', this will affect ALL USERS on this computer.)");
             println("");
-            
+
             bool shouldRemoveDMD = promptYesNo();
 
             // Remove DMD paths from system PATH?
@@ -139,10 +139,10 @@ void checkSystemPath()
                 {
                     if (newValue != "")
                         newValue ~= ';';
-                        
+
                     newValue ~= path;
                 }
-                
+
                 try
                 {
                     scope envKeyRW = new RegistryKey(RegRoot.HKEY_LOCAL_MACHINE, envKeyPath);

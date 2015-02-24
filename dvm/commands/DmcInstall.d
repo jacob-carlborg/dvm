@@ -29,11 +29,11 @@ import dvm.dvm._;
 import Path = dvm.io.Path;
 import dvm.util.Util;
 
-// DMC is Windows-only, but this is allowed on Posix 
+// DMC is Windows-only, but this is allowed on Posix
 // in case someone wants to try to use it through Wine.
 
 class DmcInstall : Fetch
-{    
+{
     private
     {
         string archivePath;
@@ -41,24 +41,24 @@ class DmcInstall : Fetch
         Wrapper wrapper;
         string installPath_;
     }
-    
+
     override void execute ()
     {
         install;
     }
-    
+
 private:
 
     void install ()
     {
         archivePath = Path.join(options.path.archives, dmcArchiveName);
-        
+
         fetchDMC(options.path.archives);
         println("Installing: dmc");
 
         unpack;
         moveFiles;
-        
+
         version (Windows)
             installWrapper;
     }
@@ -71,7 +71,7 @@ private:
         verbose(options.indentation, "destination: ", tmpCompilerPath, '\n');
         extractArchive(archivePath, tmpCompilerPath);
     }
-    
+
     void moveFiles ()
     {
         verbose("Moving:");
@@ -87,7 +87,7 @@ private:
             verbose("Installing wrapper: " ~ wrapper.path);
             wrapper.write;
         }
-    
+
     string installPath ()
     {
         if (installPath_.length > 0)

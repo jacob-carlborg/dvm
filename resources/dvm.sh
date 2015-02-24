@@ -37,7 +37,7 @@ __dvm_setup_paths
 __dvm_setup_environment
 
 dvm()
-{    
+{
     if [ -e "$dvm_exe_path" ] ; then
         "$dvm_exe_path" "$@"
         exit_code=$?
@@ -46,7 +46,7 @@ dvm()
         echo "Exiting..."
         return 1
     fi
-    
+
     if [ -s "$dvm_result_path" ] ; then
         . "$dvm_result_path"
     fi
@@ -54,7 +54,7 @@ dvm()
     if [ -s "$dvm_tmp_path" ] ; then
         rm -r "$dvm_tmp_path"
     fi
-    
+
     return $exit_code
 }
 

@@ -17,9 +17,9 @@ import dvm.dvm.Options;
 class CommandManager
 {
     mixin Singleton;
-    
+
     private Command[string] commands;
-    
+
     void register (string command)
     {
         commands[command] = null;
@@ -30,22 +30,22 @@ class CommandManager
         if (auto c = command in commands)
             if (*c)
                 return *c;
-        
+
         auto c = createCommand(command);
         commands[command] = c;
-        
+
         return c;
     }
-    
+
     string[] names ()
     {
         return commands.keys.sort;
     }
-    
+
     string summary ()
     {
         string result;
-        
+
         auto len = lenghtOfLongestCommand;
         auto options = Options.instance;
 
@@ -59,23 +59,23 @@ class CommandManager
                         options.indentation.repeat(options.numberOfIndentations),
                         command.summary);
         }
-        
+
         return result;
     }
-    
+
     private Command createCommand (string command)
     {
         return cast(Command) ClassInfo.find(command).create;
     }
-    
+
     private size_t lenghtOfLongestCommand ()
     {
         size_t len;
-        
+
         foreach (name, _ ; commands)
         {
             auto command = this[name];
-            
+
             if (command.name.length > len)
                 len = command.name.length;
         }

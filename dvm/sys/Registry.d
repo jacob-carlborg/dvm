@@ -36,7 +36,7 @@ public import tango.sys.win32.Types :
     KEY_WRITE,
     REG_OPTION_NON_VOLATILE,
     REG_OPTION_VOLATILE;
-    
+
 enum : DWORD
 {
     REG_OPTION_CREATE_LINK = 2,
@@ -127,19 +127,19 @@ template DataTypeOf (RegValueType type)
 {
     static if(type == RegValueType.DWORD)
         alias uint DataTypeOf;
-        
+
     else static if(type == RegValueType.DWORD_LITTLE_ENDIAN)
         alias uint DataTypeOf;
-        
+
     else static if(type == RegValueType.SZ)
         alias string DataTypeOf;
-        
+
     else static if(type == RegValueType.EXPAND_SZ)
         alias string DataTypeOf;
-        
+
     else static if(type == RegValueType.MULTI_SZ)
         alias string[] DataTypeOf;
-        
+
     else
         alias ubyte[] DataTypeOf;
 }
@@ -151,19 +151,19 @@ class RegistryException : WinAPIException
     string registryMsg;
     string path;
     bool isKey; // Is path a key or a value?
-    
+
     this (LONG code, string path, bool isKey, string registryMsg="")
     {
         this.registryMsg = registryMsg;
         this.path = path;
         this.isKey = isKey;
-        
+
         string keyInfo;
         if(isKey)
             keyInfo = "Registry Key '" ~ path ~ "': ";
         else
             keyInfo = "Registry Value '" ~ path ~ "': ";
-        
+
         string regMsgInfo = registryMsg;
         string windowsMsg = "";
 
@@ -172,7 +172,7 @@ class RegistryException : WinAPIException
 
         if(regMsgInfo != "" && windowsMsg != "")
             regMsgInfo ~= ": ";
-        
+
         super(code, keyInfo ~ regMsgInfo ~ windowsMsg);
     }
 
@@ -210,14 +210,14 @@ ubyte[] toRegMultiSZ (string[] arr)
     {
         if(str.length == 0)
             throw new DvmException("Cannot store empty strings in a REG_MULTI_SZ", __FILE__, __LINE__);
-        
+
         auto wstr = to!(wstring)(str);
         result ~= cast(ushort[]) wstr;
         result ~= 0;
     }
 
     result ~= 0;
-    
+
     return cast(ubyte[]) result;
 }
 
@@ -308,10 +308,10 @@ private void errorValue (LONG code, string path, string registryMsg="")
 HKEY regOpenKey (HKEY hKey, string subKey, RegKeyAccess access)
 {
     HKEY outKey;
-    
+
     auto result = RegOpenKeyExW(hKey, to!(wstring)(subKey).toString16z(),0, toRegSam(access), &outKey);
     ensureSuccessKey(result, subKey, "Couldn't open key");
-        
+
     return outKey;
 }
 
@@ -319,10 +319,10 @@ HKEY regCreateKey (HKEY hKey, string subKey, DWORD dwOptions, RegKeyAccess acces
 {
     HKEY outKey;
     DWORD disposition;
-    auto result = RegCreateKeyExW(hKey, subKey.toString16z(), 0, null, dwOptions, toRegSam(access), null, &outKey, &disposition);    
-    wasCreated = (disposition == REG_CREATED_NEW_KEY);    
+    auto result = RegCreateKeyExW(hKey, subKey.toString16z(), 0, null, dwOptions, toRegSam(access), null, &outKey, &disposition);
+    wasCreated = (disposition == REG_CREATED_NEW_KEY);
     ensureSuccessKey(result, subKey, "Couldn't open or create key");
-        
+
     return outKey;
 }
 
@@ -344,7 +344,7 @@ bool regValueExists (HKEY hKey, string valueName)
 
     if(result == ERROR_FILE_NOT_FOUND)
         return false;
-    
+
     if(result == ERROR_SUCCESS)
         return true;
 
@@ -374,10 +374,10 @@ void regSetValue (HKEY hKey, string valueName, RegValueType type, ubyte[] data)
 {
     if(type == RegValueType.Unknown)
         errorValue(ERROR_SUCCESS, valueName, "Can't set a key value of type 'Unknown'");
-    
+
     auto ptr = (data is null)? null : data.ptr;
     auto len = (data is null)? 0 : data.length;
-    
+
     auto result = RegSetValueExW(hKey, valueName.toString16z(), 0, type, ptr, len);
     ensureSuccessValue(result, valueName, "Couldn't set "~toString(type)~" value");
 }
@@ -425,7 +425,7 @@ void regSetValue (HKEY hKey, string valueName, RegQueryResult data)
         case RegValueType.DWORD:
             regSetValue(hKey, valueName, data.type, toRegDWord(data.asUInt));
         break;
-        
+
         case RegValueType.SZ, RegValueType.EXPAND_SZ:
             regSetValue(hKey, valueName, data.type, data.asString.toRegSZ());
         break;
@@ -433,7 +433,7 @@ void regSetValue (HKEY hKey, string valueName, RegQueryResult data)
         case RegValueType.MULTI_SZ:
             regSetValue(hKey, valueName, data.type, data.asStringArray.toRegMultiSZ());
         break;
-        
+
         default:
             regSetValue(hKey, valueName, data.type, data.asBinary);
         break;
@@ -447,13 +447,13 @@ RegQueryResult regQueryValue () (HKEY hKey, string valueName)
     RegQueryResult ret;
     DWORD dataSize;
     auto valueNameZ = valueName.toString16z();
-    
+
     auto result = RegQueryValueExW(hKey, valueNameZ, null, null, null, &dataSize);
     ensureSuccessValue(result, valueName, "Couldn't check length of value's data");
 
     ubyte[] data;
     data.length = dataSize;
-    
+
     result = RegQueryValueExW(hKey, valueNameZ, null, &(cast(DWORD)(ret.type)), data.ptr, &dataSize);
     ensureSuccessValue(result, valueName, "Couldn't get value");
 
@@ -462,7 +462,7 @@ RegQueryResult regQueryValue () (HKEY hKey, string valueName)
         case RegValueType.DWORD:
             ret.asUInt = (cast(uint[])data)[0];
         break;
-        
+
         case RegValueType.SZ, RegValueType.EXPAND_SZ:
             ret.asString = to!(string)( (cast(wstring) data)[0 .. $-1] );
         break;
@@ -474,7 +474,7 @@ RegQueryResult regQueryValue () (HKEY hKey, string valueName)
             foreach(wstr; wstrArr)
                 ret.asStringArray ~= to!(string)(wstr);
         break;
-        
+
         default:
             ret.asBinary = data;
         break;
@@ -486,10 +486,10 @@ RegQueryResult regQueryValue () (HKEY hKey, string valueName)
 DataTypeOf!(type) regQueryValue (RegValueType type) (HKEY hKey, string valueName)
 {
     auto result = regQueryValue(hKey, valueName);
-    
+
     if(result.type != type)
         errorValue(ERROR_SUCCESS, valueName, "Expected key type '" ~ toString(type) ~ "', " ~"not '"~toString(result.type)~"'");
-    
+
     alias DataTypeOf!(type) T;
 
     static if (is(T == uint))

@@ -66,18 +66,18 @@ scope final class RegistryKey
     {
         return _wasCreated;
     }
-    
+
     /// toString ////////////////////////
     override string toString()
     {
         return dvm.sys.Registry.toString(_root) ~ `\` ~ _subKey;
     }
-    
+
     static string toString(RegRoot root, string subKey)
     {
         return dvm.sys.Registry.toString(root) ~ `\` ~ subKey;
     }
-    
+
     /// Private Error Handling Utilities ////////////////////////
     private static string chooseErrorMsg(WinAPIException e, string msg)
     {
@@ -89,29 +89,29 @@ scope final class RegistryKey
         }
         return msg;
     }
-    
+
     private static void staticErrorKey(WinAPIException e, RegRoot root, string subKey, string msg="")
     {
         msg = chooseErrorMsg(e, msg);
         throw new RegistryException(e.code, toString(root, subKey), true, msg);
     }
-    
+
     private void errorKey(WinAPIException e, string msg="")
     {
         msg = chooseErrorMsg(e, msg);
         throw new RegistryException(e.code, this.toString(), true, msg);
     }
-    
+
     private void errorValue(WinAPIException e, string valueName, string msg="")
     {
         msg = chooseErrorMsg(e, msg);
-        
+
         if(valueName == "")
             valueName = "(Default)";
 
         throw new RegistryException(e.code, this.toString()~`\`~valueName, false, msg);
     }
-    
+
     /// Constructor/Destructor ////////////////////////
     this(
         RegRoot root, string subKey,
@@ -122,7 +122,7 @@ scope final class RegistryKey
         _root   = root;
         _subKey = subKey;
         _access = access;
-        
+
         if(create == RegKeyOpenMode.Create)
         {
             try _hKey = regCreateKey(cast(HKEY)root, subKey, 0, access, _wasCreated);
@@ -134,13 +134,13 @@ scope final class RegistryKey
             catch(WinAPIException e) errorKey(e);
         }
     }
-    
+
     ~this()
     {
         try regCloseKey(_hKey);
         catch(WinAPIException e) errorKey(e);
     }
-    
+
     /// Registry Functions ////////////////////////
     static void deleteKey(RegRoot root, string subKey)
     {
@@ -158,7 +158,7 @@ scope final class RegistryKey
         try regDeleteValue(_hKey, valueName);
         catch(WinAPIException e) errorValue(e, valueName);
     }
-    
+
     bool valueExists(string valueName)
     {
         try return regValueExists(_hKey, valueName);
@@ -168,7 +168,7 @@ scope final class RegistryKey
             return false;
         }
     }
-    
+
     /// Registry Functions: setValue //////////////////////////////
     void setValue(string valueName, RegValueType type, ubyte[] data)
     {

@@ -14,14 +14,14 @@ import dvm.dvm.Options;
 Use!(void delegate (), bool) unless (bool value)
 {
     Use!(void delegate (), bool) use;
-    
+
     use.args[0] = (void delegate () dg, bool value) {
         if (value == false)
             dg();
     };
-    
+
     use.args[1] = value;
-    
+
     return use;
 }
 

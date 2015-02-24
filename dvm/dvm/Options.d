@@ -18,11 +18,11 @@ import dvm.io.Path;
 class Options
 {
     mixin Singleton;
-    
+
     enum indentation = "    ";
     enum numberOfIndentations = 1;
     enum path = Path();
-    
+
     bool verbose = false;
     bool tango = false;
     bool isDefault = false;
@@ -40,13 +40,13 @@ class Options
 
     version (OSX)
         enum platform = "osx";
-    
+
     else version (FreeBSD)
         enum platform = "freebsd";
-    
+
     else version (linux)
         enum platform = "linux";
-    
+
     else version (Windows)
         enum platform = "windows";
 
@@ -84,7 +84,7 @@ private struct Path
         enum pathSeparator = ";";
         enum confName = "sc.ini";
     }
-    
+
     private
     {
         string home_;
@@ -109,7 +109,7 @@ private struct Path
         string tangoUnarchived_;
         string defaultEnv_;
         string defaultBin_;
-        
+
         version (Posix)
         {
             enum string dvmDir = ".dvm";
@@ -126,12 +126,12 @@ private struct Path
             enum string dvmExecName = "_dvm";
         }
     }
-    
+
     string home ()
     {
         if (home_.length > 0)
             return home_;
-        
+
         version (Posix)
             return home_ = homeFolder.assumeUnique;
 
@@ -146,15 +146,15 @@ private struct Path
 
         return dvm_ = join(home, dvmDir).assumeUnique;
     }
-    
+
     string dvmExecutable ()
     {
         if (dvmExecutable_.length > 0)
             return dvmExecutable_;
-        
+
         return dvmExecutable_ = join(binDir, dvmExecName ~ executableExtension).assumeUnique;
     }
-    
+
     string dvmScript ()
     {
         if (dvmScript_.length > 0)
@@ -162,18 +162,18 @@ private struct Path
 
         version (Posix)
             auto dir = scripts;
-        
+
         version (Windows)
             auto dir = binDir;
 
         return dvmScript_ = join(dir, "dvm" ~ scriptExtension).assumeUnique;
     }
-    
+
     string env ()
     {
         if (env_.length > 0)
             return env_;
-        
+
         return env_ = join(dvm, "env").assumeUnique;
     }
 
@@ -200,12 +200,12 @@ private struct Path
 
         return result_ = join(tmp, "result" ~ scriptExtension).assumeUnique;
     }
-    
+
     string scripts ()
     {
         if (scripts_.length > 0)
             return scripts_;
-        
+
         return scripts_ = join(dvm, "scripts").assumeUnique;
     }
 
@@ -213,7 +213,7 @@ private struct Path
     {
         if (binDir_.length > 0)
             return binDir_;
-        
+
         return binDir_ = join(dvm, "bin").assumeUnique;
     }
 
@@ -224,39 +224,39 @@ private struct Path
 
         return tmp_ = join(dvm, "tmp").assumeUnique;
     }
-    
+
     string conf ()
     {
         if (conf_.length > 0)
             return conf_;
-        
+
         return conf_ = join(bin, confName).assumeUnique;
     }
-    
+
     string tangoZip ()
     {
         if (tangoZip_.length > 0)
             return tangoZip_;
-        
+
         return tangoZip_ = join(tmp, "tango.zip").assumeUnique;
     }
-    
+
     string tangoTmp ()
     {
         if (tangoTmp_.length > 0)
             return tangoTmp_;
-        
+
         return tangoTmp_ = join(tangoUnarchived, "trunk").assumeUnique;
     }
-    
+
     string tangoUnarchived ()
     {
         if (tangoUnarchived_.length > 0)
             return tangoUnarchived_;
-        
+
         return tangoUnarchived_ = join(tmp, "tango", "head").assumeUnique;
     }
-    
+
     string tangoBob ()
     {
         if (tangoBob_.length > 0)
@@ -264,54 +264,54 @@ private struct Path
 
         auto suffix = Options.instance.is64bit ? "64" : "32";
         auto path = join(tangoTmp, "build", "bin").assumeUnique;
-        
+
         version (OSX)
             path = join(path, "osx" ~ suffix).assumeUnique;
-        
+
         else version (FreeBSD)
             path = join(path, "freebsd" ~ suffix).assumeUnique;
-        
+
         else version (linux)
             path = join(path, "linux" ~ suffix).assumeUnique;
-        
+
         else version (Windows)
             path = join(path, "win" ~ suffix).assumeUnique;
-        
+
         else
             static assert(false, "Unhandled platform for installing Tango");
-        
+
         return tangoBob_ = join(path, "bob" ~ executableExtension).assumeUnique;
     }
-    
+
     string tangoLib ()
     {
         if (tangoLib_.length > 0)
             return tangoLib_;
-        
+
         return tangoLib_ = join(tangoTmp, tangoLibName ~ libExtension).assumeUnique;
     }
-    
+
     string tangoSrc ()
     {
         if (tangoSrc_.length)
             return tangoSrc_;
-        
+
         return tangoSrc_ = join(tangoTmp, "tango").assumeUnique;
     }
-    
+
     string tangoObject ()
     {
         if (tangoObject_.length > 0)
             return tangoObject_;
-        
+
         return tangoObject_ = join(tangoTmp, object_di).assumeUnique;
     }
-    
+
     string tangoVendor ()
     {
         if (tangoVendor_.length > 0)
             return tangoVendor_;
-        
+
         return tangoVendor_ = join(tangoSrc, "core", "vendor", std).assumeUnique;
     }
 

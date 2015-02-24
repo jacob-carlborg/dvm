@@ -12,42 +12,42 @@ import mambo.core._;
 
 class ShellScript
 {
-    string path;    
+    string path;
     private string content_;
-    
+
     string content ()
     {
         return content_;
     }
-    
+
     private string content (string content)
     {
         return content_ = content;
     }
-    
+
     this (string path = "")
     {
         this.path = path;
     }
-    
+
     ShellScript allArgs (bool quote = true)
     {
         append(Sh.allArgs);
         return this;
     }
-    
+
     ShellScript comment (string c)
     {
         append(Sh.comment(c));
         return this;
     }
-    
+
     ShellScript declareVariable (string name, string value = "", bool local = false)
     {
         append(Sh.declareVariable(name, value, local)).nl;
         return this;
     }
-    
+
     ShellScript echoOff ()
     {
         version (Windows)
@@ -55,23 +55,23 @@ class ShellScript
 
         return this;
     }
-    
+
     ShellScript exec (string name, string args = "")
     {
         append(Sh.exec(name, args));
         return this;
     }
-    
+
     ShellScript export_ (string name, string content, bool quote = true)
     {
         append(Sh.export_(name, content, quote));
         return this;
     }
-    
+
     ShellScript exportPath (string name, string[] args ...)
     {
         string content ;
-        
+
         foreach (i, arg ; args)
         {
             if (i != args.length - 1)
@@ -80,21 +80,21 @@ class ShellScript
             else
                 content ~=  arg;
         }
-        
+
         return export_(name, content);
     }
-    
+
     ShellScript ifFileIsNotEmpty (string path, void delegate () ifBlock, void delegate () elseBlock = null)
     {
         version (Posix)
             ifStatement("-s " ~ path, ifBlock, elseBlock);
-        
+
         else
             ifStatement("exist " ~ path, ifBlock, elseBlock);
-            
+
         return this;
     }
-    
+
     ShellScript ifStatement (string condition, void delegate () ifBlock, void delegate () elseBlock = null)
     {
         version (Posix)
@@ -102,14 +102,14 @@ class ShellScript
             append(format("if [ {} ] ; then", condition)).nl.indent;
             ifBlock();
             nl;
-            
+
             if (elseBlock)
             {
                 append("else").nl.indent;
                 elseBlock();
                 nl;
             }
-            
+
             append("fi");
         }
 
@@ -119,7 +119,7 @@ class ShellScript
             ifBlock();
             nl;
             append(")");
-            
+
             if (elseBlock)
             {
                 append(" else (").nl.indent;
@@ -131,7 +131,7 @@ class ShellScript
 
         return this;
     }
-    
+
     ShellScript printError (string message, bool singleQuote = false)
     {
         version (Posix)
@@ -139,13 +139,13 @@ class ShellScript
             auto quote = singleQuote ? "'" : `"`;
             append(format(`echo {}Error: {}{} >&2`, quote, message, quote));
         }
-        
+
         else
             append(format(`echo Error: {} >&2`, message));
 
         return this;
     }
-    
+
     ShellScript shebang ()
     {
         version (Posix)
@@ -156,38 +156,38 @@ class ShellScript
 
         return this;
     }
-    
+
     ShellScript source (string path)
     {
-        append(Sh.source(path));        
+        append(Sh.source(path));
         return this;
     }
-    
+
     ShellScript variable (string name, bool quote = true)
     {
         append(Sh.variable(name, quote));
         return this;
     }
-    
+
     ShellScript write ()
     {
         File.set(path, content);
         return this;
     }
-    
+
     ShellScript append (Args...) (Args args)
     {
         enum fmt = "{}{}{}{}{}{}{}{}"
                       "{}{}{}{}{}{}{}{}"
                       "{}{}{}{}{}{}{}{}";
-        
+
         static assert (Args.length <= fmt.length / 2, "dvm.dvm.ShellScript :: too many arguments");
-        
+
         content_ ~= format(fmt[0 .. args.length * 2], args);
-        
+
         return this;
     }
-    
+
     ShellScript nl ()
     {
         version (Posix)
@@ -198,113 +198,113 @@ class ShellScript
 
         return this;
     }
-    
+
     ShellScript indent ()
     {
         append('\t');
         return this;
     }
 }
-    
+
 struct Sh
 {
     static:
-        
+
     string quote (string str)
     {
         return format(`"{}"`, str);
     }
-        
+
     version (Posix)
     {
         enum shebang = "#!/bin/sh";
         enum separator = ":";
-        
+
         string allArgs (bool quote = true)
         {
             return quote ? `"$@"` : "$@";
         }
-        
+
         string comment (string c)
         {
             return "# " ~ c;
         }
-        
+
         string declareVariable (string name, string value = "", bool local = false)
         {
             string loc = local ? "local " : "";
-            
+
             if (value == "")
                 return loc ~ name;
-            
-            return format("{}{}={}", loc, name, value); 
+
+            return format("{}{}={}", loc, name, value);
         }
-        
+
         string exec (string name, string args = "")
         {
             args = args == "" ? "" : ' ' ~ args;
 
             return format("exec {}{}", name, args);
         }
-        
+
         string export_ (string name, string value, bool quote = true)
         {
             return format("{}=\"{}\"\nexport {}", name, value, name);
         }
-        
+
         string source (string path, bool quote = true)
-        {            
+        {
             return format(". {}", path);
         }
-        
+
         string exec (string command)
         {
             return format("exec {}", command);
         }
-        
+
         string variable (string name, bool quote = true)
         {
             return quote ? format(`"${}"`, name) : '$' ~ name;
         }
     }
-        
+
     else version (Windows)
     {
         // DMD 1.068 and up optimizes this out causing a linker error
         //enum shebang = "";
         enum echoOff = "@echo off";
         enum separator = ";";
-        
+
         string allArgs (bool quote = true)
         {
             return "%*";
         }
-        
+
         string comment (string c)
         {
             return "rem " ~ c;
         }
-        
+
         string declareVariable (string name, string value = "", bool local = false)
         {
-            return format("set {}={}", name, value); 
+            return format("set {}={}", name, value);
         }
-        
+
         string export_ (string name, string content, bool quote = true)
         {
             return format("set {}={}", name, content);
         }
-        
+
         string source (string path)
         {
             return format("call {}", path);
         }
-        
+
         string exec (string name, string args = "")
         {
             return format("{} {}", name, args);
         }
-        
+
         string variable (string name, bool quote = true)
         {
             return quote ? format(`"%{}%"`, name) : '%' ~ name ~ '%';
@@ -321,6 +321,6 @@ string slashSafeSubstitute (string haystack, string needle, string replacement)
         needle = needle.substitute("/", "\\").assumeUnique;
         replacement = replacement.substitute("/", "\\").assumeUnique;
     }
-    
+
     return haystack.substitute(needle, replacement).assumeUnique;
 }

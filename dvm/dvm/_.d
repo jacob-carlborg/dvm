@@ -7,7 +7,7 @@
 module dvm.dvm._;
 
 public:
-    
+
 import dvm.dvm.Application;
 import dvm.dvm.CommandManager;
 import dvm.dvm.Exceptions;

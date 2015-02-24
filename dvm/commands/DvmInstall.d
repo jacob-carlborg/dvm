@@ -22,7 +22,7 @@ version (Windows) import DvmRegistry = dvm.util.DvmRegistry;
 version (Windows) import dvm.util.Windows;
 
 class DvmInstall : Command
-{    
+{
     private
     {
         enum postInstallInstructions = import("post_install_instructions.txt");
@@ -30,23 +30,23 @@ class DvmInstall : Command
 
         version (Posix)
             enum dvmScript = import("dvm.sh");
-        
+
         else
             enum dvmScript = import("dvm.bat");
     }
-    
+
     override void execute ()
     {
         install;
     }
-    
+
 private:
-    
+
     void install ()
     {
         if (Path.exists(options.path.dvm))
             return update;
-        
+
         verbose("Installing dvm to: ", options.path.dvm);
         createPaths;
         copyExecutable;
@@ -57,7 +57,7 @@ private:
             setPermissions;
             installBashInclude(createBashInclude);
         }
-        
+
         version (Windows)
             setupRegistry;
     }
@@ -72,7 +72,7 @@ private:
         version (Windows)
             setupRegistry;
     }
-    
+
     void createPaths ()
     {
         verbose("Creating paths:");
@@ -83,7 +83,7 @@ private:
         createPath(options.path.compilers);
         createPath(options.path.env);
         createPath(options.path.scripts);
-        
+
         verbose();
     }
 
@@ -93,7 +93,7 @@ private:
         verbose("thisExePath: ", thisExePath);
         copy(thisExePath, options.path.dvmExecutable);
     }
-    
+
     void writeScript ()
     {
         verbose("Writing script to: ", options.path.dvmScript);
@@ -106,7 +106,7 @@ private:
         permission(options.path.dvmScript, "+x");
         permission(options.path.dvmExecutable, "+x");
     }
-    
+
     version (Posix)
         void installBashInclude (ShellScript sh)
         {
@@ -137,26 +137,26 @@ private:
         if(!Path.exists(path))
             Path.createFolder(path);
     }
-    
+
     void permission (string path, string mode)
     {
         version (Posix)
         {
             verbose(options.indentation, "mode: " ~ mode);
             verbose(options.indentation, "file: " ~ path, '\n');
-            
+
             Path.permission(path, mode);
         }
     }
-    
+
     void copy (string source, string destination)
-    {        
+    {
         verbose(options.indentation, "source: ", source);
         verbose(options.indentation, "destination: ", destination, '\n');
 
         Path.copy(source, destination);
     }
-    
+
     ShellScript createBashInclude ()
     {
         auto sh = new ShellScript;
@@ -166,10 +166,10 @@ private:
         sh.ifFileIsNotEmpty(options.path.dvmScript, {
             sh.source(options.path.dvmScript);
         });
-        
+
         return sh;
     }
-    
+
     version (Windows)
         void setupRegistry ()
         {

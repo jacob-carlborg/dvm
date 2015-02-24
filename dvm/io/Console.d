@@ -37,7 +37,7 @@ string prompt(string promptMsg, bool delegate(const(char)[]) accept=null, string
         Stdout(promptMsg).flush;
         Cin.readln(input);
         input = trim(input);
-        
+
         if (accept is null)
             break;
         else
@@ -52,7 +52,7 @@ string prompt(string promptMsg, bool delegate(const(char)[]) accept=null, string
             }
         }
     }
-    
+
     return input.assumeUnique;
 }
 
@@ -65,14 +65,14 @@ bool promptYesNo()
         str = toLower(str);
         return str != "" && str[0] == ch;
     }
-    
+
     bool accept(const(char)[] str)
     {
         return matches('y', str) || matches('n', str);
     }
 
     auto options = Options.instance;
-    
+
     if (options.decline)
     {
         println("[Declining, 'no']");
@@ -84,7 +84,7 @@ bool promptYesNo()
         println("[Forcing, 'yes']");
         return true;
     }
-    
+
     auto response = prompt("Yes/No?>", &accept);
     return matches('y', response);
 }

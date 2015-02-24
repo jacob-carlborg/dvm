@@ -22,7 +22,7 @@ class WinAPIException : DvmException
 {
     LONG code;
     string windowsMsg;
-    
+
     this (LONG code, string msg = "", string file = __FILE__, size_t line = __LINE__)
     {
         this.code = code;
@@ -32,18 +32,18 @@ class WinAPIException : DvmException
 
         super(msg == "" ? windowsMsg : msg, file, line);
     }
-    
+
     static string getMessage (DWORD errorCode)
     {
         wchar* pMsg;
 
         auto result = FormatMessageW(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
             FORMAT_MESSAGE_FROM_SYSTEM     |
             FORMAT_MESSAGE_IGNORE_INSERTS,
             null, errorCode, 0, &pMsg, 0, null
         );
-        
+
         if(result == 0)
             return "Unknown WinAPI Error";
 
@@ -70,7 +70,7 @@ void broadcastSettingChange (string settingName, uint timeout=1)
         0, cast(LPARAM)(settingName.toString16z()),
         SMTO_ABORTIFHUNG, timeout, null
     );
-    
+
     if(result == 0)
     {
         auto errCode = GetLastError();
@@ -83,10 +83,10 @@ void broadcastSettingChange (string settingName, uint timeout=1)
 string expandEnvironmentStrings(string str)
 {
     auto wstr = toString16z(str);
-    
+
     wchar[] result;
     result.length = 32_000 / wchar.sizeof;
-    
+
     auto resultLength = ExpandEnvironmentStringsW(wstr, result.ptr, result.length);
 
     if(resultLength == 0)
@@ -96,6 +96,6 @@ string expandEnvironmentStrings(string str)
         if (errCode != ERROR_SUCCESS)
             throw new WinAPIException(errCode, "Problem expanding environment variables", __FILE__, __LINE__);
     }
-    
+
     return to!(string)(result[0..resultLength-1]);
 }

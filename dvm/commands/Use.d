@@ -25,12 +25,12 @@ class Use : Command
         string envPath_;
         Wrapper wrapper;
     }
-    
+
     this ()
     {
         super("use", "Setup current shell to use a specific D compiler version.");
     }
-    
+
     override void execute ()
     {
         loadEnvironment;
@@ -42,9 +42,9 @@ class Use : Command
         version (Windows)
             updateRegistry;
     }
-    
+
 private:
-    
+
     void loadEnvironment ()
     {
         auto shellScript = createShellScript;
@@ -88,9 +88,9 @@ private:
             {
                 auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
                 DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
-            
+
                 DvmRegistry.checkSystemPath();
-            
+
                 broadcastSettingChange("Environment");
             }
         }
@@ -114,33 +114,33 @@ private:
 
             permission(path, mode);
         }
-    
+
     ShellScript createShellScript ()
     {
         verbose("Creating shell script");
         auto sh = new ShellScript;
         sh.echoOff;
         sh.source(Sh.quote(envPath));
-        
+
         return sh;
     }
-    
+
     void writeShellScript (ShellScript sh, string path)
     {
         validatePath(envPath);
         sh.path = path;
-        
+
         if (!exists(options.path.tmp))
             createFolder(options.path.tmp);
-        
+
         sh.write;
     }
-    
+
     string envPath ()
     {
         if (envPath_.length > 0)
             return envPath_;
-        
+
         return envPath_ = native(join(options.path.env, "dmd-" ~ args.first ~ options.path.scriptExtension)).assumeUnique;
     }
 
@@ -157,6 +157,6 @@ private:
 template UseImpl ()
 {
 
-    
+
 
 }

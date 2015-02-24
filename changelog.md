@@ -51,7 +51,7 @@ libraries are supported simultaneously
 
 ### Bugs Fixed
 * Can't link using DMD 1.068.
-* Issue 2: The '.dvm/bin/dmd-{ver}' scripts don't work on Ubuntu 10.04 
+* Issue 2: The '.dvm/bin/dmd-{ver}' scripts don't work on Ubuntu 10.04
 * Issue 7: No error on invalid command
 * Issue 13: Tmp dir should be deleted before running DVM binary (not just after)
 * Issue 5: Invalid character in .dvm/env files

@@ -41,13 +41,13 @@ class List : Command
             println(errorMessage);
             return;
         }
-        
+
         println("Installed D compilers:\n");
-        
+
         foreach (file ; folder)
             println(stripPath(file.toString));
     }
-    
+
     private string stripPath (string name)
     {
         return parse(name).file;
