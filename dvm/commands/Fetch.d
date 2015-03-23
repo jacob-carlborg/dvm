@@ -296,8 +296,14 @@ protected:
 
     bool isPreRelease (string version_)
     {
-        auto parts = version_.split("-");
-        return parts.length == 2 && parts[1].first == 'b';
+        immutable parts = version_.split("-");
+
+        if (parts.length != 2)
+            return false;
+
+        immutable suffix = parts[1];
+
+        return suffix.first == 'b' || suffix.startsWith("rc");
     }
 }
 
