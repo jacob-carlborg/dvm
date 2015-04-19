@@ -75,6 +75,8 @@ private struct Path
         enum tangoLibName = "libtango";
         enum pathSeparator = ":";
         enum confName = "dmd.conf";
+        enum scriptExtension = "";
+        enum executableExtension = "";
     }
 
     else
@@ -83,6 +85,8 @@ private struct Path
         enum tangoLibName = "tango";
         enum pathSeparator = ";";
         enum confName = "sc.ini";
+        enum scriptExtension = ".bat";
+        enum executableExtension = ".exe";
     }
 
     private
@@ -113,16 +117,12 @@ private struct Path
         version (Posix)
         {
             enum string dvmDir = ".dvm";
-            enum string scriptExtension = "";
-            enum string executableExtension = "";
             enum string dvmExecName = "dvm";
         }
 
         else version (Windows)
         {
             enum string dvmDir = "dvm";
-            enum string scriptExtension = ".bat";
-            enum string executableExtension = ".exe";
             enum string dvmExecName = "_dvm";
         }
     }
