@@ -174,13 +174,16 @@ protected:
         if (ver == "")
             ver = getDMDVersion;
 
-        return "dmd." ~ ver ~ ".zip";
+        auto filename = format("dmd.{}.{}.zip", ver, platformForArchive);
+        auto url = buildUrl(ver, filename);
+
+        return urlExists(url) ? filename : format("dmd.{}.zip", ver);
     }
 
     string buildUrl (string version_, string filename)
     {
         auto url = dlangUrl(version_, filename);
-        println(url);
+
         if (urlExists(url))
             return url;
 
@@ -304,6 +307,16 @@ protected:
         immutable suffix = parts[1];
 
         return suffix.first == 'b' || suffix.startsWith("rc");
+    }
+
+    string platformForArchive()
+    {
+        auto platform = options.platform;
+
+        version (FreeBSD)
+            platform ~= options.is64bit ? "-64" : "-32";
+
+        return platform;
     }
 }
 
