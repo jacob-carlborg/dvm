@@ -1,6 +1,6 @@
 # DVM Change Log
 
-## Unreleased
+## Version 0.4.4
 ### New/Changed Features
 * Experimental support for FreeBSD (using Bash)
 * Download DMD using platform specific archive if available

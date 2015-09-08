@@ -6,4 +6,4 @@
  */
 module dvm.dvm.Version;
 
-enum Version = "0.4.3";
+enum Version = "0.4.4";
