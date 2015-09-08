@@ -4,7 +4,7 @@
     "authors": ["Jacob Carlborg"],
     "homepage": "https://github.com/jacob-carlborg/dvm",
     "license": "BSL-1.0",
-    "copyright": "Copyright (c) 2010-2014 Jacob Carlborg. All rights reserved.",
+    "copyright": "Copyright (c) 2010-2015 Jacob Carlborg. All rights reserved.",
 
     "mainSourceFile": "dvm/dvm/dvm.d",
     "targetType": "executable",
@@ -23,6 +23,6 @@
     "buildRequirements": ["silenceWarnings"],
 
     "dependencies": {
-        "mambo": "0.0.4"
+        "mambo": "0.0.5"
     }
 }
