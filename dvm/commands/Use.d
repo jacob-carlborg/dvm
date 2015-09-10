@@ -86,7 +86,7 @@ private:
         {
             if (options.isDefault)
             {
-                auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.path.bin);
+                auto dmdDir = join(options.path.compilers, "dmd-" ~ args.first, options.platform, options.path.bin);
                 DvmRegistry.updateEnvironment(options.path.binDir, dmdDir);
 
                 DvmRegistry.checkSystemPath();
