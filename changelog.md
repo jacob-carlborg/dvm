@@ -2,11 +2,15 @@
 
 ## Unreleased
 ### New/Changed Features
+* Experimental support for FreeBSD (using Bash)
 * Download DMD using platform specific archive if available
 * Support for installing release candidates
 * Download DMD from `downloads.dlang.org` (fallback to `ftp.digitalmars.com`)
 * Set a user agent when fetching compilers. The user agent will be in the form
 of `dvm/<version> (<architecture>-<operating system>)`
+
+### Bugs Fixed
+* [Issue 31](https://github.com/jacob-carlborg/dvm/issues/31): Windows: default compiler does not persist
 
 ## Version 0.4.3
 ### New/Changed Features
