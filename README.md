@@ -18,20 +18,24 @@ D2 version in another.
 
 #### Mac OS X:
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-osx && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-osx && chmod +x dvm && ./dvm install dvm
 
 #### Linux 64bit
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
 
 #### Linux 32bit
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
+
+#### FreeBSD 64bit (Bash required)
+
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-freebsd-pcbsd9.1-x86_64 && chmod +x dvm && ./dvm install dvm
 
 #### Windows
 
 Follow the general installation instructions.
-https://github.com/jacob-carlborg/dvm/releases/download/v0.4.3/dvm-0.4.3-win.exe
+https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-win.exe
 
 #### Upgrading from 0.2.0 to 0.3.0
 
@@ -42,13 +46,13 @@ particular if you had any problems with the previous shell scripts not working.
 
 ### Install Compilers
 
-* Install a D compiler (DMD): `$ dvm install 2.064.2`
+* Install a D compiler (DMD): `$ dvm install 2.068.1`
 * Install a D compiler (DMD) with Tango as the standard library: `$ dvm install 1.072 -t`
 
 ### Use a Compiler
 
-* Use a D compiler (DMD): `$ dvm use 2.064.2`
-* Use a D compiler (DMD) and set it to default: `$ dvm use 2.064.2 -d`
+* Use a D compiler (DMD): `$ dvm use 2.068.1`
+* Use a D compiler (DMD) and set it to default: `$ dvm use 2.068.1 -d`
 * Show usage information: `$ dvm -h`
 
 ## License
