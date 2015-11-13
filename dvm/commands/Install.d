@@ -144,7 +144,7 @@ private:
         catch (Exception ex)
         {
             import std.regex;
-            if (matchFirst(ex.toString(), r"dmd-[\d\.]\.bat"))
+            if (matchFirst(ex.toString(), r"dmd-[\d\.]+\.bat"))
             {
                 println("Error installing - did you remember to 'dvm install dvm' first?");
             }
