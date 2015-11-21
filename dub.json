@@ -21,8 +21,9 @@
     ],
 
     "buildRequirements": ["silenceWarnings"],
+    "lflags": ["-macosx_version_min", "10.6", "-lcrt1.10.6.o"],
 
     "dependencies": {
-        "mambo": "0.0.5"
+        "mambo": "0.0.6"
     }
 }

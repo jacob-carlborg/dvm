@@ -1,7 +1,7 @@
 {
 	"fileVersion": 1,
 	"versions": {
-		"mambo": "0.0.5",
-		"tango": "1.0.1+2.067"
+		"mambo": "0.0.6",
+		"tango": "1.0.3+2.068"
 	}
 }
