@@ -62,6 +62,9 @@ The source code is available under the [Boost Software License 1.0](http://www.b
 ## Limitations
 
 * Currently DMD is the only supported compiler
+* On Windows DVM does not work in the PowerShell prompt, only in cmd. Although,
+  it is possible to set a default compiler, `dvm use <version> -d`, in cmd and
+  then use the compiler in the PowerShell prompt.
 
 ## Build Dependencies
 
