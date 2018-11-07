@@ -18,24 +18,24 @@ D2 version in another.
 
 #### Mac OS X:
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.5/dvm-0.4.5-osx && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-osx && chmod +x dvm && ./dvm install dvm
 
 #### Linux 64bit
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.5/dvm-0.4.5-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
 
 #### Linux 32bit
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.5/dvm-0.4.5-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-linux-debian6-x86 && chmod +x dvm && ./dvm install dvm
 
 #### FreeBSD 64bit (Bash required)
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.5/dvm-0.4.5-freebsd-pcbsd9.1-x86_64 && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-freebsd-pcbsd9.1-x86_64 && chmod +x dvm && ./dvm install dvm
 
 #### Windows
 
 Follow the general installation instructions.
-https://github.com/jacob-carlborg/dvm/releases/download/v0.4.5/dvm-0.4.5-win.exe
+https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-win.exe
 
 #### Upgrading from 0.2.0 to 0.3.0
 
