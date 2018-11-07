@@ -1,5 +1,12 @@
 # DVM Change Log
 
+## Version 0.4.5
+
+### Bugs Fixed
+
+* Fixed installing the latest compiler, that is using the `-l` flag
+* Fixed missing executable permission for the `dub` executable
+
 ## Version 0.4.4
 ### New/Changed Features
 * Experimental support for FreeBSD (using Bash)
