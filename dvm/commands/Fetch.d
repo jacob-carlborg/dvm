@@ -239,7 +239,7 @@ protected:
         if (options.latest)
         {
             auto vers = getDVersion;
-            return args.first = vers ~ "." ~ getLatestDMDVersion(vers);
+            return args.first = getLatestDMDVersion(vers);
         }
 
         else
@@ -256,36 +256,28 @@ protected:
 
     string getLatestDMDVersion (string dVersion)
     {
-        auto dmdPattern = r"(?:dmd\." ~ dVersion ~ r"\.([\d.]+)\.zip)";
-        auto pattern = regex(r"http:\/\/downloads\.dlang\.org\/releases\/(?:\d+)\/" ~ dmdPattern);
+        enum mirrors = [
+            "http://downloads.dlang.org/releases/LATEST",
+            "http://ftp.digitalmars.com/LATEST"
+        ];
 
-        if (auto result = getLatestDMDVersionImpl(pattern))
-            return result;
-
-        pattern = regex(r"http:\/\/ftp\.digitalmars\.com\/" ~ dmdPattern);
-
-        if (auto result = getLatestDMDVersionImpl(pattern))
-            return result;
-
-        throw new DvmException("Failed to get the latest DMD version.", __FILE__, __LINE__);
-    }
-
-    private string getLatestDMDVersionImpl (Regex!(char) regex)
-    {
-        scope page = new HttpGet("http://dlang.org/download.html");
-        auto content = cast(string) page.read;
-
-        string vers = null;
-
-        foreach (line ; content.splitter('\n'))
+        static string fetchFromMirror(string url)
         {
-            auto match = line.matchFirst(regex);
+            scope page = new HttpGet(url);
+            page.setTimeout(5f);
+            page.enableRedirect();
+            page.open();
 
-            if (match.any && match[1] > vers)
-                vers = match[1];
+            return page.isResponseOK ? cast(string) page.read : null;
         }
 
-        return vers;
+        foreach (mirror ; mirrors)
+        {
+            if (auto content = fetchFromMirror(mirror))
+                return content;
+        }
+
+        throw new DvmException("Failed to get the latest DMD version.", __FILE__, __LINE__);
     }
 
     void validateArguments (string errorMessage = null)
