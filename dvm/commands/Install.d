@@ -147,6 +147,7 @@ private:
         setExecutableIfExists(Path.join(binDestination, "ddemangle"));
         setExecutableIfExists(Path.join(binDestination, "dman"));
         setExecutableIfExists(Path.join(binDestination, "dmd"));
+        setExecutableIfExists(Path.join(binDestination, "dub"));
         setExecutableIfExists(Path.join(binDestination, "dumpobj"));
         setExecutableIfExists(Path.join(binDestination, "dustmite"));
         setExecutableIfExists(Path.join(binDestination, "obj2asm"));
