@@ -6,6 +6,8 @@
  */
 module dvm.dvm.CommandManager;
 
+import std.array : array;
+
 import tango.text.convert.Format;
 
 import mambo.core._;
@@ -39,7 +41,7 @@ class CommandManager
 
     string[] names ()
     {
-        return commands.keys.sort;
+        return commands.keys.sort.array;
     }
 
     string summary ()

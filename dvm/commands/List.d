@@ -10,7 +10,7 @@ import tango.io.vfs.FileFolder;
 
 import mambo.core._;
 import dvm.commands.Command;
-import dvm.io.Path;
+import Path = dvm.io.Path;
 
 class List : Command
 {
@@ -50,6 +50,6 @@ class List : Command
 
     private string stripPath (string name)
     {
-        return parse(name).file;
+        return Path.parse(name).file;
     }
 }

@@ -177,8 +177,8 @@ class ShellScript
 
     ShellScript append (Args...) (Args args)
     {
-        enum fmt = "{}{}{}{}{}{}{}{}"
-                      "{}{}{}{}{}{}{}{}"
+        enum fmt = "{}{}{}{}{}{}{}{}" ~
+                      "{}{}{}{}{}{}{}{}" ~
                       "{}{}{}{}{}{}{}{}";
 
         static assert (Args.length <= fmt.length / 2, "dvm.dvm.ShellScript :: too many arguments");

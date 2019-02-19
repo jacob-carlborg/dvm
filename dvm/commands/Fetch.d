@@ -86,8 +86,8 @@ protected:
         {
             import tango.io.Stdout;
 
-            static enum string fmt = "{}{}{}{}{}{}{}{}"
-                                     "{}{}{}{}{}{}{}{}"
+            static enum string fmt = "{}{}{}{}{}{}{}{}" ~
+                                     "{}{}{}{}{}{}{}{}" ~
                                      "{}{}{}{}{}{}{}{}";
 
             static assert (A.length <= fmt.length / 2, "mambo.io.print :: too many arguments");

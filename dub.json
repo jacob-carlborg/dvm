@@ -24,6 +24,6 @@
     "lflags-osx" : ["-macosx_version_min", "10.9"],
 
     "dependencies": {
-        "mambo": "0.0.6"
+        "mambo": "~>0.0.9"
     }
 }
