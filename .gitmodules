@@ -1,3 +1,0 @@
-[submodule "mambo"]
-	path = mambo
-	url = git@github.com:jacob-carlborg/mambo.git
