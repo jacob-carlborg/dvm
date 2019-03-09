@@ -12,7 +12,7 @@
     "targetPath": "bin",
     "sourcePaths": ["dvm"],
     "importPaths": ["dvm"],
-    "stringImportPaths": ["resources"],
+    "stringImportPaths": ["resources", "tmp"],
 
     "excludedSourceFiles-posix": [
         "dvm/util/DvmRegistry.d",
@@ -25,5 +25,13 @@
 
     "dependencies": {
         "mambo": "~>0.0.9"
-    }
+    },
+
+    "preGenerateCommands-posix": [
+      "$$DC -run $PACKAGE_DIR/tools/generate_version.d"
+    ],
+
+    "preGenerateCommands-windows": [
+      "%DC% -run $PACKAGE_DIR/tools/generate_version.d"
+    ]
 }

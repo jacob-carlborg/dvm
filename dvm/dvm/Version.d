@@ -6,4 +6,7 @@
  */
 module dvm.dvm.Version;
 
-enum Version = "0.4.5";
+import std.range : drop;
+import std.string : strip;
+
+enum Version = import("version").strip.drop(1);
