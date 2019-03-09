@@ -33,5 +33,14 @@
 
     "preGenerateCommands-windows": [
       "%DC% -run $PACKAGE_DIR/tools/generate_version.d"
-    ]
+    ],
+
+    "buildTypes": {
+        "release": {
+            "buildOptions": ["optimize", "inline"],
+            "dflags-posix-ldc": ["-flto=full"],
+            "lflags-linux-ldc": ["-static"],
+            "lflags-osx-ldc": ["-dead_strip"]
+        }
+    }
 }
