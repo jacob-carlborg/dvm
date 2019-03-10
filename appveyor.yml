@@ -1,0 +1,47 @@
+platform:
+  - x86
+
+environment:
+  DVersion: stable
+
+  matrix:
+    - d: dmd
+
+init:
+  - ps: |
+        $env:arch = 'x86'
+        $env:vcvarsall_arg = 'x86'
+
+install:
+  - ps: tools/install_dc.ps1
+
+before_build:
+  - '"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall" %vcvarsall_arg%'
+
+build_script:
+  - ps: |
+      if ($env:APPVEYOR_REPO_TAG -eq 'true')
+      {
+        tools/build_release.ps1
+      }
+      else
+      {
+        dub build --verror --arch=$env:arch --compiler=$env:DC
+      }
+
+test_script:
+  - echo dummy build script - dont remove me
+
+artifacts:
+  - path: dvm*.exe
+
+deploy:
+  description: ''
+  provider: GitHub
+  auth_token:
+    secure: KVVCA2Qqz6sZjemDmZmI7uVx12ku+DalV8I5Utt3grBtyuan8RfigRSDxA40Pbt7
+  artifact: /dvm.+\.exe/
+  draft: true
+  on:
+    appveyor_repo_tag: true
+    d: dmd

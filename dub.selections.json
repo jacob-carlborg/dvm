@@ -1,7 +1,7 @@
 {
 	"fileVersion": 1,
 	"versions": {
-		"mambo": "0.0.9",
-		"tango": "1.0.5+2.0.85"
+		"mambo": "0.0.11",
+		"tango": "~d2port"
 	}
 }

@@ -24,7 +24,7 @@
     "lflags-osx" : ["-macosx_version_min", "10.9"],
 
     "dependencies": {
-        "mambo": "~>0.0.9"
+        "mambo": "~>0.0.11"
     },
 
     "preGenerateCommands-posix": [
