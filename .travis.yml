@@ -1,0 +1,51 @@
+dist: trusty
+git:
+  depth: false
+
+language: d
+d:
+  - dmd
+
+os:
+  - linux
+  - osx
+
+env:
+  global: MACOSX_DEPLOYMENT_TARGET=10.9
+
+script: dub build
+
+matrix:
+  include:
+    # beta and nightly builds for DMD and LDC
+    - &entry
+      d: dmd-beta
+      os: linux
+    - <<: *entry
+      d: dmd-nightly
+
+    # deployment
+    - &deploy
+      stage: deploy
+      if: tag IS present
+      d: dmd
+      os: linux
+      script: ./tools/build_release.sh
+      deploy:
+        provider: releases
+        api_key:
+          secure: l8irZWB5vIrqVXWkTD/F4iAYpHZ9tovG6dlkjafDZEM4aKJWON+LOnnoKCbGApCRIj0eXArQ7gNP17tgVe0HPkm46XAao7qQsv5f+hE0MpEUcER3OuK0m51OvWuBToeIqqWIlgJT4C2P4mjIUYykCRTg7uPSv5rDq0BOFyH8gl0=
+        draft: true
+        tag_name: $TRAVIS_TAG
+        file_glob: true
+        file: bin/dvm
+        skip_cleanup: true
+        on:
+          repo: jacob-carlborg/dvm
+          tags: true
+    - <<: *deploy
+      os: osx
+
+  allow_failures:
+    - <<: *entry
+      d: dmd-nightly
