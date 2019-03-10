@@ -2,8 +2,10 @@
 
 ## Version 0.4.5
 
-### Bugs Fixed
+### New/Changed Features
+* Add a flag to print the version of DVM, `--version`
 
+### Bugs Fixed
 * Fixed installing the latest compiler, that is using the `-l` flag
 * Fixed missing executable permission for the `dub` executable
 

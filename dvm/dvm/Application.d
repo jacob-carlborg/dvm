@@ -148,6 +148,7 @@ class Application
         auto opts = new OptionParser;
         auto commands = CommandManager.instance.summary;
         auto help = false;
+        auto version_ = false;
 
         opts.banner = "Usage: dvm [options] command [arg]";
         opts.separator("Version " ~ dvm.dvm.Version.Version);
@@ -195,6 +196,10 @@ class Application
             options.compileDebug = true;
         });
 
+        opts.on('V', "version", "Print the version of DVM and exit.", {
+            version_ = true;
+        });
+
         opts.on('h', "help", "Show this message and exit.", {
             help = true;
         });
@@ -209,7 +214,10 @@ class Application
 
         opts.parse(args[1 .. $]);
 
-        if (args.length == 1 || help)
+        if (version_)
+            println(dvm.dvm.Version.Version);
+
+        else if (args.length == 1 || help)
         {
             println(opts);
             println(helpMessage);
