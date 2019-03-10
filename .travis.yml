@@ -34,11 +34,11 @@ matrix:
       deploy:
         provider: releases
         api_key:
-          secure: l8irZWB5vIrqVXWkTD/F4iAYpHZ9tovG6dlkjafDZEM4aKJWON+LOnnoKCbGApCRIj0eXArQ7gNP17tgVe0HPkm46XAao7qQsv5f+hE0MpEUcER3OuK0m51OvWuBToeIqqWIlgJT4C2P4mjIUYykCRTg7uPSv5rDq0BOFyH8gl0=
+          secure: Ujn07NYSawxfE4LpFQsFMRzdmxXCGdtGba8jFZFcBY9CdISnG70y5YyXdS0hbXTMM8bH08v4KFD4G9Vm1kog6Lwon4jzhScaAjlSOl1ylku5VxPdYuhX4laLKxMVOIx+jA3P0PyIM9Ygd/dwDtPnAHShqwtQfyQYxxwSNVjQfmdsSHiVk5mmiZdz9sUTKc4fBJY88el1b8O65nl9JArpoLM3ph0PwHuKo78H+Orn0sZC39H6Q86CmNRrDvrIlmJy4raAoEVqj1PHZuV0HcV6HjqHGv4/wT5LnW4Mvn8T6V8H+ZJSVzWtDcV/6fDac8DklgDG4cG3WwfvFFrXAAlpVtg0dFNRH1EVdOiwPWywhfz2/oaHAUR8ODgvnHGSKuWAiSLqEGtQaaEJj7lORKk/nSyfy2+L+2LHjMv0EUcWo/GiDD6aJO26kg6eCinN/lasvLcNRaTSTl8tXKZQNMrRL81+H0+sqA8dT28doDjlUC8BSpoYkn7I5uKeACrIH8wchPIRJfIIm/08mUhLUqmKC/2Iz+wUcisR6JiTB9jPPeOFCS9YgSPvD9Vj2IMLJGLIGbAeZANT3mvm9SnhPLkfQwjZ4Sc5J2Xab2iGvd3AC8zg2fyWDEkIU7DtRgTJ9gCARngpJWkk7ML+lgKh0zKYnGgvtAX+P5/CAQn41D/6G6E=
         draft: true
         tag_name: $TRAVIS_TAG
         file_glob: true
-        file: bin/dvm
+        file: bin/dvm*
         skip_cleanup: true
         on:
           repo: jacob-carlborg/dvm
