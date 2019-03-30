@@ -21,7 +21,6 @@
     ],
 
     "buildRequirements": ["silenceWarnings"],
-    "lflags-osx" : ["-macosx_version_min", "10.9"],
 
     "dependencies": {
         "mambo": "~>0.0.11"
