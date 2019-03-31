@@ -1,6 +1,6 @@
 # DVM Change Log
 
-## Version 0.4.5
+## Version 0.5.0
 
 ### New/Changed Features
 * Add a flag to print the version of DVM, `--version`
