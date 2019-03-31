@@ -25,6 +25,10 @@ function release_name {
 
   if [ "$(os)" = 'macos' ]; then
     echo "$release_name"
+  elif [ "$(os)" = 'linux' ] && [ $TRAVIS = 'true' ]; then
+    local dist=$(lsb_release -i | awk '{print $3}' | tr '[:upper:]' '[:lower:]')
+    local dist_release=$(lsb_release -r | awk '{print $2}')
+    echo "$app_name-$(version)-$(os)-${dist}${dist_release}-$(arch)"
   else
     echo "$release_name-$(arch)"
   fi
