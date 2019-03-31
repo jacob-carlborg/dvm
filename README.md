@@ -18,11 +18,11 @@ D2 version in another.
 
 #### Mac OS X:
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-osx && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.5.1/dvm-0.5.1-macos && chmod +x dvm && ./dvm install dvm
 
 #### Linux 64bit
 
-    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-linux-debian7-x86_64 && chmod +x dvm && ./dvm install dvm
+    $ curl -L -o dvm https://github.com/jacob-carlborg/dvm/releases/download/v0.5.1/dvm-0.5.1-linux-ubuntu14.04-x86_64 && chmod +x dvm && ./dvm install dvm
 
 #### Linux 32bit
 
@@ -35,7 +35,7 @@ D2 version in another.
 #### Windows
 
 Follow the general installation instructions.
-https://github.com/jacob-carlborg/dvm/releases/download/v0.4.4/dvm-0.4.4-win.exe
+https://github.com/jacob-carlborg/dvm/releases/download/v0.5.1/dvm-0.5.1-win32.exe
 
 #### Upgrading from 0.2.0 to 0.3.0
 
