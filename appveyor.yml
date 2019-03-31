@@ -33,7 +33,7 @@ test_script:
   - echo dummy build script - dont remove me
 
 artifacts:
-  - path: dvm*.exe
+  - path: bin/dvm*.exe
 
 deploy:
   description: ''
