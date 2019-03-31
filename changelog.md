@@ -7,7 +7,8 @@
 
 ### Bugs Fixed
 * Fixed installing the latest compiler, that is using the `-l` flag
-* Fixed missing executable permission for the `dub` executable
+* [Issue 44](https://github.com/jacob-carlborg/dvm/issues/44): Make dub executable
+* [Issue 42](https://github.com/jacob-carlborg/dvm/issues/43): Doesn't compile with recent compilers (e.g. dmd-2.074.1)
 
 ## Version 0.4.4
 ### New/Changed Features
