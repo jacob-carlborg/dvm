@@ -1,5 +1,10 @@
 # DVM Change Log
 
+## Version 0.5.1
+
+### New/Changed Features
+* Add support for macOS Catalina (10.15)
+
 ## Version 0.5.0
 
 ### New/Changed Features

@@ -35,7 +35,7 @@ D2 version in another.
 #### Windows
 
 Follow the general installation instructions.
-https://github.com/jacob-carlborg/dvm/releases/download/v0.5.1/dvm-0.5.1-win32.exe
+https://github.com/jacob-carlborg/dvm/releases/download/v0.5.1/dvm-0.5.0-win32.exe
 
 #### Upgrading from 0.2.0 to 0.3.0
 
