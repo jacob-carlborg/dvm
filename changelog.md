@@ -5,6 +5,10 @@
 ### New/Changed Features
 * Add support for ZSH
 
+### Bugs Fixed
+* [Issue 48](https://github.com/jacob-carlborg/dvm/issues/48): Installation
+    fails if `~/.bash_profile` doesn't exist
+
 ## Version 0.5.1
 
 ### New/Changed Features

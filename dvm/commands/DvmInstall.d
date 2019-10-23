@@ -8,7 +8,7 @@ module dvm.commands.DvmInstall;
 
 import std.algorithm : each, filter, map;
 import std.array : array;
-import std.file : exists, thisExePath;
+import std.file : append, exists, thisExePath;
 import std.path : buildPath;
 
 import tango.io.device.File;
@@ -142,7 +142,7 @@ private:
                 [home.buildPath(defaultProfile)] : existingPofilePaths.array;
 
             verbose("Installing dvm in the shell loading file(s): ", profilePaths.join(", "));
-            profilePaths.each!(path => File.append(path, sh.content));
+            profilePaths.each!(path => append(path, sh.content));
             println(postInstallInstructions);
         }
 
