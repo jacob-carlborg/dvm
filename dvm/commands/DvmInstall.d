@@ -6,17 +6,20 @@
  */
 module dvm.commands.DvmInstall;
 
-import std.file : thisExePath;
+import std.algorithm : each, filter, map;
+import std.array : array;
+import std.file : exists, thisExePath;
+import std.path : buildPath;
 
 import tango.io.device.File;
 import tango.sys.HomeFolder;
-import tango.text.Util;
 
 import mambo.core._;
 import Path = dvm.io.Path;
 import dvm.commands.Command;
 import dvm.dvm.Exceptions;
 import dvm.dvm.ShellScript;
+import dvm.dvm.Options;
 import dvm.util.Util;
 version (Windows) import DvmRegistry = dvm.util.DvmRegistry;
 version (Windows) import dvm.util.Windows;
@@ -110,24 +113,36 @@ private:
     version (Posix)
         void installBashInclude (ShellScript sh)
         {
-            auto home = homeFolder.assumeUnique;
-            auto bashrc = Path.join(home, ".bashrc");
-            auto bash_profile = Path.join(home, ".bash_profile");
-            string shPath;
+            static string defaultProfile()
+            {
+                with(Shell) switch (Options.instance.shell)
+                {
+                    case bash: return ".bash_profile";
+                    case zsh: return ".zprofile";
+                    default: throw new DvmException("Failed to identify a " ~
+                        "default shell profile file", __FILE__, __LINE__);
+                }
+            }
 
-            if (Path.exists(bashrc))
-                shPath = bashrc;
+            enum potentialShellProfileFiles = [
+                [".bashrc", ".bash_profile"],
+                [".zshrc", ".zprofile"]
+            ];
 
-            else if (Path.exists(bash_profile))
-                shPath = bash_profile;
+            const home = homeFolder.assumeUnique;
+            alias toFullPath = path => home.buildPath(path);
 
-            else
-                throw new DvmException(format(`Cannot find "{}" or "{}". Please perform the post installation manually by following the instructions below:{}{}`,
-                                                bashrc, bash_profile, "\n\n", failedInstallInstructions), __FILE__, __LINE__);
+            auto existingPofilePaths = potentialShellProfileFiles
+                .map!(files => files.map!toFullPath)
+                .map!(files => files.find!exists)
+                .filter!(files => !files.empty)
+                .map!(files => files.front);
 
-            verbose("Installing dvm in the shell loading file: ", shPath);
-            File.append(shPath, sh.content);
+            auto profilePaths = existingPofilePaths.empty ?
+                [home.buildPath(defaultProfile)] : existingPofilePaths.array;
 
+            verbose("Installing dvm in the shell loading file(s): ", profilePaths.join(", "));
+            profilePaths.each!(path => File.append(path, sh.content));
             println(postInstallInstructions);
         }
 

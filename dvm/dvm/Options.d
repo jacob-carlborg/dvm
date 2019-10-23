@@ -6,6 +6,9 @@
  */
 module dvm.dvm.Options;
 
+import std.path : baseName;
+import std.process : environment;
+
 import tango.sys.Environment;
 import tango.sys.HomeFolder;
 
@@ -14,6 +17,14 @@ import mambo.util.Singleton;
 import mambo.util.Version;
 
 import dvm.io.Path;
+
+enum Shell
+{
+    invalid,
+    unkown,
+    bash,
+    zsh
+}
 
 class Options
 {
@@ -31,6 +42,8 @@ class Options
     bool decline = false;
     bool latest = false;
     bool compileDebug = false;
+
+    private Shell shell_;
 
     version (D_LP64)
         bool is64bit = true;
@@ -52,6 +65,24 @@ class Options
 
     else
         static assert (false, "Platform not supported");
+
+    Shell shell()
+    {
+        if (shell_ != Shell.invalid)
+            return shell_;
+
+        if ("SHELL" in environment)
+        {
+            with(Shell) switch (environment["SHELL"].baseName)
+            {
+                case "bash": return shell_ = bash;
+                case "zsh": return shell_ = zsh;
+                default: return shell_ = unkown;
+            }
+        }
+
+        return shell_ = Shell.unkown;
+    }
 }
 
 private struct Path

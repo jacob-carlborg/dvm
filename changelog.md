@@ -1,5 +1,10 @@
 # DVM Change Log
 
+# Unreleased
+
+### New/Changed Features
+* Add support for ZSH
+
 ## Version 0.5.1
 
 ### New/Changed Features
