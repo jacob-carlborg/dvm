@@ -10,7 +10,7 @@ D2 version in another.
 
 ### General Installation Instructions:
 
-1. Download the DVM tool form: https://github.com/jacob-carlborg/dvm/releases
+1. Download the DVM tool from: https://github.com/jacob-carlborg/dvm/releases
 2. Add executable permissions to the downloaded file.
 3. Run the installation: `$ ./<dvm> install dvm` (where `<dvm>` is the name of the downloaded file)
 
