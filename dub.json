@@ -20,7 +20,7 @@
         "dvm/util/Windows.d"
     ],
 
-    "buildRequirements": ["silenceWarnings"],
+    "buildRequirements": ["silenceWarnings", "silenceDeprecations"],
 
     "dependencies": {
         "mambo": "~>0.0.11"
