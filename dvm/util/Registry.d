@@ -11,7 +11,6 @@ version (Windows) {} else
 
 /// High-Level Registry Utilities
 
-import mambo.core.string;
 import dvm.sys.Registry;
 import dvm.util.Windows;
 import tango.sys.win32.Types;

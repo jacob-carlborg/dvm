@@ -6,11 +6,13 @@
  */
 module dvm.commands.Uninstall;
 
+import std.exception : assumeUnique;
+import std.stdio : writeln;
+
 import tango.io.device.File;
 import tango.text.Util;
 
 import dvm.commands.Command;
-import mambo.core._;
 import Path = dvm.io.Path;
 import dvm.util._;
 
@@ -30,7 +32,7 @@ class Uninstall : Command
 
     override void execute ()
     {
-        println("Uninstalling dmd-", args.first);
+        writeln("Uninstalling dmd-", args.first);
         removeFiles;
     }
 

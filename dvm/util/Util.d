@@ -6,33 +6,18 @@
  */
 module dvm.util.Util;
 
-import mambo.core.io;
-import mambo.util.Use;
+import std.stdio : writeln;
 
 import dvm.dvm.Options;
-
-Use!(void delegate (), bool) unless (bool value)
-{
-    Use!(void delegate (), bool) use;
-
-    use.args[0] = (void delegate () dg, bool value) {
-        if (value == false)
-            dg();
-    };
-
-    use.args[1] = value;
-
-    return use;
-}
 
 void verbose (ARGS...) (ARGS args)
 {
     if (Options.instance.verbose)
-        println(args);
+        writeln(args);
 }
 
 void verboseRaw (ARGS...) (ARGS args)
 {
     if (Options.instance.verbose)
-        print(args);
+        writeln(args);
 }

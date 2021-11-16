@@ -6,6 +6,8 @@
  */
 module dvm.dvm.Application;
 
+import std.stdio : writeln;
+
 import tango.core.Exception;
 import tango.io.device.File;
 import tango.io.Stdout;
@@ -16,8 +18,6 @@ import tango.text.convert.Format : Format;
 
 import dvm.dvm._;
 import dvm.util._;
-import mambo.core._;
-import mambo.util._;
 
 static import dvm.commands._;
 
@@ -33,7 +33,6 @@ class Application
 
     private
     {
-        alias Format format;
         string[] args;
         Options options;
         CommandManager commandManager;
@@ -59,45 +58,33 @@ class Application
     {
         this.args = args;
 
-        return handleExceptions in {
+        return handleExceptions({
             parseOptions();
             return EXIT_SUCCESS;
-        };
+        });
     }
 
-    Use!(int delegate ()) handleExceptions ()
+    int handleExceptions (int delegate() block)
     {
-        Use!(int delegate ()) use;
+        try
+            return block();
 
-        use.args[0] = (int delegate () dg) {
-            try
-                return dg();
+        catch (DvmException e)
+        {
+            stderr.format("An error occurred: %s", e).newline.flush;
+            return EXIT_FAILURE;
+        }
 
-            catch (DvmException e)
-            {
-                stderr.format("An error occurred: {}", e).newline.flush;
-                return EXIT_FAILURE;
-            }
-
-            catch (Exception e)
-            {
-                stderr.format("An unknown error occurred:").newline;
-                throw e;
-            }
-        };
-
-        return use;
+        catch (Exception e)
+        {
+            stderr.format("An unknown error occurred:").newline;
+            throw e;
+        }
     }
 
-    Use!(int delegate ()) debugHandleExceptions ()
+    int debugHandleExceptions (int delegate() block)
     {
-        Use!(int delegate ()) use;
-
-        use.args[0] = (int delegate () dg) {
-            return dg();
-        };
-
-        return use;
+        return block();
     }
 
     private void registerCommands ()
@@ -215,12 +202,12 @@ class Application
         opts.parse(args[1 .. $]);
 
         if (version_)
-            println(dvm.dvm.Version.Version);
+            writeln(dvm.dvm.Version.Version);
 
         else if (args.length == 1 || help)
         {
-            println(opts);
-            println(helpMessage);
+            writeln(opts);
+            writeln(helpMessage);
         }
     }
 }

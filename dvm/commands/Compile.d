@@ -6,6 +6,9 @@
  */
 module dvm.commands.Compile;
 
+import std.exception : assumeUnique;
+import std.format : format;
+
 import tango.core.Exception;
 import tango.io.Stdout;
 import tango.io.device.File;
@@ -17,14 +20,11 @@ import tango.sys.win32.Types;
 import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
-import mambo.util.Version;
-
 import dvm.commands.Command;
 import dvm.commands.DmcInstall;
 import dvm.commands.Fetch;
 import dvm.commands.Install;
 import dvm.commands.Use;
-import mambo.core._;
 import dvm.dvm.Wrapper;
 import dvm.dvm._;
 import Path = dvm.io.Path;
@@ -35,7 +35,7 @@ class Compile : Fetch
 {
     private
     {
-        static if (Windows)
+        version(Windows)
         {
             string origMakefile       = "win32.mak";
             string secondaryMakefile  = "win32.mak";
@@ -447,10 +447,10 @@ private:
     string quote (string str)
     {
         version (Windows)
-            return format(`"{}"`, str);
+            return format(`"%s"`, str);
 
         else
-            return format(`'{}'`, str);
+            return format(`'%s'`, str);
     }
 
     void addEnvPath (string path)
@@ -481,4 +481,11 @@ private:
 
         return defaultPath;
     }
+}
+
+private:
+
+T[] toMutable (T) (const(T)[] array)
+{
+	return cast(T[]) array;
 }

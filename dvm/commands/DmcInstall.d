@@ -6,6 +6,8 @@
  */
 module dvm.commands.DmcInstall;
 
+import std.stdio : writeln;
+
 import tango.core.Exception;
 import tango.io.Stdout;
 import tango.io.device.File;
@@ -17,13 +19,10 @@ import tango.sys.win32.Types;
 import tango.text.Util;
 import tango.util.compress.Zip : extractArchive;
 
-import mambo.util.Version;
-
 import dvm.commands.Command;
 import dvm.commands.DvmInstall;
 import dvm.commands.Fetch;
 import dvm.commands.Use;
-import mambo.core._;
 import dvm.dvm.Wrapper;
 import dvm.dvm._;
 import Path = dvm.io.Path;
@@ -54,7 +53,7 @@ private:
         archivePath = Path.join(options.path.archives, dmcArchiveName);
 
         fetchDMC(options.path.archives);
-        println("Installing: dmc");
+        writeln("Installing: dmc");
 
         unpack;
         moveFiles;

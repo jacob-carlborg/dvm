@@ -6,11 +6,14 @@
  */
 module dvm.io.Console;
 
+import std.exception : assumeUnique;
+import std.stdio : writeln;
+import std.uni : toLower;
+
 import tango.io.Console;
 import tango.io.Stdout;
 import tango.text.Util;
 
-import mambo.core._;
 import dvm.dvm.Options;
 import dvm.util.Util;
 
@@ -75,13 +78,13 @@ bool promptYesNo()
 
     if (options.decline)
     {
-        println("[Declining, 'no']");
+        writeln("[Declining, 'no']");
         return false;
     }
 
     if (options.force)
     {
-        println("[Forcing, 'yes']");
+        writeln("[Forcing, 'yes']");
         return true;
     }
 

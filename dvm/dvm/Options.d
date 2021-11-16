@@ -6,15 +6,12 @@
  */
 module dvm.dvm.Options;
 
+import std.exception : assumeUnique;
 import std.path : baseName;
 import std.process : environment;
 
 import tango.sys.Environment;
 import tango.sys.HomeFolder;
-
-import mambo.core.string;
-import mambo.util.Singleton;
-import mambo.util.Version;
 
 import dvm.io.Path;
 
@@ -28,11 +25,11 @@ enum Shell
 
 class Options
 {
-    mixin Singleton;
-
     enum indentation = "    ";
     enum numberOfIndentations = 1;
     enum path = Path();
+
+    private static Options instance_;
 
     bool verbose = false;
     bool tango = false;
@@ -65,6 +62,16 @@ class Options
 
     else
         static assert (false, "Platform not supported");
+
+	private this () {}
+
+	static Options instance ()
+	{
+		if (instance_)
+			return instance_;
+
+		return instance_ = new typeof(this);
+	}
 
     Shell shell()
     {

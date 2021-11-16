@@ -7,13 +7,13 @@
 module dvm.io.Path;
 
 import std.conv;
+import std.exception : assumeUnique;
 
 import tango.core.Exception;
 public import tango.io.Path;
 version (Posix) import tango.stdc.posix.sys.stat;
 import tango.sys.Common;
 
-import mambo.core.string;
 import dvm.dvm.Options;
 import dvm.util.Util;
 
@@ -257,4 +257,11 @@ private ushort permission (string path)
         throw new IOException(path ~ ": " ~ SysError.lastMsg.assumeUnique);
 
     return buffer.st_mode & octal!(777);
+}
+
+private:
+
+T[] toMutable (T) (const(T)[] array)
+{
+	return cast(T[]) array;
 }

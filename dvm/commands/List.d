@@ -6,9 +6,10 @@
  */
 module dvm.commands.List;
 
+import std.stdio : writeln;
+
 import tango.io.vfs.FileFolder;
 
-import mambo.core._;
 import dvm.commands.Command;
 import Path = dvm.io.Path;
 
@@ -30,7 +31,7 @@ class List : Command
 
         if (!Path.exists(options.path.compilers))
         {
-            println(errorMessage);
+            writeln(errorMessage);
             return;
         }
 
@@ -38,14 +39,14 @@ class List : Command
 
         if (folder.self.folders == 0)
         {
-            println(errorMessage);
+            writeln(errorMessage);
             return;
         }
 
-        println("Installed D compilers:\n");
+        writeln("Installed D compilers:\n");
 
         foreach (file ; folder)
-            println(stripPath(file.toString));
+            writeln(stripPath(file.toString));
     }
 
     private string stripPath (string name)

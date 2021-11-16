@@ -8,11 +8,12 @@ module dvm.sys.Registry;
 
 version (Windows):
 
+import std.utf : toUTF16z;
+
 import tango.sys.win32.Types;
 import tango.sys.win32.UserGdi;
 import tango.util.Convert;
 
-import mambo.core.string;
 import dvm.dvm.Exceptions;
 import dvm.util.Windows;
 
@@ -184,9 +185,6 @@ class RegistryException : WinAPIException
 
 /// Conversion Functions ///////////////////////////
 
-private alias dvm.util.Windows.toString16z toString16z;
-private alias mambo.core.string.toString16z toString16z;
-
 ubyte[] toRegDWord (ref uint val)
 {
     return (cast(ubyte*) &val)[0..4];
@@ -309,7 +307,7 @@ HKEY regOpenKey (HKEY hKey, string subKey, RegKeyAccess access)
 {
     HKEY outKey;
 
-    auto result = RegOpenKeyExW(hKey, to!(wstring)(subKey).toString16z(),0, toRegSam(access), &outKey);
+    auto result = RegOpenKeyExW(hKey, subKey.toUTF16z(),0, toRegSam(access), &outKey);
     ensureSuccessKey(result, subKey, "Couldn't open key");
 
     return outKey;
@@ -319,7 +317,7 @@ HKEY regCreateKey (HKEY hKey, string subKey, DWORD dwOptions, RegKeyAccess acces
 {
     HKEY outKey;
     DWORD disposition;
-    auto result = RegCreateKeyExW(hKey, subKey.toString16z(), 0, null, dwOptions, toRegSam(access), null, &outKey, &disposition);
+    auto result = RegCreateKeyExW(hKey, subKey.toUTF16z(), 0, null, dwOptions, toRegSam(access), null, &outKey, &disposition);
     wasCreated = (disposition == REG_CREATED_NEW_KEY);
     ensureSuccessKey(result, subKey, "Couldn't open or create key");
 
@@ -340,7 +338,7 @@ void regCloseKey (HKEY hKey)
 
 bool regValueExists (HKEY hKey, string valueName)
 {
-    auto result = RegQueryValueExW(hKey, valueName.toString16z(), null, null, null, null);
+    auto result = RegQueryValueExW(hKey, valueName.toUTF16z(), null, null, null, null);
 
     if(result == ERROR_FILE_NOT_FOUND)
         return false;
@@ -354,13 +352,13 @@ bool regValueExists (HKEY hKey, string valueName)
 
 void regDeleteKey (HKEY hKey, string subKey)
 {
-    auto result = RegDeleteKeyW(hKey, subKey.toString16z());
+    auto result = RegDeleteKeyW(hKey, subKey.toUTF16z());
     ensureSuccessKey(result, subKey, "Couldn't delete key");
 }
 
 void regDeleteValue (HKEY hKey, string valueName)
 {
-    auto result = RegDeleteValueW(hKey, valueName.toString16z());
+    auto result = RegDeleteValueW(hKey, valueName.toUTF16z());
     ensureSuccessValue(result, valueName, "Couldn't delete value");
 }
 
@@ -378,7 +376,7 @@ void regSetValue (HKEY hKey, string valueName, RegValueType type, ubyte[] data)
     auto ptr = (data is null)? null : data.ptr;
     auto len = (data is null)? 0 : data.length;
 
-    auto result = RegSetValueExW(hKey, valueName.toString16z(), 0, type, ptr, len);
+    auto result = RegSetValueExW(hKey, valueName.toUTF16z(), 0, type, ptr, len);
     ensureSuccessValue(result, valueName, "Couldn't set "~toString(type)~" value");
 }
 
@@ -446,7 +444,7 @@ RegQueryResult regQueryValue () (HKEY hKey, string valueName)
 {
     RegQueryResult ret;
     DWORD dataSize;
-    auto valueNameZ = valueName.toString16z();
+    auto valueNameZ = valueName.toUTF16z();
 
     auto result = RegQueryValueExW(hKey, valueNameZ, null, null, null, &dataSize);
     ensureSuccessValue(result, valueName, "Couldn't check length of value's data");

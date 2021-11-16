@@ -6,9 +6,13 @@
  */
 module dvm.commands.Fetch;
 
-import std.algorithm : splitter;
-import std.string : split;
+import std.algorithm : splitter, startsWith;
+import std.exception : assumeUnique;
+import std.format : format;
+import std.range : empty, front;
 import std.regex;
+import std.stdio : writeln;
+import std.string : split;
 
 import tango.core.Exception;
 import tango.io.device.File;
@@ -20,7 +24,6 @@ import tango.net.http.HttpGet;
 import tango.net.http.HttpConst;
 
 import dvm.commands.Command;
-import mambo.core._;
 import dvm.util._;
 import dvm.dvm._;
 
@@ -68,13 +71,13 @@ protected:
 
         if (options.verbose)
         {
-            println("Fetching:");
-            println(options.indentation, "source: ", source);
-            println(options.indentation, "destination: ", destination, '\n');
+            writeln("Fetching:");
+            writeln(options.indentation, "source: ", source);
+            writeln(options.indentation, "destination: ", destination, '\n');
         }
 
         else
-            println("Fetching: ", source);
+            writeln("Fetching: ", source);
 
         createPath(Path.parse(destination).folder);
         writeFile(downloadFile(source), destination);
@@ -156,8 +159,8 @@ protected:
             num--;
         }
 
-        println(restoreCursor);
-        println();
+        writeln(restoreCursor);
+        writeln();
 
         return buffer.slice;
     }
@@ -174,10 +177,10 @@ protected:
         if (ver == "")
             ver = getDMDVersion;
 
-        auto filename = format("dmd.{}.{}.zip", ver, platformForArchive);
+        auto filename = format("dmd.%s.%s.zip", ver, platformForArchive);
         auto url = buildUrl(ver, filename);
 
-        return urlExists(url) ? filename : format("dmd.{}.zip", ver);
+        return urlExists(url) ? filename : format("dmd.%s.zip", ver);
     }
 
     string buildUrl (string version_, string filename)
@@ -203,10 +206,10 @@ protected:
         if (isPreRelease(version_))
         {
             releases = "pre-releases";
-            version_ = version_.split("-").first;
+            version_ = version_.split("-").front;
         }
 
-        return format(baseUrl ~ "{}/{}.x/{}/{}", releases, version_.first, version_, filename);
+        return format(baseUrl ~ "%s/%s.x/%s/%s", releases, version_.front, version_, filename);
     }
 
     void createPath (string path)
@@ -218,10 +221,10 @@ protected:
     void checkPageStatus (HttpGet page, string url)
     {
         if (page.getStatus == 404)
-            throw new IOException(format(`The resource with URL "{}" could not be found.`, url));
+            throw new IOException(format(`The resource with URL "%s" could not be found.`, url));
 
         else if (!page.isResponseOK)
-            throw new IOException(format(`An unexpected error occurred. The resource "{}" responded with the message "{}" and the status code {}.`, url, page.getResponse.getReason, page.getResponse.getStatus));
+            throw new IOException(format(`An unexpected error occurred. The resource "%s" responded with the message "%s" and the status code %s.`, url, page.getResponse.getReason, page.getResponse.getStatus));
     }
 
     bool urlExists (string url, float timeout = 5f)
@@ -282,7 +285,7 @@ protected:
 
     void validateArguments (string errorMessage = null)
     {
-        if (errorMessage.isEmpty)
+        if (errorMessage.empty)
             errorMessage = "Cannot fetch a compiler without specifying a version";
 
         if (args.empty)
@@ -298,7 +301,7 @@ protected:
 
         immutable suffix = parts[1];
 
-        return suffix.first == 'b' || suffix.startsWith("rc");
+        return suffix.front == 'b' || suffix.startsWith("rc");
     }
 
     string platformForArchive()
@@ -343,7 +346,7 @@ template FetchImpl ()
         auto page = new HttpGet(url);
 
         if (!page.isResponseOK())
-            throw new IOException(format("{}", page.getResponse.getStatus));
+            throw new IOException(format("%s", page.getResponse.getStatus));
 
         return page.read;
     }

@@ -6,10 +6,12 @@
  */
 module dvm.commands.Use;
 
+import std.exception : assumeUnique;
+import std.format : format;
+
 import dvm.util.Util;
 import tango.core.Exception;
 
-import mambo.core._;
 import dvm.dvm.Options;
 import dvm.dvm.ShellScript;
 import dvm.dvm.Wrapper;
@@ -50,7 +52,7 @@ private:
         auto shellScript = createShellScript;
 
         auto current = options.isDefault ? "default" : "current";
-        verbose(format(`Installing "{}" as the {} D compiler`, args.first, current));
+        verbose(format(`Installing "%s" as the %s D compiler`, args.first, current));
 
         writeShellScript(shellScript, options.path.result);
 

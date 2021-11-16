@@ -8,7 +8,8 @@ module dvm.util.Windows;
 
 version (Windows):
 
-import mambo.core.string;
+import std.utf : toUTF16z;
+
 import dvm.dvm.Exceptions;
 import tango.sys.win32.Types;
 import tango.sys.win32.UserGdi;
@@ -55,19 +56,12 @@ class WinAPIException : DvmException
     }
 }
 
-private alias mambo.core.string.toString16z toString16z;
-
-immutable(wchar)* toString16z (string str)
-{
-    return to!(wstring)(str).toString16z();
-}
-
 /// For more info, see: http://msdn.microsoft.com/en-us/library/ms725497(VS.85).aspx
 void broadcastSettingChange (string settingName, uint timeout=1)
 {
     auto result = SendMessageTimeoutW(
         HWND_BROADCAST, WM_SETTINGCHANGE,
-        0, cast(LPARAM)(settingName.toString16z()),
+        0, cast(LPARAM)(settingName.toUTF16z()),
         SMTO_ABORTIFHUNG, timeout, null
     );
 
@@ -82,7 +76,7 @@ void broadcastSettingChange (string settingName, uint timeout=1)
 
 string expandEnvironmentStrings(string str)
 {
-    auto wstr = toString16z(str);
+    auto wstr = toUTF16z(str);
 
     wchar[] result;
     result.length = 32_000 / wchar.sizeof;

@@ -6,6 +6,10 @@
  */
 module dvm.commands.Install;
 
+import std.format : format;
+import std.range : empty;
+import std.stdio : writeln;
+
 import tango.core.Exception;
 import tango.io.Stdout;
 import tango.io.device.File;
@@ -16,14 +20,11 @@ import tango.sys.Process;
 import tango.sys.win32.Types;
 import tango.util.compress.Zip : extractArchive;
 
-import mambo.util.Version;
-
 import dvm.commands.Command;
 import dvm.commands.DmcInstall;
 import dvm.commands.DvmInstall;
 import dvm.commands.Fetch;
 import dvm.commands.Use;
-import mambo.core._;
 import dvm.dvm.Wrapper;
 import dvm.dvm._;
 import Path = dvm.io.Path;
@@ -76,7 +77,7 @@ class Install : Fetch
         archivePath = Path.join(options.path.archives, filename);
 
         fetch(url, archivePath);
-        println("Installing: dmd-", ver);
+        writeln("Installing: dmd-", ver);
 
         unpack;
         moveFiles;
@@ -109,7 +110,7 @@ private:
         auto platformRoot = Path.join(root, Options.platform);
 
         if (!Path.exists(platformRoot))
-            throw new DvmException(mambo.core.string.format(`The platform "{}" is not compatible with the compiler dmd {}`, Options.platform, ver), __FILE__, __LINE__);
+            throw new DvmException(format(`The platform "%s" is not compatible with the compiler dmd %s`, Options.platform, ver), __FILE__, __LINE__);
 
         auto binSource = getBinSource(platformRoot);
 
@@ -217,7 +218,7 @@ private:
 
     void setupTangoEnvironment ()
     {
-        verbose(format(`Installing "{}" as the temporary D compiler`, ver));
+        verbose(format(`Installing "%s" as the temporary D compiler`, ver));
         auto path = Environment.get("PATH");
         path = binDestination ~ options.path.pathSeparator ~ path;
         Environment.set("PATH", path);
@@ -246,12 +247,12 @@ private:
 
         if (options.verbose || result.reason != Process.Result.Exit)
         {
-            println("Output of the Tango build:", "\n");
+            writeln("Output of the Tango build:", "\n");
             Stdout.copy(process.stdout).flush;
-            println();
-            println("Process ", process.programName, '(', process.pid, ')', " exited with:");
-            println(options.indentation, "reason: ", result);
-            println(options.indentation, "status: ", result.status, "\n");
+            writeln();
+            writeln("Process ", process.programName, '(', process.pid, ')', " exited with:");
+            writeln(options.indentation, "reason: ", result);
+            writeln(options.indentation, "status: ", result.status, "\n");
         }
     }
 
@@ -338,7 +339,7 @@ private:
         if (auto path = getLibSource(platformRoot, options.path.lib64))
             paths ~= path;
 
-        if (paths.isEmpty)
+        if (paths.empty)
             throw new DvmException("Could not find any library paths", __FILE__, __LINE__);
 
         return paths;
@@ -389,7 +390,7 @@ private:
 
     void validateArguments (string errorMessage = null)
     {
-        if (errorMessage.isEmpty)
+        if (errorMessage.empty)
             errorMessage = "Cannot install a compiler without specifying a version";
 
         super.validateArguments(errorMessage);
@@ -402,7 +403,7 @@ private:
 
         bool isValid ()
         {
-            return source.any && destination.any;
+            return source.length > 0 && destination.length > 0;
         }
 
         bool opCast (T : bool) ()
@@ -418,6 +419,6 @@ private:
 
     string binDestination ()
     {
-        return binDestination_ = binDestination_.any ? binDestination_ : Path.join(installPath, options.platform, options.path.bin);
+        return binDestination_ = binDestination_.length > 0 ? binDestination_ : Path.join(installPath, options.platform, options.path.bin);
     }
 }

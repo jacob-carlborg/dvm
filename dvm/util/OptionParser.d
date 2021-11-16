@@ -6,12 +6,13 @@
  */
 module dvm.util.OptionParser;
 
+import std.exception : assumeUnique;
+import std.format : format;
+import std.range : join, repeat;
+
 import tango.text.Arguments;
 import tango.text.convert.Format;
 import tango.io.Stdout;
-
-import mambo.core._;
-import mambo.util.Traits;
 
 import dvm.dvm.Options;
 import dvm.dvm.Exceptions;
@@ -23,7 +24,6 @@ class OptionParser
 
     private
     {
-        alias Format format;
         Arguments arguments;
         void delegate (string[] args) argsDg;
         string helpText;
@@ -103,7 +103,7 @@ class OptionParser
 
     override string toString ()
     {
-        return format("{}\n{}", banner, buildHelpText).assumeUnique;
+        return format("%s\n%s", banner, buildHelpText).assumeUnique;
     }
 
     private void handleArgs (string[] args)
@@ -136,23 +136,23 @@ class OptionParser
         foreach (option ; options)
         {
             if (option.longOption.length == 0 && option.shortOption == char.init)
-                help ~= format("{}\n", option.helpText);
+                help ~= format("%s\n", option.helpText);
 
             else if (option.shortOption == char.init)
-                help ~= format("{}--{}{}{}{}\n",
+                help ~= format("%s--%s%s%s%s\n",
                             indentation ~ indentation,
                             option.longOption,
-                            " ".repeat(len - option.longOption.length),
-                            indentation.repeat(numberOfIndentations),
+                            " ".repeat(len - option.longOption.length).join,
+                            indentation.repeat(numberOfIndentations).join,
                             option.helpText);
 
             else
-                help ~= format("{}-{}, --{}{}{}{}\n",
+                help ~= format("%s-%s, --%s%s%s%s\n",
                             indentation,
                             option.shortOption,
                             option.longOption,
-                            " ".repeat(len - option.longOption.length),
-                            indentation.repeat(numberOfIndentations),
+                            " ".repeat(len - option.longOption.length).join,
+                            indentation.repeat(numberOfIndentations).join,
                             option.helpText);
         }
 

@@ -6,7 +6,8 @@
  */
 module dvm.dvm.Wrapper;
 
-import mambo.core._;
+import std.format : format;
+
 import dvm.dvm.ShellScript;
 import dvm.io.Path;
 
@@ -50,7 +51,14 @@ struct Wrapper
         sh.ifFileIsNotEmpty(dmdPath, {
             sh.exec(dmdPath, Sh.allArgs);
         }, {
-            sh.printError(format(`Missing target: "{}"`, target), true);
+            sh.printError(format(`Missing target: "%s"`, target), true);
         });
     }
+}
+
+private:
+
+T[] toMutable (T) (const(T)[] array)
+{
+	return cast(T[]) array;
 }

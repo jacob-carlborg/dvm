@@ -6,9 +6,11 @@
  */
 module dvm.dvm.ShellScript;
 
-import tango.io.device.File;
+import std.conv : text;
+import std.exception : assumeUnique;
+import std.format : format;
 
-import mambo.core._;
+import tango.io.device.File;
 
 class ShellScript
 {
@@ -99,7 +101,7 @@ class ShellScript
     {
         version (Posix)
         {
-            append(format("if [ {} ] ; then", condition)).nl.indent;
+            append(format("if [ %s ] ; then", condition)).nl.indent;
             ifBlock();
             nl;
 
@@ -115,7 +117,7 @@ class ShellScript
 
         else
         {
-            append(format("if {} (", condition)).nl.indent;
+            append(format("if %s (", condition)).nl.indent;
             ifBlock();
             nl;
             append(")");
@@ -137,11 +139,11 @@ class ShellScript
         version (Posix)
         {
             auto quote = singleQuote ? "'" : `"`;
-            append(format(`echo {}Error: {}{} >&2`, quote, message, quote));
+            append(format(`echo %sError: %s%s >&2`, quote, message, quote));
         }
 
         else
-            append(format(`echo Error: {} >&2`, message));
+            append(format(`echo Error: %s >&2`, message));
 
         return this;
     }
@@ -175,18 +177,12 @@ class ShellScript
         return this;
     }
 
-    ShellScript append (Args...) (Args args)
+    ShellScript append(T)(T value)
     {
-        enum fmt = "{}{}{}{}{}{}{}{}" ~
-                      "{}{}{}{}{}{}{}{}" ~
-                      "{}{}{}{}{}{}{}{}";
-
-        static assert (Args.length <= fmt.length / 2, "dvm.dvm.ShellScript :: too many arguments");
-
-        content_ ~= format(fmt[0 .. args.length * 2], args);
-
+        content_ ~= value.text;
         return this;
     }
+
 
     ShellScript nl ()
     {
@@ -212,7 +208,7 @@ struct Sh
 
     string quote (string str)
     {
-        return format(`"{}"`, str);
+        return format(`"%s"`, str);
     }
 
     version (Posix)
@@ -237,34 +233,34 @@ struct Sh
             if (value == "")
                 return loc ~ name;
 
-            return format("{}{}={}", loc, name, value);
+            return format("%s%s=%s", loc, name, value);
         }
 
         string exec (string name, string args = "")
         {
             args = args == "" ? "" : ' ' ~ args;
 
-            return format("exec {}{}", name, args);
+            return format("exec %s%s", name, args);
         }
 
         string export_ (string name, string value, bool quote = true)
         {
-            return format("{}=\"{}\"\nexport {}", name, value, name);
+            return format("%s=\"%s\"\nexport %s", name, value, name);
         }
 
         string source (string path, bool quote = true)
         {
-            return format(". {}", path);
+            return format(". %s", path);
         }
 
         string exec (string command)
         {
-            return format("exec {}", command);
+            return format("exec %s", command);
         }
 
         string variable (string name, bool quote = true)
         {
-            return quote ? format(`"${}"`, name) : '$' ~ name;
+            return quote ? format(`"$%s"`, name) : '$' ~ name;
         }
     }
 
@@ -287,27 +283,27 @@ struct Sh
 
         string declareVariable (string name, string value = "", bool local = false)
         {
-            return format("set {}={}", name, value);
+            return format("set %s=%s", name, value);
         }
 
         string export_ (string name, string content, bool quote = true)
         {
-            return format("set {}={}", name, content);
+            return format("set %s=%s", name, content);
         }
 
         string source (string path)
         {
-            return format("call {}", path);
+            return format("call %s", path);
         }
 
         string exec (string name, string args = "")
         {
-            return format("{} {}", name, args);
+            return format("%s %s", name, args);
         }
 
         string variable (string name, bool quote = true)
         {
-            return quote ? format(`"%{}%"`, name) : '%' ~ name ~ '%';
+            return quote ? format(`"%%s%"`, name) : '%' ~ name ~ '%';
         }
     }
 }

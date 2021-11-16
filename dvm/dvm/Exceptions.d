@@ -6,8 +6,6 @@
  */
 module dvm.dvm.Exceptions;
 
-import mambo.core.string;
-
 class DvmException : Exception
 {
     template Constructor ()

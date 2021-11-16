@@ -6,21 +6,29 @@
  */
 module dvm.dvm.CommandManager;
 
+import std.algorithm : sort;
 import std.array : array;
-
-import tango.text.convert.Format;
-
-import mambo.core._;
-import mambo.util.Singleton;
+import std.format : format;
+import std.range : join, repeat;
+import std.conv : to;
 
 import dvm.commands.Command;
 import dvm.dvm.Options;
 
 class CommandManager
 {
-    mixin Singleton;
-
+	private static CommandManager instance_;
     private Command[string] commands;
+
+	private this () {}
+
+	static CommandManager instance ()
+	{
+		if (instance_)
+			return instance_;
+
+		return instance_ = new typeof(this);
+	}
 
     void register (string command)
     {
@@ -54,11 +62,11 @@ class CommandManager
         foreach (name, _ ; commands)
         {
             auto command = this[name];
-            result ~= Format("{}{}{}{}{}\n",
+            result ~= format("%s%s%s%s%s\n",
                         options.indentation,
                         command.name,
-                        " ".repeat(len - command.name.length),
-                        options.indentation.repeat(options.numberOfIndentations),
+                        " ".repeat(len - command.name.length).join,
+                        options.indentation.repeat(options.numberOfIndentations).join,
                         command.summary);
         }
 

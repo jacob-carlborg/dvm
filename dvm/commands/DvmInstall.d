@@ -6,15 +6,16 @@
  */
 module dvm.commands.DvmInstall;
 
-import std.algorithm : each, filter, map;
-import std.array : array;
+import std.algorithm : each, filter, find, map;
+import std.array : array, join;
+import std.exception : assumeUnique;
 import std.file : append, exists, thisExePath;
 import std.path : buildPath;
+import std.stdio : writeln;
 
 import tango.io.device.File;
 import tango.sys.HomeFolder;
 
-import mambo.core._;
 import Path = dvm.io.Path;
 import dvm.commands.Command;
 import dvm.dvm.Exceptions;
@@ -143,7 +144,7 @@ private:
 
             verbose("Installing dvm in the shell loading file(s): ", profilePaths.join(", "));
             profilePaths.each!(path => append(path, sh.content));
-            println(postInstallInstructions);
+            writeln(postInstallInstructions);
         }
 
     void createPath (string path)
