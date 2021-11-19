@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -z "$dvm_prefix" ] ; then
+if [ -z ${dvm_prefix:+default} ] ; then
 
     if [ -n "$HOME" ] ; then
         dvm_prefix="$HOME/."
@@ -12,9 +12,7 @@ if [ -z "$dvm_prefix" ] ; then
     fi
 fi
 
-if [ -z "$dvm_path" ] ; then
-    dvm_path="${dvm_prefix}dvm"
-fi
+dvm_path=${dvm_path:-${dvm_prefix}dvm}
 
 __dvm_setup_paths()
 {

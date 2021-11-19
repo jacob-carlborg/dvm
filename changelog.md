@@ -4,6 +4,7 @@
 
 ### New/Changed Features
 * Add support for ZSH
+* Add support for sourcing `dvm.sh` when `set -u` is set
 
 ### Bugs Fixed
 * [Issue 48](https://github.com/jacob-carlborg/dvm/issues/48): Installation
