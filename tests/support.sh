@@ -11,3 +11,22 @@ dvm_install_dvm() {
 
   echo "$dvm_install_dir"
 }
+
+# Installs the specified version of the compiler
+# $1 = the DVM install directory
+# $2 = the version of the compiler to install
+dvm_install() {
+  local dvm_install_dir="$1"
+  local version="$2"
+
+  HOME="$dvm_install_dir"
+  USERPROFILE="$dvm_install_dir"
+  APPDATA="$dvm_install_dir"
+
+  source "$dvm_install_dir/.dvm/scripts/dvm"
+
+  HOME="$dvm_install_dir" \
+    USERPROFILE="$dvm_install_dir" \
+    APPDATA="$dvm_install_dir" \
+    dvm install "$version"
+}
