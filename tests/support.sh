@@ -30,3 +30,26 @@ dvm_install() {
     APPDATA="$dvm_install_dir" \
     dvm install "$version"
 }
+
+platform() {
+  local system="$(uname -s)"
+
+  case "$system" in
+    Darwin)
+      echo 'osx'
+      ;;
+
+    Linux)
+      echo 'linux'
+      ;;
+
+    FreeBSD)
+      echo 'freebsd'
+      ;;
+
+    *)
+      echo "Unrecognized operating system: $system"
+      return 1
+      ;;
+  esac
+}
