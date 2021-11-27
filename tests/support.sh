@@ -1,6 +1,6 @@
 # Installs DVM and returns the install directory
 dvm_install_dvm() {
-  local dvm_install_dir="$(mktemp -d -t dvm_test_home)"
+  local dvm_install_dir="$(mktemp -d -t dvm_test_home.XXXXXXXX)"
 
   mkdir -p "$dvm_install_dir"
 
@@ -19,11 +19,10 @@ dvm_install() {
   local dvm_install_dir="$1"
   local version="$2"
 
-  HOME="$dvm_install_dir"
-  USERPROFILE="$dvm_install_dir"
-  APPDATA="$dvm_install_dir"
-
-  source "$dvm_install_dir/.dvm/scripts/dvm"
+  HOME="$dvm_install_dir" \
+  USERPROFILE="$dvm_install_dir" \
+  APPDATA="$dvm_install_dir" \
+    source "$dvm_install_dir/.dvm/scripts/dvm"
 
   HOME="$dvm_install_dir" \
     USERPROFILE="$dvm_install_dir" \

@@ -1,0 +1,151 @@
+name: CI
+
+on:
+  push:
+    branches: '*'
+    tags: v*
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: 0 0 * * *
+
+env:
+  MACOSX_DEPLOYMENT_TARGET: 10.9
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: ${{ matrix.arch }}-${{ matrix.data.os.target }}${{ matrix.data.os.version }} ${{ matrix.compiler }}
+    runs-on: ${{ matrix.data.os.host }}
+    continue-on-error: ${{ matrix.nightly == 'nightly' }}
+    env:
+      DVM_ARCH: ${{ matrix.arch }}
+      DVM_COMPILER: ${{ matrix.compiler }}
+      DVM_DOCKER: ${{ matrix.data.docker }}
+      DVM_OS: ${{ matrix.data.os.target }}
+      DVM_OS_VERSION: ${{ matrix.data.os.version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - dmd-latest
+          # - ldc-latest
+        arch: [x86_64]
+        data:
+          - os:
+              target: macos
+              host: macOS-latest
+
+          - os:
+              target: linux
+              host: ubuntu-latest
+
+          # - os:
+          #     target: windows
+          #     host: windows-latest
+          #
+          # - os:
+          #     target: freebsd
+          #     host: macOS-latest
+          #     version: 12.2
+          #   cross_platform_actions: true
+
+        # include:
+        #   - data:
+        #       os:
+        #         target: linux
+        #         host: ubuntu-latest
+        #       docker: true
+        #     compiler: ldc-latest
+        #     arch: arm64
+        #
+        #   - data:
+        #       os:
+        #         target: linux
+        #         host: ubuntu-latest
+        #       docker: true
+        #     compiler: ldc-latest
+        #     arch: i386
+        #     docker_arch: 386
+        #
+        #   - data:
+        #       os:
+        #         target: windows
+        #         host: windows-latest
+        #     compiler: ldc-latest
+        #     arch: i386
+        #
+        #   - data:
+        #       os:
+        #         target: linux
+        #         host: ubuntu-latest
+        #     compiler: ldc-beta
+        #     arch: x86_64
+        #
+        #   - data:
+        #       os:
+        #         target: linux
+        #         host: ubuntu-latest
+        #     compiler: ldc-master
+        #     arch: x86_64
+        #     nightly: nightly
+        #
+        #   - data:
+        #       os:
+        #         target: linux
+        #         host: ubuntu-latest
+        #     compiler: dmd-beta
+        #     arch: x86_64
+        #
+        #   - data:
+        #       os:
+        #         target: linux
+        #         host: ubuntu-latest
+        #     compiler: dmd-master
+        #     arch: x86_64
+        #     nightly: nightly
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Build and Test
+        if: ${{ !matrix.data.cross_platform_actions && !matrix.data.docker }}
+        run: ./.github/workflows/ci.sh
+
+      - name: Run Tests in VM
+        if: ${{ matrix.data.cross_platform_actions }}
+        uses: cross-platform-actions/action@v0.3.1
+        with:
+          shell: bash
+          operating_system: ${{ matrix.data.os.target }}
+          version: ${{ matrix.data.os.version }}
+          environment_variables: DVM_COMPILER
+          run: |
+            sudo pkg update
+            sudo pkg install -y git
+            ./.github/workflows/ci.sh
+
+      - name: Set up QEMU
+        if: ${{ matrix.data.docker }}
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: ${{ matrix.arch }}
+
+      - name: Run Tests in Docker
+        if: ${{ matrix.data.docker }}
+        run: |
+          docker run \
+            --rm \
+            -v $(pwd):/${{ github.workspace }} \
+            -w ${{ github.workspace }} \
+            -e DVM_DOCKER=${{ env.DVM_DOCKER}} \
+            --platform linux/${{ matrix.docker_arch || matrix.arch }} \
+            alpine:latest \
+            ./.github/workflows/ci.sh

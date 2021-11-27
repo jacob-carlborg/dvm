@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eux
+set -eu
 set -o pipefail
 
 source "$DVM_ROOT/tests/support.sh"
@@ -9,6 +9,12 @@ dvm_install_dir=''
 
 before() {
   dvm_install_dir="$(dvm_install_dvm)"
+
+  HOME="$dvm_install_dir"
+  USERPROFILE="$dvm_install_dir"
+  APPDATA="$dvm_install_dir"
+
+  source "$dvm_install_dir/.dvm/scripts/dvm"
 }
 
 after() {
@@ -16,7 +22,6 @@ after() {
 }
 
 run() {
-  source "$dvm_install_dir/.dvm/scripts/dvm"
   type dvm | head -n 1 | grep -q -E  '^dvm is a function$'
 }
 
