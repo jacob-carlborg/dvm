@@ -24,6 +24,7 @@ import tango.net.http.HttpGet;
 import tango.net.http.HttpConst;
 
 import dvm.commands.Command;
+import Fetchers = dvm.commands.fetchers.base;
 import dvm.util._;
 import dvm.dvm._;
 
@@ -41,6 +42,8 @@ class Fetch : Command
 
     override void execute ()
     {
+        resolveFetcher(args).fetch();
+
         if (args.any && args.first == "dmc")
             fetchDMC;
 
@@ -56,13 +59,6 @@ class Fetch : Command
 protected:
 
     enum userAgent = buildUserAgent();
-    enum dmcArchiveName = "dm852c.zip";
-
-    void fetchDMC (string destinationPath=".")
-    {
-        auto url = "http://ftp.digitalmars.com/Digital_Mars_C++/Patch/" ~ dmcArchiveName;
-        fetch(url, Path.join(destinationPath, dmcArchiveName).assumeUnique);
-    }
 
     void fetch (string source, string destination)
     {
@@ -312,6 +308,24 @@ protected:
             platform ~= options.is64bit ? "-64" : "-32";
 
         return platform;
+    }
+
+    private Fetchers.Base resolveFetcher(string[] args)
+    {
+        if (args.empty)
+            assert(false, "Handle error");
+
+        immutable first = args.first;
+
+        if (first.length < 3)
+            assert(false, "Handle error");
+
+        switch (first.slice[0 .. 4])
+        {
+            case "dmc": return new Dmc(args);
+            case "dmd": return new Dmd(args);
+            default: assert(false, "Handle error");
+        }
     }
 }
 
