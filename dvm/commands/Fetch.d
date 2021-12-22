@@ -60,24 +60,7 @@ protected:
 
     enum userAgent = buildUserAgent();
 
-    void fetch (string source, string destination)
-    {
-        if (Path.exists(destination))
-            return;
 
-        if (options.verbose)
-        {
-            writeln("Fetching:");
-            writeln(options.indentation, "source: ", source);
-            writeln(options.indentation, "destination: ", destination, '\n');
-        }
-
-        else
-            writeln("Fetching: ", source);
-
-        createPath(Path.parse(destination).folder);
-        writeFile(downloadFile(source), destination);
-    }
 
     void[] downloadFile (string url)
     {
