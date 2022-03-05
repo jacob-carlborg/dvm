@@ -7,6 +7,8 @@
 module dvm.commands.fetchers.base;
 
 import std.stdio : writeln;
+import std.file : exists, mkdirRecurse, write;
+import std.path : dirName;
 
 abstract class Base
 {
@@ -23,7 +25,7 @@ protected:
 
     void fetch (string source, string destination)
     {
-        if (Path.exists(destination))
+        if (exists(destination))
             return;
 
         if (options.verbose)
@@ -36,7 +38,7 @@ protected:
         else
             writeln("Fetching: ", source);
 
-        createPath(Path.parse(destination).folder);
-        writeFile(downloadFile(source), destination);
+        mkdirRecurse(dirName(destination));
+        write(destination, downloadFile(source));
     }
 }

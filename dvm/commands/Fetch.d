@@ -60,7 +60,9 @@ protected:
 
     enum userAgent = buildUserAgent();
 
-
+    // https://github.com/ziglang/zig/issues/8973#issuecomment-942439072
+    // https://stackoverflow.com/questions/10402379/is-there-an-equivalent-source-command-in-windows-cmd-as-in-bash-or-tcsh
+    // https://superuser.com/questions/144347/is-there-windows-equivalent-to-the-bashrc-file-in-linux
 
     void[] downloadFile (string url)
     {
@@ -144,13 +146,6 @@ protected:
         return buffer.slice;
     }
 
-    void writeFile (void[] data, string filename)
-    {
-        auto file = new File(filename, File.WriteCreate);
-        scope(exit) file.close();
-        file.write(data);
-    }
-
     string buildFilename (string ver="")
     {
         if (ver == "")
@@ -189,12 +184,6 @@ protected:
         }
 
         return format(baseUrl ~ "%s/%s.x/%s/%s", releases, version_.front, version_, filename);
-    }
-
-    void createPath (string path)
-    {
-        if (!Path.exists(path))
-            Path.createPath(path);
     }
 
     void checkPageStatus (HttpGet page, string url)
