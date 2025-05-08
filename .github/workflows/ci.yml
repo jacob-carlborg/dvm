@@ -47,12 +47,12 @@ jobs:
           # - os:
           #     target: windows
           #     host: windows-latest
-          #
-          # - os:
-          #     target: freebsd
-          #     host: macOS-latest
-          #     version: 12.2
-          #   cross_platform_actions: true
+
+          - os:
+              target: freebsd
+              host: ubuntu-latest
+              version: 12.2
+            cross_platform_actions: true
 
         # include:
         #   - data:
@@ -121,7 +121,7 @@ jobs:
 
       - name: Run Tests in VM
         if: ${{ matrix.data.cross_platform_actions }}
-        uses: cross-platform-actions/action@v0.3.1
+        uses: cross-platform-actions/action@v0.27.0
         with:
           shell: bash
           operating_system: ${{ matrix.data.os.target }}
