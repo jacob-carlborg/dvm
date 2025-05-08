@@ -23,11 +23,7 @@ jobs:
     runs-on: ${{ matrix.data.os.host }}
     continue-on-error: ${{ matrix.nightly == 'nightly' }}
     env:
-      DVM_ARCH: ${{ matrix.arch }}
       DVM_COMPILER: ${{ matrix.compiler }}
-      DVM_DOCKER: ${{ matrix.data.docker }}
-      DVM_OS: ${{ matrix.data.os.target }}
-      DVM_OS_VERSION: ${{ matrix.data.os.version }}
     strategy:
       fail-fast: false
       matrix:
